@@ -1,6 +1,6 @@
 package net.kyrptonaught.quickshulker.config;
 
-import blue.endless.jankson.Comment;
+import net.kyrptonaught.quickshulker.util.Comment;
 import net.kyrptonaught.kyrptconfig.config.AbstractConfigFile;
 
 public class ConfigOptions implements AbstractConfigFile {
