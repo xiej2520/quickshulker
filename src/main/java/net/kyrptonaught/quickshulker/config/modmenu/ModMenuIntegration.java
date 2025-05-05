@@ -30,19 +30,19 @@ public class ModMenuIntegration implements ModMenuApi {
     public Function<Screen, ? extends Screen> getConfigScreenFactory() {
         return (screen) -> {
             ConfigOptions options = QuickShulkerMod.getConfig();
-            ConfigBuilder builder = ConfigBuilder.create().setParentScreen(screen).setTitle(new LiteralText("Quick Shulker Config"));
+            ConfigBuilder builder = ConfigBuilder.create().setParentScreen(screen).setTitle(new LiteralText("Quick Shulker Config").asString());
             builder.setSavingRunnable(() -> {
                 QuickShulkerMod.config.save();
                 ClientUtil.keycode = null;
             });
             ConfigEntryBuilder entryBuilder = ConfigEntryBuilder.create();
 
-            ConfigCategory category = builder.getOrCreateCategory(new LiteralText("key.quickshulker.config.category.activation"));
-            category.addEntry(entryBuilder.startKeyCodeField(new KeybindText("key.quickshulker.config.keybinding"), InputUtil.fromName(options.keybinding)).setSaveConsumer(key -> options.keybinding = key.getName()).build());
-            category.addEntry(entryBuilder.startBooleanToggle(new KeybindText("key.quickshulker.config.keybind"), options.keybind).setSaveConsumer(val -> options.keybind = val).setDefaultValue(true).build());
-            category.addEntry(entryBuilder.startBooleanToggle(new KeybindText("key.quickshulker.config.rightClick"), options.rightClickToOpen).setSaveConsumer(val -> options.rightClickToOpen = val).setDefaultValue(true).build());
-            category.addEntry(entryBuilder.startBooleanToggle(new KeybindText("key.quickshulker.config.keybindInInv"), options.keybingInInv).setSaveConsumer(val -> options.keybingInInv = val).setDefaultValue(true).build());
-            category.addEntry(entryBuilder.startBooleanToggle(new KeybindText("key.quickshulker.config.rightClickInInv"), options.rightClickInv).setSaveConsumer(val -> options.rightClickInv = val).setDefaultValue(true).build());
+            ConfigCategory category = builder.getOrCreateCategory("key.quickshulker.config.category.activation");
+            category.addEntry(entryBuilder.startKeyCodeField("key.quickshulker.config.keybinding", InputUtil.fromName(options.keybinding)).setSaveConsumer(key -> options.keybinding = key.getName()).build());
+            category.addEntry(entryBuilder.startBooleanToggle("key.quickshulker.config.keybind", options.keybind).setSaveConsumer(val -> options.keybind = val).setDefaultValue(true).build());
+            category.addEntry(entryBuilder.startBooleanToggle("key.quickshulker.config.rightClick", options.rightClickToOpen).setSaveConsumer(val -> options.rightClickToOpen = val).setDefaultValue(true).build());
+            category.addEntry(entryBuilder.startBooleanToggle("key.quickshulker.config.keybindInInv", options.keybingInInv).setSaveConsumer(val -> options.keybingInInv = val).setDefaultValue(true).build());
+            category.addEntry(entryBuilder.startBooleanToggle("key.quickshulker.config.rightClickInInv", options.rightClickInv).setSaveConsumer(val -> options.rightClickInv = val).setDefaultValue(true).build());
 
             return builder.build();
         };

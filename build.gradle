@@ -25,7 +25,7 @@ dependencies {
 
 	modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
 
-	modApi "me.shedaniel.cloth:cloth-config-fabric:4.17.132"
+	modApi "me.shedaniel.cloth:config-2:2.14.2"
 
 	modApi "blue.endless:jankson:+"
 	include "blue.endless:jankson:+"

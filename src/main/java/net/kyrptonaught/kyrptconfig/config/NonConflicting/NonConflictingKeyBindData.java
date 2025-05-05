@@ -8,8 +8,8 @@ public class NonConflictingKeyBindData {
     public String name, category;
    public InputUtil.Type inputType;
     public int keyCode;
-    public Consumer<InputUtil.Key> keySetEvent;
-    public NonConflictingKeyBindData(String Name, String Category, InputUtil.Type type, int KeyCode, Consumer<InputUtil.Key> keySetEvent){
+    public Consumer<InputUtil.KeyCode> keySetEvent;
+    public NonConflictingKeyBindData(String Name, String Category, InputUtil.Type type, int KeyCode, Consumer<InputUtil.KeyCode> keySetEvent){
         this.name = Name;
         this.category = Category;
         this.inputType = type;
