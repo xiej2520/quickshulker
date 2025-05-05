@@ -17,7 +17,7 @@
   "mixins": [
     {
       "config": "net.kyrptonaught.quickshulker.json",
-      "environment": "client"
+      "environment": "*"
     }
   ],
   "entrypoints": {
@@ -30,6 +30,9 @@
     "quickshulker": [
       "net.kyrptonaught.quickshulker.QuickShulkerMod"
     ],
+    "registernonconflicting": [
+      "net.kyrptonaught.quickshulker.QuickShulkerMod"
+    ],
     "modmenu": [
       "net.kyrptonaught.quickshulker.config.modmenu.ModMenuIntegration"
     ]
@@ -37,5 +40,6 @@
   "depends": {
     "fabricloader": ">=0.4.0",
     "fabric": "*"
-  }
+  },
+  "accessWidener" : "quickshulker.accesswidener"
 }
