@@ -1,7 +1,7 @@
 package net.kyrptonaught.quickshulker.mixin;
 
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.container.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 

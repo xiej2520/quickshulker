@@ -6,13 +6,13 @@ import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.client.ClientUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.container.Container;
+import net.minecraft.container.Slot;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(HandledScreen.class)
+@Mixin(ContainerScreen.class)
 @Environment(EnvType.CLIENT)
 public abstract class ScreenMixin {
     @Shadow
@@ -36,7 +36,7 @@ public abstract class ScreenMixin {
 
     @Shadow
     @Final
-    protected ScreenHandler handler;
+    protected Container container;
 
     @Inject(method = "init", at = @At("TAIL"))
     private void fixMouse(CallbackInfo ci) {
@@ -50,7 +50,7 @@ public abstract class ScreenMixin {
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void QS$keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
         if (QuickShulkerMod.getConfig().keybingInInv) {
-            if (ClientUtil.keycode.getCategory() == InputUtil.Type.KEYSYM && keyCode == ClientUtil.keycode.getCode()) {
+            if (ClientUtil.keycode.getCategory() == InputUtil.Type.KEYSYM && keyCode == ClientUtil.keycode.getKeyCode()) {
                 if (handleTrigger())
                     cir.cancel();
             }
@@ -66,7 +66,7 @@ public abstract class ScreenMixin {
             }
         }
         if (QuickShulkerMod.getConfig().keybingInInv) {
-            if (ClientUtil.keycode.getCategory() == InputUtil.Type.MOUSE && button == ClientUtil.keycode.getCode()) {
+            if (ClientUtil.keycode.getCategory() == InputUtil.Type.MOUSE && button == ClientUtil.keycode.getKeyCode()) {
                 if (handleTrigger())
                     cir.cancel();
             }
@@ -76,7 +76,9 @@ public abstract class ScreenMixin {
     @Unique
     private boolean handleTrigger() {
         if (this.focusedSlot != null) {
-            if (handler instanceof CreativeInventoryScreen.CreativeScreenHandler) {
+            if (container instanceof CreativeInventoryScreen.CreativeContainer) {
+                // CreativeInventoryScreen extends AbstractInventoryScreen<CreativeContainer> extends ContainerScreen<CreativeContainer>,
+                // ignore ClassCastException warning
                 if (((CreativeInventoryScreen) (Object) this).getSelectedTab() == ItemGroup.INVENTORY.getIndex()) {
                     return isValid(this.focusedSlot.getStack(), ((CreativeSlotMixin) this.focusedSlot).getSlot().id, 1);
                 } else {

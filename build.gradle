@@ -39,6 +39,9 @@ configurations.all {
 		force "net.fabricmc:fabric-loader:${project.loader_version}"  // force this version, cloth-config uses 0.13.1
 	}
 }
+loom {
+	accessWidenerPath = file("src/main/resources/quickshulker.accesswidener")
+}
 
 processResources {
 	inputs.property "version", project.version

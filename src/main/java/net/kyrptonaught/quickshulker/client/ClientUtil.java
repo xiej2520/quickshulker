@@ -26,15 +26,15 @@ public class ClientUtil {
         OpenShulkerPacket.sendOpenPacket(slot, type);
     }
 
-    public static InputUtil.Key keycode;
+    public static InputUtil.KeyCode keycode;
 
     public static boolean isKeybindPressed() {
         if (keycode == null) {
-            keycode = InputUtil.fromTranslationKey(QuickShulkerMod.getConfig().keybinding);
+            keycode = InputUtil.fromName(QuickShulkerMod.getConfig().keybinding);
         }
         if (keycode.getCategory() == InputUtil.Type.MOUSE) {
-            return GLFW.glfwGetMouseButton(MinecraftClient.getInstance().getWindow().getHandle(), keycode.getCode()) == 1;
+            return GLFW.glfwGetMouseButton(MinecraftClient.getInstance().getWindow().getHandle(), keycode.getKeyCode()) == 1;
         }
-        return GLFW.glfwGetKey(MinecraftClient.getInstance().getWindow().getHandle(), keycode.getCode()) == 1;
+        return GLFW.glfwGetKey(MinecraftClient.getInstance().getWindow().getHandle(), keycode.getKeyCode()) == 1;
     }
 }

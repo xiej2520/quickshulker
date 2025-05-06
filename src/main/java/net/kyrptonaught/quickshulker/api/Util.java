@@ -4,38 +4,45 @@ import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.EnderChestBlock;
-import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
+import net.minecraft.container.Container;
+import net.minecraft.container.ContainerListener;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerListener;
+import net.minecraft.network.packet.s2c.play.CloseContainerS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.DefaultedList;
 
 public class Util {
+
+    // 1.16 does a mass reworking of Container to ScreenHandler
+
     public static void openItem(PlayerEntity player, ItemStack stack) {
         Block item = Block.getBlockFromItem(stack.getItem());
         stack.removeSubTag(QuickShulkerMod.MOD_ID);
         if (QuickOpenableRegistry.consumers.containsKey(item.getClass())) {
             QuickOpenableRegistry.consumers.get(item.getClass()).accept(player, stack);
-            ((ItemInventoryContainer) player.currentScreenHandler).setOpenedItem(stack);
-            player.currentScreenHandler.addListener(forceCloseScreenIfNotPresent(player, stack));
+            // 1.16: container -> currentScreenHandler
+            ((ItemInventoryContainer) player.container).setOpenedItem(stack);
+            player.container.addListener(forceCloseScreenIfNotPresent(player, stack));
         }
     }
 
     public static void openItem(PlayerEntity player, int invSlot, int type) {
         if (type == 0) {
-            if (invSlot == -69)//nice
+            if (invSlot == -69) {
+                // main hand
                 openItem(player, player.getMainHandStack());
-            else if (invSlot >= 0 && invSlot < player.currentScreenHandler.slots.size())
-                openItem(player, player.currentScreenHandler.getSlot(invSlot).getStack());
+            } else if (invSlot >= 0 && invSlot < player.container.slots.size()) {
+                // opened container
+                openItem(player, player.container.getSlot(invSlot).getStack());
+            }
         } else if (type == 1) {
-            if (invSlot >= 0 && invSlot < player.playerScreenHandler.slots.size())
-                openItem(player, player.playerScreenHandler.getSlot(invSlot).getStack());
+            // 1.16: playerContainer -> playerScreenHandler
+            if (invSlot >= 0 && invSlot < player.playerContainer.slots.size())
+                // player inventory
+                openItem(player, player.playerContainer.getSlot(invSlot).getStack());
         }
     }
 
@@ -57,27 +64,27 @@ public class Util {
         return stack1.getItem() == stack2.getItem() && ItemStack.areTagsEqual(stack1, stack2) && stack1.getCount() == stack2.getCount();
     }
 
-    public static ScreenHandlerListener forceCloseScreenIfNotPresent(PlayerEntity player, ItemStack stack) {
-        return new ScreenHandlerListener() {
+    public static ContainerListener forceCloseScreenIfNotPresent(PlayerEntity player, ItemStack stack) {
+        return new ContainerListener() {
             @Override
-            public void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> stacks) {
+            public void onContainerRegistered(Container handler, DefaultedList<ItemStack> stacks) {
                 isValid();
             }
 
             @Override
-            public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
+            public void onContainerSlotUpdate(Container handler, int slotId, ItemStack stack) {
                 isValid();
             }
 
             @Override
-            public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
+            public void onContainerPropertyUpdate(Container handler, int property, int value) {
                 isValid();
             }
 
             public void isValid() {
                 if (!player.inventory.contains(stack)) {
-                    ((ServerPlayerEntity) player).networkHandler.sendPacket(new CloseScreenS2CPacket(player.currentScreenHandler.syncId));
-                    player.currentScreenHandler = player.playerScreenHandler;
+                    ((ServerPlayerEntity) player).networkHandler.sendPacket(new CloseContainerS2CPacket(player.container.syncId));
+                    player.container = player.playerContainer;
                 }
             }
         };

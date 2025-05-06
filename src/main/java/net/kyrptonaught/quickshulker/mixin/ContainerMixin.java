@@ -2,13 +2,13 @@ package net.kyrptonaught.quickshulker.mixin;
 
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.api.Util;
+import net.minecraft.container.Container;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.network.packet.s2c.play.ContainerSlotUpdateS2CPacket;
+import net.minecraft.container.Slot;
+import net.minecraft.container.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 
 
-@Mixin(ScreenHandler.class)
+@Mixin(Container.class)
 public abstract class ContainerMixin implements ItemInventoryContainer {
 
     @Unique
@@ -47,7 +47,8 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
                         cir.setReturnValue(ItemStack.EMPTY);
                         if (player instanceof ServerPlayerEntity) {
                             ServerPlayerEntity sPlayer = (ServerPlayerEntity) player;
-                            sPlayer.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(syncId, slotId, slot.getStack()));
+                            // 1.16: ContainerSlotUpdateS2CPacket -> ScreenHandlerSlotUpdateS2CPacket
+                            sPlayer.networkHandler.sendPacket(new ContainerSlotUpdateS2CPacket(syncId, slotId, slot.getStack()));
                         }
                     }
                 }

@@ -7,26 +7,28 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyrptonaught.quickshulker.api.Util;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.PacketByteBuf;
 
 public class OpenShulkerPacket {
     private static final Identifier OPEN_SHULKER_PACKET = new Identifier(QuickShulkerMod.MOD_ID, "open_shulker_packet");
 
     static void registerReceivePacket() {
+        // 1.16 code
         //ServerSidePacketRegistry.INSTANCE.register(OPEN_SHULKER_PACKET, (packetContext, packetByteBuf) -> {
+        //    int type = packetByteBuf.readInt();
         //    int invSlot = packetByteBuf.readInt();
-        //    packetContext.getTaskQueue().execute(() -> Util.openItem(packetContext.getPlayer(), invSlot));
+        //    packetContext.getTaskQueue().execute(() -> {
+        //        Util.openItem(packetContext.getPlayer(), invSlot, type);
+        //    });
         //});
         ServerPlayNetworking.registerGlobalReceiver(OPEN_SHULKER_PACKET, (server, player, serverPlayNetworkHandler, packetByteBuf, packetSender) -> {
-        ServerSidePacketRegistry.INSTANCE.register(OPEN_SHULKER_PACKET, (packetContext, packetByteBuf) -> {
             int type = packetByteBuf.readInt();
             int invSlot = packetByteBuf.readInt();
-            packetContext.getTaskQueue().execute(() -> {
-                Util.openItem(packetContext.getPlayer(), invSlot, type);
-            });
-            server.execute(() -> Util.openItem(player, invSlot));
+            server.execute(() ->
+                Util.openItem(player, invSlot, type)
+            );
         });
     }
 
