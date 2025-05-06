@@ -2,11 +2,14 @@ package net.kyrptonaught.quickshulker.api;
 
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
+import net.kyrptonaught.quickshulker.mixin.SlotAccessor;
+import net.kyrptonaught.quickshulker.network.OpenInventoryPacket;
 import net.minecraft.block.Block;
 import net.minecraft.block.EnderChestBlock;
 import net.minecraft.container.Container;
 import net.minecraft.container.ContainerListener;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -23,7 +26,7 @@ public class Util {
             System.out.println("[QuickShulker]: unknown slot opened");
             //return; //not preventing the crash might make it easier to debug a fix.
         }
-        openItem(player, invSlot, player.container.slots.get(invSlot).getIndex());
+        openItem(player, invSlot, ((SlotAccessor) player.container.slots.get(invSlot)).getIndex());
     }
 
     public static void openItem(PlayerEntity player, int invSlot, int playerInvIndex) {
@@ -34,7 +37,7 @@ public class Util {
             OpenInventoryPacket.send((ServerPlayerEntity) player);
             return;
         }
-        ItemStack stack = player.getInventory().getStack(playerInvIndex);
+        ItemStack stack = player.inventory.getInvStack(playerInvIndex);
         Block item = Block.getBlockFromItem(stack.getItem());
         stack.removeSubTag(QuickShulkerMod.MOD_ID);
         if (QuickOpenableRegistry.quickies.containsKey(item.getClass())) {
@@ -70,7 +73,7 @@ public class Util {
         return stack1.getItem() == stack2.getItem() && ItemStack.areTagsEqual(stack1, stack2) && stack1.getCount() == stack2.getCount();
     }
 
-    public static ContainerListener forceCloseScreenIfNotPresent(PlayerEntity player, ItemStack stack) {
+    public static ContainerListener forceCloseScreenIfNotPresent(PlayerEntity player, int slotID, ItemStack stack) {
         return new ContainerListener() {
             @Override
             public void onContainerRegistered(Container handler, DefaultedList<ItemStack> stacks) {
@@ -88,7 +91,7 @@ public class Util {
             }
 
             public void isValid() {
-                if (!areItemsEqual(stack, player.getInventory().getStack(slotID))) {
+                if (!areItemsEqual(stack, player.inventory.getInvStack(slotID))) {
                     ((ServerPlayerEntity) player).networkHandler.sendPacket(new CloseContainerS2CPacket(player.container.syncId));
                     player.container.close(player);
                     player.container = player.playerContainer;

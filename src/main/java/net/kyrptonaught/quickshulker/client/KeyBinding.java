@@ -7,7 +7,8 @@ import org.lwjgl.glfw.GLFW;
 
 public class KeyBinding {
     public String rawKey;
-    public InputUtil.Key keycode;
+    // InputUtil.Key in 1.16+
+    public InputUtil.KeyCode keycode;
     public boolean doParseKeycode = true;
 
     public KeyBinding() {
@@ -43,13 +44,13 @@ public class KeyBinding {
         parseKeycode();
         if (keycode == null) // Invalid key
             return false;
-        if (keycode == InputUtil.UNKNOWN_KEY)
+        if (keycode == InputUtil.UNKNOWN_KEYCODE)
             return false;
 
         if (keycode.getCategory() == InputUtil.Type.MOUSE)
-            return GLFW.glfwGetMouseButton(MinecraftClient.getInstance().getWindow().getHandle(), keycode.getCode()) == 1;
+            return GLFW.glfwGetMouseButton(MinecraftClient.getInstance().getWindow().getHandle(), keycode.getKeyCode()) == 1;
         else
-            return GLFW.glfwGetKey(MinecraftClient.getInstance().getWindow().getHandle(), keycode.getCode()) == 1;
+            return GLFW.glfwGetKey(MinecraftClient.getInstance().getWindow().getHandle(), keycode.getKeyCode()) == 1;
 
     }
 
@@ -57,19 +58,20 @@ public class KeyBinding {
         parseKeycode();
         if (keycode == null) // Invalid key
             return false;
-        if (keycode == InputUtil.UNKNOWN_KEY)
+        if (keycode == InputUtil.UNKNOWN_KEYCODE)
             return false;
-        return keycode.getCategory() == type && keycode.getCode() == code;
+        return keycode.getCategory() == type && keycode.getKeyCode() == code;
     }
 
-    public InputUtil.Key getKeybinding() {
+    public InputUtil.KeyCode getKeybinding() {
         if (rawKey == null || rawKey.isEmpty())
-            return InputUtil.UNKNOWN_KEY;
+            return InputUtil.UNKNOWN_KEYCODE;
         try {
-            return InputUtil.fromTranslationKey(rawKey);
+            // InputUtil.fromTranslationKey in 1.16+
+            return InputUtil.fromName(rawKey);
         } catch (IllegalArgumentException e) {
             System.out.println(QuickShulkerMod.MOD_ID + ": unknown key entered");
-            return InputUtil.UNKNOWN_KEY;
+            return InputUtil.UNKNOWN_KEYCODE;
         }
     }
 }

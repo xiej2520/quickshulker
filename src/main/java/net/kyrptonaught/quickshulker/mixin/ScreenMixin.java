@@ -6,15 +6,12 @@ import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.client.ClientUtil;
 import net.kyrptonaught.quickshulker.client.QuickShulkerModClient;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.container.Container;
 import net.minecraft.container.Slot;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,6 +34,7 @@ public abstract class ScreenMixin {
 
     @Shadow
     @Final
+    // handler in 1.16+
     protected Container container;
 
     @Inject(method = "init", at = @At("TAIL"))
@@ -51,7 +49,6 @@ public abstract class ScreenMixin {
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void QS$keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
         if (QuickShulkerMod.getConfig().keybingInInv) {
-            if (ClientUtil.keycode.getCategory() == InputUtil.Type.KEYSYM && keyCode == ClientUtil.keycode.getKeyCode()) {
             if (QuickShulkerModClient.quickKey.doesMatch(InputUtil.Type.KEYSYM, keyCode)) {
                 if (handleTrigger())
                     cir.cancel();
@@ -87,7 +84,7 @@ public abstract class ScreenMixin {
             //        return isValid(this.focusedSlot.getStack(), this.focusedSlot.id - 9, 1);
             //    }
             //}
-            return isValid(this.focusedSlot.getStack(), ClientUtil.getSlotId(handler, this.focusedSlot));
+            return isValid(this.focusedSlot.getStack(), ClientUtil.getSlotId(container, this.focusedSlot));
         }
         return false;
     }

@@ -1,15 +1,16 @@
 package net.kyrptonaught.quickshulker.client;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.kyrptonaught.quickshulker.OpenShulkerPacket;
-import net.kyrptonaught.quickshulker.QuickShulkerMod;
+import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
 import net.kyrptonaught.quickshulker.api.Util;
+import net.kyrptonaught.quickshulker.mixin.CreativeSlotMixin;
+import net.kyrptonaught.quickshulker.mixin.SlotAccessor;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
+import net.minecraft.container.Container;
+import net.minecraft.container.Slot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import org.lwjgl.glfw.GLFW;
 
 public class ClientUtil {
 
@@ -26,13 +27,12 @@ public class ClientUtil {
     }
 
     public static boolean isCreativeScreen(PlayerEntity player) {
-        return player.currentScreenHandler instanceof CreativeInventoryScreen.CreativeScreenHandler;
+        return player.container instanceof CreativeInventoryScreen.CreativeContainer;
 
     }
 
-    public static InputUtil.KeyCode keycode;
-    public static int getSlotId(ScreenHandler handler, Slot slot) {
-        if (handler instanceof CreativeInventoryScreen.CreativeScreenHandler) {
+    public static int getSlotId(Container handler, Slot slot) {
+        if (handler instanceof CreativeInventoryScreen.CreativeContainer) {
             if (((CreativeInventoryScreen) MinecraftClient.getInstance().currentScreen).getSelectedTab() == ItemGroup.INVENTORY.getIndex() && slot instanceof CreativeInventoryScreen.CreativeSlot) {
                 return ((CreativeSlotMixin) slot).getSlot().id;
             } else {
@@ -42,19 +42,14 @@ public class ClientUtil {
         return slot.id;
     }
 
-    public static boolean isKeybindPressed() {
-        if (keycode == null) {
-            keycode = InputUtil.fromName(QuickShulkerMod.getConfig().keybinding);
-        }
-        if (keycode.getCategory() == InputUtil.Type.MOUSE) {
-            return GLFW.glfwGetMouseButton(MinecraftClient.getInstance().getWindow().getHandle(), keycode.getKeyCode()) == 1;
-    public static int getPlayerInvSlot(ScreenHandler handler, Slot slot) {
-        if (handler instanceof CreativeInventoryScreen.CreativeScreenHandler) {
+    public static int getPlayerInvSlot(Container handler, Slot slot) {
+        if (handler instanceof CreativeInventoryScreen.CreativeContainer) {
             if (((CreativeInventoryScreen) MinecraftClient.getInstance().currentScreen).getSelectedTab() == ItemGroup.INVENTORY.getIndex() && slot instanceof CreativeInventoryScreen.CreativeSlot) {
-                return ((CreativeSlotMixin) slot).getSlot().getIndex();
+                // post-1.15: getIndex()
+                return ((SlotAccessor) ((CreativeSlotMixin) slot).getSlot()).getIndex();
             }
         }
-        return GLFW.glfwGetKey(MinecraftClient.getInstance().getWindow().getHandle(), keycode.getKeyCode()) == 1;
-        return slot.getIndex();
+        // post-1.15: getIndex()
+        return ((SlotAccessor) slot).getIndex();
     }
 }

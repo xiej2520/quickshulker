@@ -34,13 +34,14 @@ public class QuickShulkerModClient implements ClientModInitializer, AddNonConfli
                     if (player.getMainHandStack().isEmpty() && !player.getOffHandStack().isEmpty())
                         ClientUtil.CheckAndSend(player.getOffHandStack(), 45);
                     else
-                        ClientUtil.CheckAndSend(player.getMainHandStack(), 36 + player.getInventory().selectedSlot);
+                        ClientUtil.CheckAndSend(player.getMainHandStack(), 36 + player.inventory.selectedSlot);
                 }
             }
         });
         ClientPlayNetworking.registerGlobalReceiver(OpenInventoryPacket.OPEN_INV, (client, handler, packet, sender) -> {
             client.execute(() -> {
-                client.setScreen(new InventoryScreen(client.player));
+                // setScreen in 1.17
+                client.openScreen(new InventoryScreen(client.player));
             });
         });
         FabricLoader.getInstance().getEntrypoints(QuickShulkerMod.MOD_ID + "_client", RegisterQuickShulkerClient.class).forEach(RegisterQuickShulkerClient::registerClient);
@@ -48,11 +49,12 @@ public class QuickShulkerModClient implements ClientModInitializer, AddNonConfli
 
     @Override
     public void addKeyBinding(List<NonConflictingKeyBindData> list) {
-        InputUtil.Key key = quickKey.getKeybinding();
-        NonConflictingKeyBindData bindData = new NonConflictingKeyBindData("key.quickshulker.config.keybinding", "key.categories.quickshulker", key, InputUtil.fromTranslationKey(ConfigOptions.defualtKeybind), setKey -> {
-            QuickShulkerMod.getConfig().keybinding = setKey.getTranslationKey();
+        InputUtil.KeyCode key = quickKey.getKeybinding();
+        // InputUtil.fromTranslationKey in 1.16+
+        NonConflictingKeyBindData bindData = new NonConflictingKeyBindData("key.quickshulker.config.keybinding", "key.categories.quickshulker", key, InputUtil.fromName(ConfigOptions.defualtKeybind), setKey -> {
+            QuickShulkerMod.getConfig().keybinding = setKey.getName();
             QuickShulkerMod.config.save();
-            quickKey.setRaw(setKey.getTranslationKey());
+            quickKey.setRaw(setKey.getName());
         });
         list.add(bindData);
     }
