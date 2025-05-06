@@ -2,23 +2,17 @@ package net.kyrptonaught.quickshulker.config.modmenu;
 
 import io.github.prospector.modmenu.api.ConfigScreenFactory;
 import io.github.prospector.modmenu.api.ModMenuApi;
-import me.shedaniel.clothconfig2.api.ConfigBuilder;
-import me.shedaniel.clothconfig2.api.ConfigCategory;
-import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
-import me.shedaniel.clothconfig2.impl.builders.KeyCodeBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.kyrptonaught.quickshulker.QuickShulkerMod;
-import net.kyrptonaught.quickshulker.client.ClientUtil;
-import net.kyrptonaught.quickshulker.config.ConfigOptions;
 import net.kyrptonaught.kyrptconfig.config.screen.ConfigScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.KeybindText;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-
-import java.util.function.Function;
+import net.kyrptonaught.kyrptconfig.config.screen.ConfigSection;
+import net.kyrptonaught.kyrptconfig.config.screen.items.BooleanItem;
+import net.kyrptonaught.kyrptconfig.config.screen.items.KeybindItem;
+import net.kyrptonaught.kyrptconfig.config.screen.items.SubItem;
+import net.kyrptonaught.quickshulker.QuickShulkerMod;
+import net.kyrptonaught.quickshulker.client.QuickShulkerModClient;
+import net.kyrptonaught.quickshulker.config.ConfigOptions;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class ModMenuIntegration implements ModMenuApi {

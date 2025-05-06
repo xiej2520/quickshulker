@@ -9,9 +9,9 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
 public class ConfigStorage {
-    private File saveFile;
+    private final File saveFile;
     public AbstractConfigFile config;
-    private AbstractConfigFile defaultConfig;
+    private final AbstractConfigFile defaultConfig;
 
     public ConfigStorage(File fileName, AbstractConfigFile defaultConfig) {
         this.saveFile = fileName;

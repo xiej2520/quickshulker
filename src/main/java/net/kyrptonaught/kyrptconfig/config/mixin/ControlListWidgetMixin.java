@@ -1,10 +1,7 @@
 package net.kyrptonaught.kyrptconfig.config.mixin;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.kyrptonaught.kyrptconfig.config.NonConflicting.AddNonConflictingKeyBind;
-import net.kyrptonaught.kyrptconfig.config.NonConflicting.NonConflictingKeyBindData;
-import net.kyrptonaught.kyrptconfig.config.NonConflicting.NonConflictingKeyBindEntry;
-import net.kyrptonaught.kyrptconfig.config.NonConflicting.NonConflictingKeyBinding;
+import net.kyrptonaught.kyrptconfig.config.NonConflicting.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.options.ControlsListWidget;
 import net.minecraft.client.gui.screen.options.ControlsOptionsScreen;
@@ -41,6 +38,8 @@ public abstract class ControlListWidgetMixin {
             }
 
             NonConflictingKeyBinding keyBinding = new NonConflictingKeyBinding(bindData.name, bindData.inputType, bindData.keyCode, bindData.category, bindData.keySetEvent);
+            if (bindData.defaultKeyCode != null)
+                ((ModifyableDefaultKey) keyBinding).setDefaultKey(bindData.defaultKeyCode);
             NonConflictingKeyBindEntry entry = new NonConflictingKeyBindEntry(keyBinding, new TranslatableText(bindData.name), this.gui, this.maxKeyNameLength);
             ((EntryListWidget) (Object) this).children().add(entry);
         }

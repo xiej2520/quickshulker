@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 
 public class NonConflictingKeyBinding extends KeyBinding {
     private final Consumer<InputUtil.KeyCode> keySet;
+
     public NonConflictingKeyBinding(String name, InputUtil.Type type, int code, String category, Consumer<InputUtil.KeyCode> keySet) {
         super(name, type, code, category);
         this.keySet = keySet;

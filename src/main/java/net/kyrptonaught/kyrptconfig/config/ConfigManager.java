@@ -9,8 +9,8 @@ import java.nio.file.Files;
 import java.util.HashMap;
 
 public class ConfigManager {
-    private final Jankson JANKSON = Jankson.builder().build();
-    private HashMap<String, ConfigStorage> configs = new HashMap<>();
+    protected final Jankson JANKSON = Jankson.builder().build();
+    protected final HashMap<String, ConfigStorage> configs = new HashMap<>();
     protected File dir;
     protected String MOD_ID;
 
@@ -20,12 +20,12 @@ public class ConfigManager {
     }
 
     public AbstractConfigFile getConfig(String name) {
-        if(!name.endsWith(".json5")) name = name + ".json5";
+        if (!name.endsWith(".json5")) name = name + ".json5";
         return configs.get(name).config;
     }
 
     public void registerFile(String name, AbstractConfigFile defaultConfig) {
-        if(!name.endsWith(".json5")) name = name + ".json5";
+        if (!name.endsWith(".json5")) name = name + ".json5";
         configs.put(name, new ConfigStorage(new File(dir, name), defaultConfig));
     }
 
@@ -38,11 +38,15 @@ public class ConfigManager {
         save();
     }
 
+    public Jankson getJANKSON() {
+        return JANKSON;
+    }
+
     public static class SingleConfigManager extends ConfigManager {
         public SingleConfigManager(String mod_id, AbstractConfigFile defaultConfig) {
             super(mod_id);
             dir = FabricLoader.getInstance().getConfigDirectory();
-            registerFile(mod_id+"config", defaultConfig);
+            registerFile(mod_id + "config", defaultConfig);
         }
 
         public AbstractConfigFile getConfig() {
@@ -60,6 +64,17 @@ public class ConfigManager {
                 } catch (IOException e) {
                 }
             }
+        }
+
+        public void load(String config) {
+            if (!config.endsWith(".json5")) config = config + ".json5";
+            this.configs.get(config).load(MOD_ID, JANKSON);
+            save(config);
+        }
+
+        public void save(String config) {
+            if (!config.endsWith(".json5")) config = config + ".json5";
+            this.configs.get(config).save(MOD_ID, JANKSON);
         }
     }
 }
