@@ -18,31 +18,29 @@ public class Util {
 
     // 1.16 does a mass reworking of Container to ScreenHandler
 
-    public static void openItem(PlayerEntity player, ItemStack stack) {
-        Block item = Block.getBlockFromItem(stack.getItem());
-        stack.removeSubTag(QuickShulkerMod.MOD_ID);
-        if (QuickOpenableRegistry.consumers.containsKey(item.getClass())) {
-            QuickOpenableRegistry.consumers.get(item.getClass()).accept(player, stack);
-            // 1.16: container -> currentScreenHandler
-            ((ItemInventoryContainer) player.container).setOpenedItem(stack);
-            player.container.addListener(forceCloseScreenIfNotPresent(player, stack));
+    public static void openItem(PlayerEntity player, int invSlot) {
+        if (invSlot < 0) {
+            System.out.println("[QuickShulker]: unknown slot opened");
+            //return; //not preventing the crash might make it easier to debug a fix.
         }
+        openItem(player, invSlot, player.container.slots.get(invSlot).getIndex());
     }
 
-    public static void openItem(PlayerEntity player, int invSlot, int type) {
-        if (type == 0) {
-            if (invSlot == -69) {
-                // main hand
-                openItem(player, player.getMainHandStack());
-            } else if (invSlot >= 0 && invSlot < player.container.slots.size()) {
-                // opened container
-                openItem(player, player.container.getSlot(invSlot).getStack());
-            }
-        } else if (type == 1) {
-            // 1.16: playerContainer -> playerScreenHandler
-            if (invSlot >= 0 && invSlot < player.playerContainer.slots.size())
-                // player inventory
-                openItem(player, player.playerContainer.getSlot(invSlot).getStack());
+    public static void openItem(PlayerEntity player, int invSlot, int playerInvIndex) {
+        if (QuickShulkerMod.getConfig().rightClickClose && playerInvIndex == ((ItemInventoryContainer) player.container).getUsedSlotInPlayerInv()) {
+            ((ServerPlayerEntity) player).networkHandler.sendPacket(new CloseContainerS2CPacket(player.container.syncId));
+            player.container.close(player);
+            player.container = player.playerContainer;
+            OpenInventoryPacket.send((ServerPlayerEntity) player);
+            return;
+        }
+        ItemStack stack = player.getInventory().getStack(playerInvIndex);
+        Block item = Block.getBlockFromItem(stack.getItem());
+        stack.removeSubTag(QuickShulkerMod.MOD_ID);
+        if (QuickOpenableRegistry.quickies.containsKey(item.getClass())) {
+            QuickOpenableRegistry.quickies.get(item.getClass()).openConsumer.accept(player, stack);
+            ((ItemInventoryContainer) player.container).setUsedSlot(playerInvIndex);
+            player.container.addListener(forceCloseScreenIfNotPresent(player, playerInvIndex, stack));
         }
     }
 
@@ -50,14 +48,22 @@ public class Util {
         Item item = stack.getItem();
         if (!(item instanceof BlockItem)) return false;
         Block block = ((BlockItem) item).getBlock();
-        if (!(block instanceof EnderChestBlock) && stack.getCount() != 1) return false;
-        return QuickOpenableRegistry.consumers.containsKey(block.getClass());
+        if (!QuickOpenableRegistry.quickies.containsKey(block.getClass()))
+            return false;
+        return stack.getCount() <= 1;
     }
 
-    public static boolean isEnderChest(ItemStack stack) {
+    public static Inventory getQuickItemInventory(PlayerEntity player, ItemStack stack) {
         Item item = stack.getItem();
-        if (!(item instanceof BlockItem)) return false;
-        return ((BlockItem) item).getBlock() instanceof EnderChestBlock;
+        if (item instanceof BlockItem) {
+            Block block = ((BlockItem) item).getBlock();
+            if (QuickOpenableRegistry.quickies.containsKey(block.getClass())) {
+                QuickShulkerData data = QuickOpenableRegistry.quickies.get(block.getClass());
+                if (data.supportsBundleing)
+                    return data.getInventory(player, stack);
+            }
+        }
+        return null;
     }
 
     public static boolean areItemsEqual(ItemStack stack1, ItemStack stack2) {
@@ -82,8 +88,9 @@ public class Util {
             }
 
             public void isValid() {
-                if (!player.inventory.contains(stack)) {
+                if (!areItemsEqual(stack, player.getInventory().getStack(slotID))) {
                     ((ServerPlayerEntity) player).networkHandler.sendPacket(new CloseContainerS2CPacket(player.container.syncId));
+                    player.container.close(player);
                     player.container = player.playerContainer;
                 }
             }

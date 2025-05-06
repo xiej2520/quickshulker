@@ -13,58 +13,34 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.List;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 
 @Mixin(Container.class)
 public abstract class ContainerMixin implements ItemInventoryContainer {
 
-    @Unique
-    ItemStack openededStack;
+    int playerInvSlot = -1;
+
+    public int getUsedSlotInPlayerInv() {
+        return playerInvSlot;
+    }
+
+    public void setUsedSlot(int playerInvSlotID) {
+        this.playerInvSlot = playerInvSlotID;
+    }
 
     @Shadow
     @Final
-    public List<Slot> slots;
-
-
-    @Shadow
-    @Final
-    public int syncId;
-
+    public DefaultedList<Slot> slots;
 
     @Inject(method = "onSlotClick", at = @At("HEAD"), cancellable = true)
-    public void QS$onClick(int slotId, int clickData, SlotActionType actionType, PlayerEntity player, CallbackInfoReturnable<ItemStack> cir) {
+    public void QS$onClick(int slotId, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
         if (slotId > 0 && slotId < slots.size()) {
-            Slot slot = this.slots.get(slotId);
-            if (slot != null && slot.inventory instanceof PlayerInventory)
-                if (hasItem()) {
-                    if (Util.areItemsEqual(slot.getStack(), getOpenedItem())) {
-                        cir.setReturnValue(ItemStack.EMPTY);
-                        if (player instanceof ServerPlayerEntity) {
-                            ServerPlayerEntity sPlayer = (ServerPlayerEntity) player;
-                            // 1.16: ContainerSlotUpdateS2CPacket -> ScreenHandlerSlotUpdateS2CPacket
-                            sPlayer.networkHandler.sendPacket(new ContainerSlotUpdateS2CPacket(syncId, slotId, slot.getStack()));
-                        }
-                    }
-                }
+            if (hasItem())
+                if (slots.get(slotId).inventory instanceof PlayerInventory && slots.get(slotId).getIndex() == playerInvSlot)
+                    ci.cancel();
         }
-    }
-
-    @Unique
-    @Override
-    public ItemStack getOpenedItem() {
-        return openededStack;
-    }
-
-    @Unique
-    @Override
-    public void setOpenedItem(ItemStack openedItem) {
-        if (!Util.isEnderChest(openedItem))
-            this.openededStack = openedItem;
     }
 }

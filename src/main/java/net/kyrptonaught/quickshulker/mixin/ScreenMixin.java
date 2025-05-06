@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.client.ClientUtil;
+import net.kyrptonaught.quickshulker.client.QuickShulkerModClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.ContainerScreen;
@@ -51,6 +52,7 @@ public abstract class ScreenMixin {
     private void QS$keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
         if (QuickShulkerMod.getConfig().keybingInInv) {
             if (ClientUtil.keycode.getCategory() == InputUtil.Type.KEYSYM && keyCode == ClientUtil.keycode.getKeyCode()) {
+            if (QuickShulkerModClient.quickKey.doesMatch(InputUtil.Type.KEYSYM, keyCode)) {
                 if (handleTrigger())
                     cir.cancel();
             }
@@ -66,7 +68,7 @@ public abstract class ScreenMixin {
             }
         }
         if (QuickShulkerMod.getConfig().keybingInInv) {
-            if (ClientUtil.keycode.getCategory() == InputUtil.Type.MOUSE && button == ClientUtil.keycode.getKeyCode()) {
+            if (QuickShulkerModClient.quickKey.doesMatch(InputUtil.Type.MOUSE, button)) {
                 if (handleTrigger())
                     cir.cancel();
             }
@@ -76,24 +78,24 @@ public abstract class ScreenMixin {
     @Unique
     private boolean handleTrigger() {
         if (this.focusedSlot != null) {
-            if (container instanceof CreativeInventoryScreen.CreativeContainer) {
-                // CreativeInventoryScreen extends AbstractInventoryScreen<CreativeContainer> extends ContainerScreen<CreativeContainer>,
-                // ignore ClassCastException warning
-                if (((CreativeInventoryScreen) (Object) this).getSelectedTab() == ItemGroup.INVENTORY.getIndex()) {
-                    return isValid(this.focusedSlot.getStack(), ((CreativeSlotMixin) this.focusedSlot).getSlot().id, 1);
-                } else {
-                    return isValid(this.focusedSlot.getStack(), this.focusedSlot.id - 9, 1);
-                }
-            }
-            return isValid(this.focusedSlot.getStack(), this.focusedSlot.id, 0);
+            //if (container instanceof CreativeInventoryScreen.CreativeContainer) {
+            //    // CreativeInventoryScreen extends AbstractInventoryScreen<CreativeContainer> extends ContainerScreen<CreativeContainer>,
+            //    // ignore ClassCastException warning
+            //    if (((CreativeInventoryScreen) (Object) this).getSelectedTab() == ItemGroup.INVENTORY.getIndex()) {
+            //        return isValid(this.focusedSlot.getStack(), ((CreativeSlotMixin) this.focusedSlot).getSlot().id, 1);
+            //    } else {
+            //        return isValid(this.focusedSlot.getStack(), this.focusedSlot.id - 9, 1);
+            //    }
+            //}
+            return isValid(this.focusedSlot.getStack(), ClientUtil.getSlotId(handler, this.focusedSlot));
         }
         return false;
     }
 
     @Unique
-    private boolean isValid(ItemStack stack, int id, int type) {
+    private boolean isValid(ItemStack stack, int id) {
         if (this.focusedSlot.inventory instanceof PlayerInventory)
-            if (ClientUtil.CheckAndSend(stack, id, type)) {
+            if (ClientUtil.CheckAndSend(stack, id)) {
                 QuickShulkerMod.lastMouseX = MinecraftClient.getInstance().mouse.getX();
                 QuickShulkerMod.lastMouseY = MinecraftClient.getInstance().mouse.getY();
                 return true;

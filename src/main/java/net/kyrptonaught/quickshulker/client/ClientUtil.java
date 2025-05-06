@@ -11,22 +11,36 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 
-@Environment(EnvType.CLIENT)
 public class ClientUtil {
 
-    public static boolean CheckAndSend(ItemStack stack, int slot, int type) {
+    public static boolean CheckAndSend(ItemStack stack, int slot) {
         if (Util.isOpenableItem(stack)) {
-            SendOpenPacket(slot, type);
+            SendOpenPacket(slot);
             return true;
         }
         return false;
     }
 
-    private static void SendOpenPacket(int slot, int type) {
-        OpenShulkerPacket.sendOpenPacket(slot, type);
+    private static void SendOpenPacket(int slot) {
+        OpenShulkerPacket.sendOpenPacket(slot);
+    }
+
+    public static boolean isCreativeScreen(PlayerEntity player) {
+        return player.currentScreenHandler instanceof CreativeInventoryScreen.CreativeScreenHandler;
+
     }
 
     public static InputUtil.KeyCode keycode;
+    public static int getSlotId(ScreenHandler handler, Slot slot) {
+        if (handler instanceof CreativeInventoryScreen.CreativeScreenHandler) {
+            if (((CreativeInventoryScreen) MinecraftClient.getInstance().currentScreen).getSelectedTab() == ItemGroup.INVENTORY.getIndex() && slot instanceof CreativeInventoryScreen.CreativeSlot) {
+                return ((CreativeSlotMixin) slot).getSlot().id;
+            } else {
+                return slot.id - 9;
+            }
+        }
+        return slot.id;
+    }
 
     public static boolean isKeybindPressed() {
         if (keycode == null) {
@@ -34,7 +48,13 @@ public class ClientUtil {
         }
         if (keycode.getCategory() == InputUtil.Type.MOUSE) {
             return GLFW.glfwGetMouseButton(MinecraftClient.getInstance().getWindow().getHandle(), keycode.getKeyCode()) == 1;
+    public static int getPlayerInvSlot(ScreenHandler handler, Slot slot) {
+        if (handler instanceof CreativeInventoryScreen.CreativeScreenHandler) {
+            if (((CreativeInventoryScreen) MinecraftClient.getInstance().currentScreen).getSelectedTab() == ItemGroup.INVENTORY.getIndex() && slot instanceof CreativeInventoryScreen.CreativeSlot) {
+                return ((CreativeSlotMixin) slot).getSlot().getIndex();
+            }
         }
         return GLFW.glfwGetKey(MinecraftClient.getInstance().getWindow().getHandle(), keycode.getKeyCode()) == 1;
+        return slot.getIndex();
     }
 }
