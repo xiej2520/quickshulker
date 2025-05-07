@@ -2,10 +2,10 @@ package net.kyrptonaught.kyrptconfig.config.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.*;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
@@ -16,8 +16,8 @@ public class ConfigScreen extends Screen {
 
     int selectedSection = 0;
     List<ConfigSection> sections = new ArrayList<>();
-    private Runnable saveRunnable;
     Screen previousScreen;
+    private Runnable saveRunnable;
 
     public ConfigScreen(Screen previousScreen, Text title) {
         super(title);
@@ -119,19 +119,18 @@ public class ConfigScreen extends Screen {
         renderBackgroundTexture(0, this.height, 0);
         fillGradient(0, 0, this.width, this.height, -1072689136, -804253680);
 
-        sections.get(selectedSection).render(55, mouseX, mouseY);
 
         renderBackgroundTexture(0, 55, 100);
         renderBackgroundTexture(this.height - 30, 30, 100);
 
-        //drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 13, 0xffffff);
         drawCenteredString(this.font, this.title.asString(), this.width / 2, 13, 0xffffff);
 
         for (int i = 0; i < sections.size(); i++) {
             sections.get(i).sectionSelectionBTN.active = i != selectedSection;
-            //sections.get(i).sectionSelectionBTN.render(matrices, mouseX, mouseY, delta);
             sections.get(i).sectionSelectionBTN.render(mouseX, mouseY, delta);
         }
+        sections.get(selectedSection).render(55, mouseX, mouseY, delta);
+        // render toolTip if applicable
         sections.get(selectedSection).render2(55, mouseX, mouseY, delta);
 
         super.render(mouseX, mouseY, delta);
@@ -149,6 +148,17 @@ public class ConfigScreen extends Screen {
         //bufferBuilder.vertex(this.width, startY, 0.0D).texture((float) this.width / 32.0F, (float) vOffset).color(64, 64, 64, 255).next();
         //bufferBuilder.vertex(0.0D, startY, 0.0D).texture(0.0F, (float) vOffset).color(64, 64, 64, 255).next();
         //tessellator.draw();
-        renderDirtBackground(vOffset);
+
+        // from Screen::renderDirtBackground(int)
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        this.minecraft.getTextureManager().bindTexture(BACKGROUND_LOCATION);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+        bufferBuilder.vertex(0.0, startY + size, 0.0).texture(0.0F, size / 32.0F + vOffset).color(64, 64, 64, 255).next();
+        bufferBuilder.vertex(this.width, startY + size, 0.0).texture(this.width / 32.0F, size / 32.0F + vOffset).color(64, 64, 64, 255).next();
+        bufferBuilder.vertex(this.width, startY, 0.0).texture(this.width / 32.0F, vOffset).color(64, 64, 64, 255).next();
+        bufferBuilder.vertex(0.0, startY, 0.0).texture(0.0F, vOffset).color(64, 64, 64, 255).next();
+        tessellator.draw();
     }
 }

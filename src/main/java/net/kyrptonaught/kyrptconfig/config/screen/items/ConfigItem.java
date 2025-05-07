@@ -2,7 +2,6 @@ package net.kyrptonaught.kyrptconfig.config.screen.items;
 
 import net.kyrptonaught.kyrptconfig.config.screen.NotSuckyButton;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
@@ -10,10 +9,10 @@ import java.util.function.Consumer;
 
 public abstract class ConfigItem<T> {
     private final Text fieldTitle;
-    private Text toolTipText;
-    private Consumer<T> saveConsumer;
     protected NotSuckyButton resetButton;
     protected T value, defaultValue;
+    private Text toolTipText;
+    private Consumer<T> saveConsumer;
     private boolean requiresRestart = false;
 
     public ConfigItem(Text name, T value, T defaultValue) {
@@ -91,8 +90,7 @@ public abstract class ConfigItem<T> {
     //        this.resetButton.y = y;
     //        this.resetButton.x = MinecraftClient.getInstance().getWindow().getScaledWidth() - resetButton.getWidth() - 20;
     //        resetButton.active = !isValueDefault();
-    //        //resetButton.render(matrices, mouseX, mouseY, delta);
-    //        resetButton.render(mouseX, mouseY, delta);
+    //        resetButton.render(matrices, mouseX, mouseY, delta);
     //    }
     //}
     public void render(int x, int y, int mouseX, int mouseY, float delta) {
@@ -113,8 +111,9 @@ public abstract class ConfigItem<T> {
     //}
     public void render2(int x, int y, int mouseX, int mouseY, float delta) {
         if (mouseX > x && mouseX < x + MinecraftClient.getInstance().textRenderer.getStringWidth(fieldTitle.asString()) &&
-                mouseY > y && mouseY < y + 12)
+                mouseY > y && mouseY < y + 12) {
             renderToolTip(mouseX, mouseY);
+        }
     }
 
     //public void renderToolTip(MatrixStack matrices, int x, int y) {
@@ -128,8 +127,7 @@ public abstract class ConfigItem<T> {
     public void renderToolTip(int x, int y) {
         if (toolTipText != null) {
             MinecraftClient.getInstance().currentScreen.renderTooltip(toolTipText.asString(), x, y);
-        }
-        else if (requiresRestart) {
+        } else if (requiresRestart) {
             MinecraftClient.getInstance().currentScreen.renderTooltip(new TranslatableText("key.kyrptconfig.config.restartRequired").asString(), x, y);
         }
     }

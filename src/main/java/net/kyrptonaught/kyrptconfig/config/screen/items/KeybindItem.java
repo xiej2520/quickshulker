@@ -3,7 +3,6 @@ package net.kyrptonaught.kyrptconfig.config.screen.items;
 import net.kyrptonaught.kyrptconfig.config.screen.NotSuckyButton;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -40,7 +39,7 @@ public class KeybindItem extends ConfigItem<String> {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (isListening) {
-            // post 1.15: getTranslationKey()
+            // post 1.15: fromKeyCode, getTranslationKey()
             setValue(InputUtil.getKeyCode(keyCode, scanCode).getName());
             return true;
         }

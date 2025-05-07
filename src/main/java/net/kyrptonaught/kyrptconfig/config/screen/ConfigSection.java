@@ -23,6 +23,7 @@ public class ConfigSection extends Screen {
         this.sectionSelectionBTN = new NotSuckyButton(0, 32, 10, 20, title, widget -> {
             configScreen.setSelectedSection(selectionIndex);
         });
+        // ??? why here instead of ConfigScreen
         configScreen.addConfigSection(this);
     }
 

@@ -64,7 +64,7 @@ public class NonConflictingKeyBindEntry extends ControlsListWidget.Entry {
     //    TextRenderer var10000 = MinecraftClient.getInstance().textRenderer;
     //    float var10003 = (float) (x + 90 - MaxKeyNameLength);
     //    int var10004 = y + entryHeight / 2;
-    //    //var10000.draw(matrices, this.bindingName, var10003, (float) (var10004 - 9 / 2), 16777215);
+    //    var10000.draw(matrices, this.bindingName, var10003, (float) (var10004 - 9 / 2), 16777215);
 
     //    VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
     //    int i = var10000.draw(this.bindingName.asString(), x, y, 16777215, false, matrices.peek().getModel(), immediate, false, 0, 15728880);
@@ -73,20 +73,16 @@ public class NonConflictingKeyBindEntry extends ControlsListWidget.Entry {
     //    this.resetButton.x = x + 190;
     //    this.resetButton.y = y;
     //    this.resetButton.active = !this.binding.isDefault();
-    //    //this.resetButton.render(matrices, mouseX, mouseY, tickDelta);
-    //    this.resetButton.render(mouseX, mouseY, tickDelta);
+    //    this.resetButton.render(matrices, mouseX, mouseY, tickDelta);
 
     //    this.editButton.x = x + 105;
     //    this.editButton.y = y;
-    //    //this.editButton.setMessage(this.binding.getBoundKeyLocalizedText());
-    //    this.editButton.setMessage(this.binding.getLocalizedName());
+    //    this.editButton.setMessage(this.binding.getBoundKeyLocalizedText());
 
     //    if (bl)
-    //        //this.editButton.setMessage((new LiteralText("> ")).append(this.editButton.getMessage().shallowCopy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW));
-    //        this.editButton.setMessage((new LiteralText("> ")).append(this.editButton.getMessage().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW).asString());
+    //        this.editButton.setMessage((new LiteralText("> ")).append(this.editButton.getMessage().shallowCopy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW));
 
-    //    //this.editButton.render(matrices, mouseX, mouseY, tickDelta);
-    //    this.editButton.render(mouseX, mouseY, tickDelta);
+    //    this.editButton.render(matrices, mouseX, mouseY, tickDelta);
     //}
 
     public void render(int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
@@ -101,17 +97,17 @@ public class NonConflictingKeyBindEntry extends ControlsListWidget.Entry {
         this.resetButton.x = x + 190;
         this.resetButton.y = y;
         this.resetButton.active = !this.binding.isDefault();
-        //this.resetButton.render(matrices, mouseX, mouseY, tickDelta);
         this.resetButton.render(mouseX, mouseY, tickDelta);
 
 
         this.editButton.x = x + 105;
         this.editButton.y = y;
-        //this.editButton.setMessage(this.binding.getBoundKeyLocalizedText());
         this.editButton.setMessage(this.binding.getLocalizedName());
 
         if (bl) {
-            this.editButton.setMessage((new LiteralText("> ")).append(this.editButton.getMessage().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW).asString());
+            this.editButton.setMessage((new LiteralText("> ")).append(
+                    this.editButton.getMessage().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW).asString()
+            );
         }
 
         this.editButton.render(mouseX, mouseY, tickDelta);
