@@ -89,7 +89,7 @@ public abstract class ScreenMixin {
     @Unique
     private boolean handleTrigger() {
         if (this.focusedSlot != null) {
-            return isValid(this.focusedSlot.getStack(), ClientUtil.getSlotId(handler, this.focusedSlot));
+            return isValid(this.focusedSlot.getStack(), ClientUtil.getSlotId(container, this.focusedSlot));
         }
         return false;
     }

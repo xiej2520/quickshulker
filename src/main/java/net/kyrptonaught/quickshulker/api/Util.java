@@ -29,7 +29,7 @@ public class Util {
 
     public static void openItem(PlayerEntity player, int invSlot, int playerInvIndex) {
         if (QuickShulkerMod.getConfig().rightClickClose && playerInvIndex == ((ItemInventoryContainer) player.container).getUsedSlotInPlayerInv()) {
-            ((ServerPlayerEntity) player).closeHandledScreen();
+            ((ServerPlayerEntity) player).closeContainer();
             OpenInventoryPacket.send((ServerPlayerEntity) player);
             return;
         }
@@ -39,7 +39,7 @@ public class Util {
         if (qsData != null) {
             qsData.openConsumer.accept(player, stack);
             ((ItemInventoryContainer) player.container).setUsedSlot(playerInvIndex);
-            player.currentScreenHandler.addListener(forceCloseScreenIfNotPresent(player, playerInvIndex, stack));
+            player.container.addListener(forceCloseScreenIfNotPresent(player, playerInvIndex, stack));
         }
     }
 
@@ -67,7 +67,7 @@ public class Util {
     }
 
     public static boolean areItemsEqual(ItemStack stack1, ItemStack stack2) {
-        return ItemStack.areItemsEqual(stack1, stack2) && ItemStack.areEqual(stack1, stack2) && stack1.getCount() == stack2.getCount();
+        return ItemStack.areItemsEqual(stack1, stack2) && ItemStack.areEqualIgnoreDamage(stack1, stack2) && stack1.getCount() == stack2.getCount();
     }
 
     public static ContainerListener forceCloseScreenIfNotPresent(PlayerEntity player, int slotID, ItemStack stack) {
@@ -88,8 +88,8 @@ public class Util {
             }
 
             public void isValid() {
-                if (!areItemsEqual(stack, player.getInventory().getStack(slotID))) {
-                    ((ServerPlayerEntity) player).closeHandledScreen();
+                if (!areItemsEqual(stack, player.inventory.getInvStack(slotID))) {
+                    ((ServerPlayerEntity) player).closeContainer();
                 }
             }
         };

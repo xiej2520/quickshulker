@@ -4,10 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyrptonaught.kyrptconfig.config.ConfigManager;
-import net.kyrptonaught.quickshulker.api.ItemStackInventory;
-import net.kyrptonaught.quickshulker.api.QuickOpenableRegistry;
-import net.kyrptonaught.quickshulker.api.RegisterQuickShulker;
-import net.kyrptonaught.quickshulker.api.Util;
+import net.kyrptonaught.quickshulker.api.*;
 import net.kyrptonaught.quickshulker.config.ConfigOptions;
 import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
 import net.minecraft.block.CraftingTableBlock;
@@ -62,8 +59,8 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
             new QuickOpenableRegistry.Builder()
                     .setItem(ShulkerBoxBlock.class)
                     .supportsBundleing(true)
-                    .setOpenAction(((player, stack) -> player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) ->
-                            new ShulkerBoxScreenHandler(i, player.getInventory(), new ItemStackInventory(stack, 27)), stack.hasCustomName() ? stack.getName() : Text.translatable("container.shulkerBox")))))
+                    .setOpenAction(((player, stack) -> player.openContainer(new SimpleNamedContainerFactory((i, playerInventory, playerEntity) ->
+                            new ShulkerBoxContainer(i, player.inventory, new ItemStackInventory(stack, 27)), stack.hasCustomName() ? stack.getName() : new TranslatableText("container.shulkerBox")))))
                     .register();
 
         if (getConfig().quickEChest)
@@ -71,24 +68,24 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
                     .setItem(EnderChestBlock.class)
                     .supportsBundleing(true)
                     .ignoreSingleStackCheck(true)
-                    .setOpenAction(((player, stack) -> player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) ->
-                            GenericContainerScreenHandler.createGeneric9x3(i, playerInventory, player.getEnderChestInventory()), Text.translatable("container.enderchest")))))
+                    .setOpenAction(((player, stack) -> player.openContainer(new SimpleNamedContainerFactory((i, playerInventory, playerEntity) ->
+                            GenericContainer.createGeneric9x3(i, playerInventory, player.getEnderChestInventory()), new TranslatableText("container.enderchest")))))
                     .register();
 
         if (getConfig().quickCraftingTables)
             new QuickOpenableRegistry.Builder()
                     .setItem(CraftingTableBlock.class)
                     .ignoreSingleStackCheck(true)
-                    .setOpenAction(((player, stack) -> player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) ->
-                            new CraftingScreenHandler(i, playerInventory, ScreenHandlerContext.create(player.getEntityWorld(), player.getBlockPos())), Text.translatable("container.crafting")))))
+                    .setOpenAction(((player, stack) -> player.openContainer(new SimpleNamedContainerFactory((i, playerInventory, playerEntity) ->
+                            new CraftingTableContainer(i, playerInventory, BlockContext.create(player.getEntityWorld(), player.getBlockPos())), new TranslatableText("container.crafting")))))
                     .register();
 
         if (getConfig().quickStonecutter)
             new QuickOpenableRegistry.Builder()
                     .setItem(StonecutterBlock.class)
                     .ignoreSingleStackCheck(true)
-                    .setOpenAction(((player, stack) -> player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) ->
-                            new StonecutterScreenHandler(i, playerInventory, ScreenHandlerContext.create(player.getEntityWorld(), player.getBlockPos())), Text.translatable("container.stonecutter")))))
+                    .setOpenAction(((player, stack) -> player.openContainer(new SimpleNamedContainerFactory((i, playerInventory, playerEntity) ->
+                            new StonecutterContainer(i, playerInventory, BlockContext.create(player.getEntityWorld(), player.getBlockPos())), new TranslatableText("container.stonecutter")))))
                     .register();
     }
 }
