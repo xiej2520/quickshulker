@@ -8,7 +8,6 @@ import net.kyrptonaught.kyrptconfig.config.screen.ConfigScreen;
 import net.kyrptonaught.kyrptconfig.config.screen.ConfigSection;
 import net.kyrptonaught.kyrptconfig.config.screen.items.BooleanItem;
 import net.kyrptonaught.kyrptconfig.config.screen.items.KeybindItem;
-import net.kyrptonaught.kyrptconfig.config.screen.items.SubItem;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.client.QuickShulkerModClient;
 import net.kyrptonaught.quickshulker.config.ConfigOptions;
@@ -38,10 +37,10 @@ public class ModMenuIntegration implements ModMenuApi {
             ConfigSection optionsSection = new ConfigSection(configScreen, new TranslatableText("key.quickshulker.config.category.options"));
             optionsSection.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.rightClickClose"), options.rightClickClose, false).setSaveConsumer(value -> options.rightClickClose = value));
 
-            SubItem subItem = (SubItem) optionsSection.addConfigItem(new SubItem(new TranslatableText("key.quickshulker.config.category.bundleing"), true));
-            subItem.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.supportsBundlingInsert"), options.supportsBundlingInsert, true).setSaveConsumer(value -> options.supportsBundlingInsert = value));
-            subItem.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.supportsBundlingPickup"), options.supportsBundlingPickup, true).setSaveConsumer(value -> options.supportsBundlingPickup = value));
-            subItem.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.supportsBundlingExtract"), options.supportsBundlingExtract, true).setSaveConsumer(value -> options.supportsBundlingExtract = value));
+            //SubItem subItem = (SubItem) optionsSection.addConfigItem(new SubItem(new TranslatableText("key.quickshulker.config.category.bundleing"), true));
+            //subItem.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.supportsBundlingInsert"), options.supportsBundlingInsert, true).setSaveConsumer(value -> options.supportsBundlingInsert = value));
+            //subItem.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.supportsBundlingPickup"), options.supportsBundlingPickup, true).setSaveConsumer(value -> options.supportsBundlingPickup = value));
+            //subItem.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.supportsBundlingExtract"), options.supportsBundlingExtract, true).setSaveConsumer(value -> options.supportsBundlingExtract = value));
 
             ConfigSection enabledSection = new ConfigSection(configScreen, new TranslatableText("key.quickshulker.config.category.enabled"));
             enabledSection.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.quickShulkerBox"), options.quickShulkerBox, true).setSaveConsumer(value -> options.quickShulkerBox = value).setRequiresRestart());

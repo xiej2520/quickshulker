@@ -10,7 +10,6 @@ import net.kyrptonaught.quickshulker.api.RegisterQuickShulker;
 import net.kyrptonaught.quickshulker.api.Util;
 import net.kyrptonaught.quickshulker.config.ConfigOptions;
 import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
-//import net.kyrptonaught.quickshulker.network.QuickBundlePacket;
 import net.minecraft.block.CraftingTableBlock;
 import net.minecraft.block.EnderChestBlock;
 import net.minecraft.block.ShulkerBoxBlock;
@@ -37,7 +36,7 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
         OpenShulkerPacket.registerReceivePacket();
         //QuickBundlePacket.registerReceivePacket();
         UseItemCallback.EVENT.register((player, world, hand) -> {
-            ItemStack stack = player.getMainHandStack();
+            ItemStack stack = player.getStackInHand(hand);
             if (!world.isClient) {
                 if (QuickShulkerMod.getConfig().rightClickToOpen) {
                     if (Util.isOpenableItem(stack)) {
@@ -103,7 +102,7 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
                             new SimpleNamedContainerFactory(
                                     (i, playerInventory, playerEntity) -> new StonecutterContainer(i, player.inventory,
                                             BlockContext.create(player.getEntityWorld(), player.getBlockPos())),
-                                    new TranslatableText("container.crafting")
+                                    new TranslatableText("container.stonecutter")
                             )
                     )
             );

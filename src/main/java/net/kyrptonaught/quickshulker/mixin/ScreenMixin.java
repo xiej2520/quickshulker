@@ -2,16 +2,20 @@ package net.kyrptonaught.quickshulker.mixin;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.client.ClientUtil;
 import net.kyrptonaught.quickshulker.client.QuickShulkerModClient;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.container.Container;
 import net.minecraft.container.Slot;
+import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,6 +26,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+// @Mixin(HandledScreen.class)
 @Mixin(ContainerScreen.class)
 @Environment(EnvType.CLIENT)
 public abstract class ScreenMixin {
@@ -59,6 +64,7 @@ public abstract class ScreenMixin {
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void QS$mousePressed(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         if (QuickShulkerMod.getConfig().rightClickInv) {
+            // TODO: is this correct? this.handler -> playerInventory
             if (playerInventory.getCursorStack().isEmpty() && button == 1) {
                 if (handleTrigger())
                     cir.cancel();

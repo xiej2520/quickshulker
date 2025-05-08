@@ -6,9 +6,7 @@
     "ContainerMixin",
     "CraftingScreenHandlerMixin",
     "ItemMixin",
-    "SlotAccessor"
-  ],
-  "client": [
+    "SlotAccessor",
     "ScreenMixin",
     "CreativeSlotMixin"
   ],
