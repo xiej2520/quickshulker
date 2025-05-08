@@ -42,6 +42,8 @@ public abstract class ScreenMixin {
     // handler in 1.16+
     protected Container container;
 
+    @Shadow private boolean cancelNextRelease;
+
     @Inject(method = "init", at = @At("TAIL"))
     private void fixMouse(CallbackInfo ci) {
         if (QuickShulkerMod.lastMouseX != 0 && QuickShulkerMod.lastMouseY != 0) {
@@ -54,9 +56,9 @@ public abstract class ScreenMixin {
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void QS$keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
         if (QuickShulkerMod.getConfig().keybingInInv) {
-            if (QuickShulkerModClient.quickKey.doesMatch(InputUtil.Type.KEYSYM, keyCode)) {
+            if (QuickShulkerModClient.getKeybinding().matches(keyCode, InputUtil.Type.KEYSYM)) {
                 if (handleTrigger())
-                    cir.cancel();
+                    cir.setReturnValue(true);
             }
         }
     }
@@ -65,15 +67,21 @@ public abstract class ScreenMixin {
     private void QS$mousePressed(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         if (QuickShulkerMod.getConfig().rightClickInv) {
             // TODO: is this correct? this.handler -> playerInventory
-            if (playerInventory.getCursorStack().isEmpty() && button == 1) {
-                if (handleTrigger())
-                    cir.cancel();
+            if (playerInventory.getCursorStack().isEmpty() && button == 1 && this.focusedSlot != null && this.focusedSlot.getStack().getCount() == 1) {
+                if (handleTrigger()) {
+                    this.cancelNextRelease = true;
+                    cir.setReturnValue(true);
+                    return;
+                }
             }
         }
         if (QuickShulkerMod.getConfig().keybingInInv) {
-            if (QuickShulkerModClient.quickKey.doesMatch(InputUtil.Type.MOUSE, button)) {
-                if (handleTrigger())
-                    cir.cancel();
+            if (QuickShulkerModClient.getKeybinding().matches(button, InputUtil.Type.MOUSE)) {
+                if (handleTrigger()) {
+                    this.cancelNextRelease = true;
+                    cir.setReturnValue(true);
+                    return;
+                }
             }
         }
     }
@@ -81,16 +89,7 @@ public abstract class ScreenMixin {
     @Unique
     private boolean handleTrigger() {
         if (this.focusedSlot != null) {
-            //if (container instanceof CreativeInventoryScreen.CreativeContainer) {
-            //    // CreativeInventoryScreen extends AbstractInventoryScreen<CreativeContainer> extends ContainerScreen<CreativeContainer>,
-            //    // ignore ClassCastException warning
-            //    if (((CreativeInventoryScreen) (Object) this).getSelectedTab() == ItemGroup.INVENTORY.getIndex()) {
-            //        return isValid(this.focusedSlot.getStack(), ((CreativeSlotMixin) this.focusedSlot).getSlot().id, 1);
-            //    } else {
-            //        return isValid(this.focusedSlot.getStack(), this.focusedSlot.id - 9, 1);
-            //    }
-            //}
-            return isValid(this.focusedSlot.getStack(), ClientUtil.getSlotId(container, this.focusedSlot));
+            return isValid(this.focusedSlot.getStack(), ClientUtil.getSlotId(handler, this.focusedSlot));
         }
         return false;
     }

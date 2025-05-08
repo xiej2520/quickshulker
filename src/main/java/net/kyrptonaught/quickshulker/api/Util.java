@@ -10,8 +10,6 @@ import net.minecraft.container.Container;
 import net.minecraft.container.ContainerListener;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.CloseContainerS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -31,46 +29,45 @@ public class Util {
 
     public static void openItem(PlayerEntity player, int invSlot, int playerInvIndex) {
         if (QuickShulkerMod.getConfig().rightClickClose && playerInvIndex == ((ItemInventoryContainer) player.container).getUsedSlotInPlayerInv()) {
-            ((ServerPlayerEntity) player).networkHandler.sendPacket(new CloseContainerS2CPacket(player.container.syncId));
-            player.container.close(player);
-            player.container = player.playerContainer;
+            ((ServerPlayerEntity) player).closeHandledScreen();
             OpenInventoryPacket.send((ServerPlayerEntity) player);
             return;
         }
         ItemStack stack = player.inventory.getInvStack(playerInvIndex);
-        Block item = Block.getBlockFromItem(stack.getItem());
         stack.removeSubTag(QuickShulkerMod.MOD_ID);
-        if (QuickOpenableRegistry.quickies.containsKey(item.getClass())) {
-            QuickOpenableRegistry.quickies.get(item.getClass()).openConsumer.accept(player, stack);
+        QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());
+        if (qsData != null) {
+            qsData.openConsumer.accept(player, stack);
             ((ItemInventoryContainer) player.container).setUsedSlot(playerInvIndex);
-            player.container.addListener(forceCloseScreenIfNotPresent(player, playerInvIndex, stack));
+            player.currentScreenHandler.addListener(forceCloseScreenIfNotPresent(player, playerInvIndex, stack));
         }
     }
 
     public static Boolean isOpenableItem(ItemStack stack) {
-        Item item = stack.getItem();
-        if (!(item instanceof BlockItem)) return false;
-        Block block = ((BlockItem) item).getBlock();
-        if (!QuickOpenableRegistry.quickies.containsKey(block.getClass()))
-            return false;
-        return stack.getCount() <= 1;
+        QuickShulkerData qsdata = QuickOpenableRegistry.getQuickie(stack.getItem());
+        if (qsdata == null) return false;
+        return qsdata.ignoreSingleStackCheck || stack.getCount() <= 1;
     }
 
     public static Inventory getQuickItemInventory(PlayerEntity player, ItemStack stack) {
-        Item item = stack.getItem();
-        if (item instanceof BlockItem) {
-            Block block = ((BlockItem) item).getBlock();
-            if (QuickOpenableRegistry.quickies.containsKey(block.getClass())) {
-                QuickShulkerData data = QuickOpenableRegistry.quickies.get(block.getClass());
-                if (data.supportsBundleing)
-                    return data.getInventory(player, stack);
-            }
+        QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());
+        if (qsData != null) {
+            if (qsData.supportsBundleing)
+                return qsData.getInventory(player, stack);
         }
         return null;
     }
 
+    public static boolean canOpenInHand(ItemStack stack) {
+        QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());
+        if (qsData != null) {
+            return qsData.canOpenInHand;
+        }
+        return false;
+    }
+
     public static boolean areItemsEqual(ItemStack stack1, ItemStack stack2) {
-        return stack1.getItem() == stack2.getItem() && ItemStack.areTagsEqual(stack1, stack2) && stack1.getCount() == stack2.getCount();
+        return ItemStack.areItemsEqual(stack1, stack2) && ItemStack.areEqual(stack1, stack2) && stack1.getCount() == stack2.getCount();
     }
 
     public static ContainerListener forceCloseScreenIfNotPresent(PlayerEntity player, int slotID, ItemStack stack) {
@@ -91,10 +88,8 @@ public class Util {
             }
 
             public void isValid() {
-                if (!areItemsEqual(stack, player.inventory.getInvStack(slotID))) {
-                    ((ServerPlayerEntity) player).networkHandler.sendPacket(new CloseContainerS2CPacket(player.container.syncId));
-                    player.container.close(player);
-                    player.container = player.playerContainer;
+                if (!areItemsEqual(stack, player.getInventory().getStack(slotID))) {
+                    ((ServerPlayerEntity) player).closeHandledScreen();
                 }
             }
         };

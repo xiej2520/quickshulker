@@ -9,7 +9,6 @@ import net.kyrptonaught.kyrptconfig.config.screen.ConfigSection;
 import net.kyrptonaught.kyrptconfig.config.screen.items.BooleanItem;
 import net.kyrptonaught.kyrptconfig.config.screen.items.KeybindItem;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
-import net.kyrptonaught.quickshulker.client.QuickShulkerModClient;
 import net.kyrptonaught.quickshulker.config.ConfigOptions;
 import net.minecraft.text.TranslatableText;
 
@@ -22,10 +21,9 @@ public class ModMenuIntegration implements ModMenuApi {
         return (screen) -> {
             ConfigOptions options = QuickShulkerMod.getConfig();
 
-            ConfigScreen configScreen = new ConfigScreen(screen, new TranslatableText("Quick Shulker Config"));
+            ConfigScreen configScreen = new ConfigScreen(screen, Text.translatable("key.quickshulker.config.category.title"));
             configScreen.setSavingEvent(() -> {
                 QuickShulkerMod.config.save();
-                QuickShulkerModClient.quickKey.setRaw(options.keybinding);
             });
             ConfigSection activationSection = new ConfigSection(configScreen, new TranslatableText("key.quickshulker.config.category.activation"));
             activationSection.addConfigItem(new KeybindItem(new TranslatableText("key.quickshulker.config.keybinding"), options.keybinding, ConfigOptions.defualtKeybind).setSaveConsumer(value -> options.keybinding = value));
