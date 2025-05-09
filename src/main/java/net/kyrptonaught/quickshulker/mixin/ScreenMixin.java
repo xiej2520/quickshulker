@@ -39,7 +39,7 @@ public abstract class ScreenMixin {
 
     @Shadow
     @Final
-    // handler in 1.16+
+    // ScreenHandler handler in 1.16+
     protected Container container;
 
     @Shadow private boolean cancelNextRelease;
@@ -66,7 +66,7 @@ public abstract class ScreenMixin {
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void QS$mousePressed(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         if (QuickShulkerMod.getConfig().rightClickInv) {
-            // TODO: is this correct? this.handler -> playerInventory
+            // cursorStack moved from PlayerInventory to ScreenHandler in 1.16?
             if (playerInventory.getCursorStack().isEmpty() && button == 1 && this.focusedSlot != null && this.focusedSlot.getStack().getCount() == 1) {
                 if (handleTrigger()) {
                     this.cancelNextRelease = true;

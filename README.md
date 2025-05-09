@@ -8,8 +8,4 @@ Forked from the last 1.15 commit in kyyrptonaught/quickshulker.
 Copied kyrptonaught/kyrptconfig into repo and tried to downgrade to 1.15 since the oldest
 available version is for 1.17.
 
-Hack job downgrading:
-
-- `NonConflictingKeyBindData.java`
-- `NonConflictingKeyBindEntry.java`
-- `ModMenuIntegration.java`
+Very janky downgrade. Copied kryptconfig, brought in minimal files to compile.

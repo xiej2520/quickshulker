@@ -3,7 +3,7 @@
   "id": "quickshulker",
   "version": "1.4.0-1.15",
   "name": "Quick Shulker",
-  "description": "Quickly open Shulker boxes and more. Backport of newer versions of quickshulker to 1.15 by xiej2520. Using kyrptconfig 1.2.2 backported to 1.15.",
+  "description": "Quickly open Shulker boxes and more. Backport of newer versions of quickshulker to 1.15 by xiej2520. Using kyrptconfig ~1.2.2 backported to 1.15.",
   "authors": [
     "kyrptonaught",
     "xiej2520"
@@ -16,14 +16,8 @@
   "icon": "assets/quickshulker/icon.png",
   "environment": "*",
   "mixins": [
-    {
-      "config": "net.kyrptonaught.quickshulker.json",
-      "environment": "*"
-    },
-    {
-      "config": "net.kyrptonaught.shulkerutils.mixins.json",
-      "environment": "*"
-    }
+    "net.kyrptonaught.quickshulker.json",
+    "net.kyrptonaught.shulkerutils.mixins.json"
   ],
   "entrypoints": {
     "main": [

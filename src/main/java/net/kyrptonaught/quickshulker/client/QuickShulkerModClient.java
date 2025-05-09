@@ -34,7 +34,6 @@ public class QuickShulkerModClient implements ClientModInitializer {
         });
         ClientPlayNetworking.registerGlobalReceiver(OpenInventoryPacket.OPEN_INV, (client, handler, packet, sender) -> {
             client.execute(() -> {
-                // setScreen in 1.17
                 client.openScreen(new InventoryScreen(client.player));
             });
         });

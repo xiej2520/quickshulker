@@ -42,7 +42,7 @@ public class DisplayOnlyKeyBind extends KeyBinding {
     @Override
     public String getId() {
         updateSetKey();
-        return super.getName();
+        return super.getId();
     }
 
     @Override

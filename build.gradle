@@ -14,6 +14,7 @@ repositories {
 	maven { url 'https://maven.kyrptonaught.dev/' }
 	maven { url "https://maven.shedaniel.me/" }
 	maven { url "https://maven.terraformersmc.com/releases/" }
+	//maven { url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1" }
 }
 
 dependencies {
@@ -24,20 +25,15 @@ dependencies {
 
 	modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
 
-	modApi "me.shedaniel.cloth:config-2:2.14.2"
-
 	modApi "blue.endless:jankson:+"
 	include "blue.endless:jankson:+"
+
+	//modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.2.1")
 
 	//modImplementation 'net.kyrptonaught:kyrptconfig:1.2.2-1.17'
 	//include 'net.kyrptonaught:kyrptconfig:1.2.2-1.17'
 }
 
-configurations.all {
-	resolutionStrategy {
-		force "net.fabricmc:fabric-loader:${project.loader_version}"  // force this version, cloth-config uses 0.13.1
-	}
-}
 loom {
 	accessWidenerPath = file("src/main/resources/quickshulker.accesswidener")
 }
