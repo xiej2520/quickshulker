@@ -21,8 +21,8 @@ public abstract class CraftingScreenHandlerMixin extends Container {
 
     @Inject(method = "canUse", at = @At("HEAD"), cancellable = true)
     public void overrideCanUse(PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
-        if (((ItemInventoryContainer) this).hasItem()) {
-            ItemStack stack = player.inventory.getInvStack(((ItemInventoryContainer) this).getUsedSlotInPlayerInv());
+        if (((ItemInventoryContainer) this).hasOpenedItem()) {
+            ItemStack stack = player.inventory.getInvStack(((ItemInventoryContainer) this).getPlayerInvUsedSlot());
             if (Util.isOpenableItem(stack))
                 cir.setReturnValue(true);
         }

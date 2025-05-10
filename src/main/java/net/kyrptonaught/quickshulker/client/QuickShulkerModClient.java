@@ -43,7 +43,7 @@ public class QuickShulkerModClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(SetUsedSlotPacket.SET_USED_SLOT_PACKET, (client, handler, packetByteBuf, sender) -> {
             int playerInvIndex = packetByteBuf.readInt();
             client.execute(() -> {
-                ((ItemInventoryContainer) client.player.container).setUsedSlot(playerInvIndex);
+                ((ItemInventoryContainer) client.player.container).setPlayerInvUsedSlot(playerInvIndex);
             });
         });
         FabricLoader.getInstance().getEntrypoints(QuickShulkerMod.MOD_ID + "_client", RegisterQuickShulkerClient.class).forEach(RegisterQuickShulkerClient::registerClient);

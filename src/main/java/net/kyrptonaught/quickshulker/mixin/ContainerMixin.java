@@ -29,35 +29,44 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
     // different from index of the item in the ContainerScreen/HandledScreen,
     // which is the player inventory, may or may not be combined with another screen
     @Unique
-    int playerInvSlot = -1;
+    int playerInvUsedSlot = -1;
 
     @Unique
-    public int getUsedSlotInPlayerInv() {
-        return playerInvSlot;
+    public int getPlayerInvUsedSlot() {
+        return playerInvUsedSlot;
     }
 
     @Unique
-    public void setUsedSlot(int playerInvSlotID) {
-        this.playerInvSlot = playerInvSlotID;
+    public void setPlayerInvUsedSlot(int playerInvUsedSlot) {
+        this.playerInvUsedSlot = playerInvUsedSlot;
+    }
+
+    @Unique
+    public ItemStack getPlayerInvUsedStack(PlayerEntity playerEntity) {
+        return playerInvUsedSlot >= 0 ? playerEntity.inventory.getInvStack(playerInvUsedSlot) : ItemStack.EMPTY;
+    }
+
+    @Unique
+    public boolean isUsedSlot(int slotId) {
+        return this.slots.get(slotId).inventory instanceof PlayerInventory && ((SlotAccessor) slots.get(slotId)).getIndex() == playerInvUsedSlot;
     }
 
     @Inject(method = "onSlotClick", at = @At("HEAD"), cancellable = true)
     public void QS$onClick(int slotId, int button, SlotActionType slotActionType, PlayerEntity playerEntity, CallbackInfoReturnable<ItemStack> cir) {
         // need to prevent the opened QuickShulker item from being moved in the inventory
         // see issue #28
-        if (slotId > 0 && slotId < slots.size()) {
-            if (hasItem()) {
-                // Intended behavior: inventory actions on opened QuickShulker item doesn't move the item at all
-                if (slots.get(slotId).inventory instanceof PlayerInventory && ((SlotAccessor) slots.get(slotId)).getIndex() == playerInvSlot) {
+        if (slotId > 0 && slotId < slots.size() && hasOpenedItem()) {
+            // Intended behavior: inventory actions on opened QuickShulker item doesn't move the item at all
+            if (isUsedSlot(slotId)) {
+                cir.setReturnValue(ItemStack.EMPTY);
+            } else if (slotActionType == SlotActionType.SWAP && button == playerInvUsedSlot) {
+                // QuickShulker item can be moved but slotId doesn't refer to it for SWAP
+                cir.setReturnValue(ItemStack.EMPTY);
+            } else if (slotActionType == SlotActionType.PICKUP_ALL) {
+                // stop picking up all items equivalent to QuickShulker item
+                ItemStack cursorStack = playerEntity.inventory.getCursorStack();
+                if (ItemStack.areItemsEqualIgnoreDamage(cursorStack, getPlayerInvUsedStack(playerEntity))) {
                     cir.setReturnValue(ItemStack.EMPTY);
-                } else if (slotActionType == SlotActionType.SWAP && button == playerInvSlot) {
-                    // QuickShulker item can be moved but slotId doesn't refer to it
-                    cir.setReturnValue(ItemStack.EMPTY);
-                } else if (slotActionType == SlotActionType.PICKUP_ALL) {
-                    ItemStack cursorStack = playerEntity.inventory.getCursorStack();
-                    if (ItemStack.areItemsEqualIgnoreDamage(cursorStack, playerEntity.inventory.getInvStack(getUsedSlotInPlayerInv()))) {
-                        cir.setReturnValue(ItemStack.EMPTY);
-                    }
                 }
             }
         }

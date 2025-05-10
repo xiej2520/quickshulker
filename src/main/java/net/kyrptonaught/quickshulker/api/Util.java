@@ -29,7 +29,7 @@ public class Util {
     }
 
     public static void openItem(PlayerEntity player, int invSlot, int playerInvIndex) {
-        if (QuickShulkerMod.getConfig().rightClickClose && playerInvIndex == ((ItemInventoryContainer) player.container).getUsedSlotInPlayerInv()) {
+        if (QuickShulkerMod.getConfig().rightClickClose && playerInvIndex == ((ItemInventoryContainer) player.container).getPlayerInvUsedSlot()) {
             ((ServerPlayerEntity) player).closeContainer();
             OpenInventoryPacket.send((ServerPlayerEntity) player);
             return;
@@ -39,7 +39,7 @@ public class Util {
         QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());
         if (qsData != null) {
             qsData.openConsumer.accept(player, stack);
-            ((ItemInventoryContainer) player.container).setUsedSlot(playerInvIndex);
+            ((ItemInventoryContainer) player.container).setPlayerInvUsedSlot(playerInvIndex);
             SetUsedSlotPacket.sendUsedSlotPacket((ServerPlayerEntity) player, playerInvIndex);
             player.container.addListener(forceCloseScreenIfNotPresent(player, playerInvIndex, stack));
         }

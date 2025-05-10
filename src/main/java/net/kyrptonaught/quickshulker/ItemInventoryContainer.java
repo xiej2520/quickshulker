@@ -1,12 +1,12 @@
 package net.kyrptonaught.quickshulker;
 
 public interface ItemInventoryContainer {
-    int getUsedSlotInPlayerInv();
+    int getPlayerInvUsedSlot();
 
-    default boolean hasItem() {
-        return getUsedSlotInPlayerInv() >= 0;
+    void setPlayerInvUsedSlot(int playerInvSlotID);
+
+    default boolean hasOpenedItem() {
+        return getPlayerInvUsedSlot() >= 0;
     }
-
-    void setUsedSlot(int playerInvSlotID);
 
 }
