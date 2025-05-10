@@ -5,6 +5,7 @@ import net.minecraft.client.util.InputUtil;
 
 import java.util.function.Consumer;
 
+// key binding info needed for showing the key binding button
 public class DisplayOnlyKeyBind extends KeyBinding {
     private CustomKeyBinding customKeyBinding;
     private final Consumer<InputUtil.KeyCode> keySet;
@@ -22,10 +23,14 @@ public class DisplayOnlyKeyBind extends KeyBinding {
         updateSetKey();
     }
 
-    public void setBoundKey(InputUtil.KeyCode boundKey) {
+    // setBoundKey in 1.16+
+    @Override
+    public void setKeyCode(InputUtil.KeyCode boundKey) {
         super.setKeyCode(boundKey);
-        if (customKeyBinding != null)
-            customKeyBinding.setRaw(getLocalizedName());
+        if (customKeyBinding != null) {
+            // getBoundKeyTranslationKey() in future. lgfw crash with wrong function call??
+            customKeyBinding.setRaw(getName());
+        }
         keySet.accept(boundKey);
     }
 

@@ -1,53 +1,61 @@
 package net.kyrptonaught.kyrptconfig.config;
 
-import blue.endless.jankson.Jankson;
-import blue.endless.jankson.JsonObject;
-
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 public class ConfigStorage {
-    private final File saveFile;
+    private final Path saveFile;
     public AbstractConfigFile config;
     private final AbstractConfigFile defaultConfig;
+    private final JsonLoader jsonLoader;
 
-    public ConfigStorage(File fileName, AbstractConfigFile defaultConfig) {
+    public ConfigStorage(Path fileName, AbstractConfigFile defaultConfig, JsonLoader jsonLoader) {
         this.saveFile = fileName;
         this.defaultConfig = defaultConfig;
+        this.jsonLoader = jsonLoader;
     }
 
-    public void save(String MOD_ID, Jankson JANKSON) {
-        try (OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(saveFile, false), StandardCharsets.UTF_8)) {
-            if (!saveFile.exists())
-                saveFile.createNewFile();
-            String json = JANKSON.toJson(config).toJson(true, true, 0);
+    public void save(String MOD_ID) {
+        try (OutputStream os = Files.newOutputStream(saveFile); OutputStreamWriter out = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {
+            String json = jsonLoader.toString(config);
             out.write(json);
-            // out.write(json.getBytes());
-
         } catch (Exception e) {
-            System.out.println(MOD_ID + " Failed to save " + saveFile.getName());
+            System.out.println(getConfigName(MOD_ID, "Failed to save #CONFIG"));
+            e.printStackTrace();
         }
     }
 
-    public AbstractConfigFile load(String MOD_ID, Jankson JANKSON) {
-        if (!saveFile.exists() || !saveFile.canRead()) {
-            System.out.println(MOD_ID + " Config not found! Creating one.");
+    public AbstractConfigFile load(String MOD_ID) {
+        if (!Files.exists(saveFile) || !Files.isReadable(saveFile)) {
+            System.out.println(getConfigName(MOD_ID, "Unable to find #CONFIG! Creating a default config"));
             config = defaultConfig;
+            return config;
         }
+
         boolean failed = false;
-        try {
-            JsonObject configJson = JANKSON.load(saveFile);
-            String regularized = configJson.toJson(false, false, 0);
-            config = JANKSON.fromJson(regularized, defaultConfig.getClass());
+        try (InputStream in = Files.newInputStream(saveFile, StandardOpenOption.READ)) {
+            config = jsonLoader.loadFromInputStream(in, defaultConfig.getClass());
         } catch (Exception e) {
             failed = true;
+            e.printStackTrace();
         }
         if (failed || (config == null)) {
-            System.out.println(MOD_ID + " Failed to load config! Overwriting with default config.");
+            System.out.println(getConfigName(MOD_ID, "Failed to load #CONFIG! Overwriting with default config"));
             config = defaultConfig;
         }
         return config;
+    }
+
+    public AbstractConfigFile getDefaultConfig() {
+        return defaultConfig;
+    }
+
+    private String getConfigName(String MOD_ID, String message) {
+        return "[" + MOD_ID + "]: " + message.replaceAll("#CONFIG", "config: " + saveFile.getFileName().toString());
     }
 }

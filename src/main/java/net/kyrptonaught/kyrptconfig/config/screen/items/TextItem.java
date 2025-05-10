@@ -2,8 +2,6 @@ package net.kyrptonaught.kyrptconfig.config.screen.items;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 public class TextItem extends ConfigItem<String> {
@@ -14,13 +12,25 @@ public class TextItem extends ConfigItem<String> {
         super(name, value, defaultValue);
         useDefaultResetBTN();
         valueEntry = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, 0, 0, 96, 17, "Text Entry");
+        setMaxLength(256);
         valueEntry.setText(value);
         valueEntry.setChangedListener(this::setValue);
+    }
+
+    public TextItem setMaxLength(int length) {
+        valueEntry.setMaxLength(length);
+        return this;
     }
 
     @Override
     public void setValue(String value) {
         super.setValue(value);
+    }
+
+    @Override
+    public void resetToDefault() {
+        setValue(defaultValue);
+        valueEntry.setText(value);
     }
 
     @Override
@@ -48,16 +58,29 @@ public class TextItem extends ConfigItem<String> {
     //@Override
     //public void render(MatrixStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
     //    super.render(matrices, x, y, mouseX, mouseY, delta);
-    //    this.valueEntry.y = y + 2;
-    //    this.valueEntry.x = resetButton.x - resetButton.getWidth() - (valueEntry.getWidth() / 2) - 20;
+
+    //    if (valueEntry.isFocused())
+    //        this.valueEntry.setWidth(150);
+    //    else
+    //        this.valueEntry.setWidth(96);
+
+    //    this.valueEntry.setY(y + 1);
+    //    this.valueEntry.setX(resetButton.getX() - (valueEntry.getWidth()) - 7);
 
     //    valueEntry.render(matrices, mouseX, mouseY, delta);
     //}
     @Override
     public void render(int x, int y, int mouseX, int mouseY, float delta) {
         super.render(x, y, mouseX, mouseY, delta);
-        this.valueEntry.y = y + 2;
-        this.valueEntry.x = resetButton.x - resetButton.getWidth() - (valueEntry.getWidth() / 2) - 20;
+
+        if (valueEntry.isFocused()) {
+            this.valueEntry.setWidth(150);
+        } else {
+            this.valueEntry.setWidth(96);
+        }
+
+        this.valueEntry.y = y + 1;
+        this.valueEntry.setX(resetButton.x - (valueEntry.getWidth()) - 7);
 
         valueEntry.render(mouseX, mouseY, delta);
     }

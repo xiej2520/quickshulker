@@ -2,10 +2,9 @@ package net.kyrptonaught.kyrptconfig.config.screen.items;
 
 import net.kyrptonaught.kyrptconfig.config.screen.NotSuckyButton;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
-public class ButtonItem extends ConfigItem {
+public class ButtonItem extends ConfigItem<Void> {
     private final NotSuckyButton button;
     Runnable clickEvent;
 

@@ -10,6 +10,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.Optional;
 
+// Key binding data and handling for config
 public class CustomKeyBinding implements CustomSerializable {
     public boolean unknownIsActivated = false;
     public String rawKey = "";
@@ -67,10 +68,11 @@ public class CustomKeyBinding implements CustomSerializable {
         if (parsedKey == InputUtil.UNKNOWN_KEYCODE)
             return unknownIsActivated; // Always pressed for empty or explicitly "key.keyboard.unknown"
         boolean pressed;
-        if (parsedKey.getCategory() == InputUtil.Type.MOUSE)
+        if (parsedKey.getCategory() == InputUtil.Type.MOUSE) {
             pressed = GLFW.glfwGetMouseButton(MinecraftClient.getInstance().getWindow().getHandle(), parsedKey.getKeyCode()) == 1;
-        else
+        } else {
             pressed = GLFW.glfwGetKey(MinecraftClient.getInstance().getWindow().getHandle(), parsedKey.getKeyCode()) == 1;
+        }
         return pressed;
     }
 

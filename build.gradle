@@ -25,8 +25,8 @@ dependencies {
 
 	modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
 
-	modApi "blue.endless:jankson:+"
-	include "blue.endless:jankson:+"
+	modApi "blue.endless:jankson:1.2.3"
+	include "blue.endless:jankson:1.2.3"
 
 	//modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.2.1")
 

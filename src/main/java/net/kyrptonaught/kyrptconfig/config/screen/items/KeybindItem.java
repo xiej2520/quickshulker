@@ -6,6 +6,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import org.lwjgl.glfw.GLFW;
 
 public class KeybindItem extends ConfigItem<String> {
     private final NotSuckyButton keyButton;
@@ -17,10 +18,12 @@ public class KeybindItem extends ConfigItem<String> {
             this.isListening = !this.isListening;
             if (!this.isListening) {
                 widget.setMessage(this.getCleanName(this.value).asString());
+                //widget.setTooltip(Tooltip.of(Text.literal(this.value)));
             } else {
                 widget.setMessage(new LiteralText("> ").append(this.getCleanName(this.value).append(new LiteralText(" <"))).asString());
             }
         });
+        //keyButton.setTooltip(Tooltip.of(Text.literal(this.value)));
         useDefaultResetBTN();
     }
 
@@ -28,11 +31,14 @@ public class KeybindItem extends ConfigItem<String> {
         super.setValue(value);
         isListening = false;
         keyButton.setMessage(this.getCleanName(this.value).asString());
+        //keyButton.setTooltip(Tooltip.of(Text.literal(this.value)));
     }
 
     public Text getCleanName(String str) {
         if (I18n.hasTranslation(value))
             return new TranslatableText(str);
+        if (str == null || str.isBlank())
+            return new TranslatableText("key.keyboard.unknown");
         return new LiteralText(str.substring(str.length() - 1).toUpperCase());
     }
 
@@ -40,6 +46,11 @@ public class KeybindItem extends ConfigItem<String> {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (isListening) {
             // post 1.15: fromKeyCode, getTranslationKey()
+            setValue(InputUtil.getKeyCode(keyCode, scanCode).getName());
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+                setValue(value);
+                return true;
+            }
             setValue(InputUtil.getKeyCode(keyCode, scanCode).getName());
             return true;
         }
@@ -59,9 +70,9 @@ public class KeybindItem extends ConfigItem<String> {
     //@Override
     //public void render(MatrixStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
     //    super.render(matrices, x, y, mouseX, mouseY, delta);
-    //    this.keyButton.y = y;
+    //    this.keyButton.setY(y);
 
-    //    this.keyButton.x = resetButton.x - resetButton.getWidth() - (keyButton.getWidth() / 2) - 20;
+    //    this.keyButton.setX(resetButton.getX() - resetButton.getWidth() - (keyButton.getWidth() / 2) - 20);
 
     //    keyButton.render(matrices, mouseX, mouseY, delta);
     //}

@@ -26,10 +26,10 @@ public class ModMenuIntegration implements ModMenuApi {
                 QuickShulkerMod.config.save();
             });
             ConfigSection activationSection = new ConfigSection(configScreen, new TranslatableText("key.quickshulker.config.category.activation"));
-            activationSection.addConfigItem(new KeybindItem(new TranslatableText("key.quickshulker.config.keybinding"), options.keybinding.rawKey, ConfigOptions.defualtKeybind).setSaveConsumer(value -> options.keybinding.setRaw(value)));
+            activationSection.addConfigItem(new KeybindItem(new TranslatableText("key.quickshulker.config.keybinding"), options.keybinding.rawKey, ConfigOptions.defaultKeybind).setSaveConsumer(value -> options.keybinding.setRaw(value)));
             activationSection.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.keybind"), options.keybind, true).setSaveConsumer(value -> options.keybind = value));
             activationSection.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.rightClick"), options.rightClickToOpen, true).setSaveConsumer(value -> options.rightClickToOpen = value));
-            activationSection.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.keybindInInv"), options.keybingInInv, true).setSaveConsumer(value -> options.keybingInInv = value));
+            activationSection.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.keybindInInv"), options.keybindInInv, true).setSaveConsumer(value -> options.keybindInInv = value));
             activationSection.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.rightClickInInv"), options.rightClickInv, true).setSaveConsumer(value -> options.rightClickInv = value));
 
             ConfigSection optionsSection = new ConfigSection(configScreen, new TranslatableText("key.quickshulker.config.category.options"));

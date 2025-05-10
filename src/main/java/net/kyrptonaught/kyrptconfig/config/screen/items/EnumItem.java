@@ -1,7 +1,6 @@
 package net.kyrptonaught.kyrptconfig.config.screen.items;
 
 import net.kyrptonaught.kyrptconfig.config.screen.NotSuckyButton;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 

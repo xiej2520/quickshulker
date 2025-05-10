@@ -6,7 +6,7 @@ import net.kyrptonaught.kyrptconfig.keybinding.CustomKeyBinding;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 
 public class ConfigOptions implements AbstractConfigFile {
-    public static String defualtKeybind = "key.keyboard.k";
+    public static String defaultKeybind = "key.keyboard.k";
     @Comment("Activation key")
     public CustomKeyBinding keybinding = CustomKeyBinding.configDefault(QuickShulkerMod.MOD_ID, "key.keyboard.k");
     @Comment("Right Clicking with shulker in hand opens it")
@@ -14,7 +14,7 @@ public class ConfigOptions implements AbstractConfigFile {
     @Comment("Hitting the keybind with shulker in hand opens it")
     public boolean keybind = true;
     @Comment("Hitting the keybind while hovering over shulker in inv opens it")
-    public boolean keybingInInv = true;
+    public boolean keybindInInv = true;
     @Comment("Right Clicking a shulker in your inv opens it")
     public boolean rightClickInv = true;
 

@@ -2,8 +2,6 @@ package net.kyrptonaught.kyrptconfig.config.screen.items;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 import java.math.BigDecimal;
@@ -21,7 +19,7 @@ public class NumberItem<T extends Number> extends ConfigItem<T> {
         valueEntry.setChangedListener(this::onTyped);
     }
 
-    public NumberItem setMinMax(T min, T max) {
+    public NumberItem<T> setMinMax(T min, T max) {
         this.min = min;
         this.max = max;
         return this;
