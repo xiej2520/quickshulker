@@ -47,11 +47,17 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
         // see issue #28
         if (slotId > 0 && slotId < slots.size()) {
             if (hasItem()) {
+                // Intended behavior: inventory actions on opened QuickShulker item doesn't move the item at all
                 if (slots.get(slotId).inventory instanceof PlayerInventory && ((SlotAccessor) slots.get(slotId)).getIndex() == playerInvSlot) {
-                    // TODO
-                    // causes desyncs but I don't think it loses items?
-                    // Intended behavior: inventory actions on opened QuickShulker item doesn't move the item at all
                     cir.setReturnValue(ItemStack.EMPTY);
+                } else if (slotActionType == SlotActionType.SWAP && button == playerInvSlot) {
+                    // QuickShulker item can be moved but slotId doesn't refer to it
+                    cir.setReturnValue(ItemStack.EMPTY);
+                } else if (slotActionType == SlotActionType.PICKUP_ALL) {
+                    ItemStack cursorStack = playerEntity.inventory.getCursorStack();
+                    if (ItemStack.areItemsEqualIgnoreDamage(cursorStack, playerEntity.inventory.getInvStack(getUsedSlotInPlayerInv()))) {
+                        cir.setReturnValue(ItemStack.EMPTY);
+                    }
                 }
             }
         }

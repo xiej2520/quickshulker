@@ -1,5 +1,6 @@
 package net.kyrptonaught.quickshulker.client;
 
+import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
 import net.kyrptonaught.quickshulker.api.Util;
 import net.kyrptonaught.quickshulker.mixin.CreativeSlotMixin;

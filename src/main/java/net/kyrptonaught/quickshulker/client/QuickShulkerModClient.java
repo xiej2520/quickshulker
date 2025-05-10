@@ -9,9 +9,11 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyrptonaught.kyrptconfig.keybinding.CustomKeyBinding;
 import net.kyrptonaught.kyrptconfig.keybinding.DisplayOnlyKeyBind;
+import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.api.RegisterQuickShulkerClient;
 import net.kyrptonaught.quickshulker.network.OpenInventoryPacket;
+import net.kyrptonaught.quickshulker.network.SetUsedSlotPacket;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,16 +27,23 @@ public class QuickShulkerModClient implements ClientModInitializer {
             if (MinecraftClient.getInstance().currentScreen == null && QuickShulkerMod.getConfig().keybind) {
                 PlayerEntity player = MinecraftClient.getInstance().player;
                 if (getKeybinding().isKeybindPressed() && player != null) {
-                    if (player.getMainHandStack().isEmpty() && !player.getOffHandStack().isEmpty())
+                    if (player.getMainHandStack().isEmpty() && !player.getOffHandStack().isEmpty()) {
                         ClientUtil.CheckAndSend(player.getOffHandStack(), 45);
-                    else
+                    } else {
                         ClientUtil.CheckAndSend(player.getMainHandStack(), 36 + player.inventory.selectedSlot);
+                    }
                 }
             }
         });
         ClientPlayNetworking.registerGlobalReceiver(OpenInventoryPacket.OPEN_INV, (client, handler, packet, sender) -> {
             client.execute(() -> {
                 client.openScreen(new InventoryScreen(client.player));
+            });
+        });
+        ClientPlayNetworking.registerGlobalReceiver(SetUsedSlotPacket.SET_USED_SLOT_PACKET, (client, handler, packetByteBuf, sender) -> {
+            int playerInvIndex = packetByteBuf.readInt();
+            client.execute(() -> {
+                ((ItemInventoryContainer) client.player.container).setUsedSlot(playerInvIndex);
             });
         });
         FabricLoader.getInstance().getEntrypoints(QuickShulkerMod.MOD_ID + "_client", RegisterQuickShulkerClient.class).forEach(RegisterQuickShulkerClient::registerClient);

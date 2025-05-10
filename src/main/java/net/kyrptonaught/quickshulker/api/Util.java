@@ -4,6 +4,7 @@ import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.mixin.SlotAccessor;
 import net.kyrptonaught.quickshulker.network.OpenInventoryPacket;
+import net.kyrptonaught.quickshulker.network.SetUsedSlotPacket;
 import net.minecraft.block.Block;
 import net.minecraft.block.EnderChestBlock;
 import net.minecraft.container.Container;
@@ -39,6 +40,7 @@ public class Util {
         if (qsData != null) {
             qsData.openConsumer.accept(player, stack);
             ((ItemInventoryContainer) player.container).setUsedSlot(playerInvIndex);
+            SetUsedSlotPacket.sendUsedSlotPacket((ServerPlayerEntity) player, playerInvIndex);
             player.container.addListener(forceCloseScreenIfNotPresent(player, playerInvIndex, stack));
         }
     }
