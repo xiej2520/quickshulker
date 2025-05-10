@@ -111,8 +111,8 @@ public class CustomKeyBinding implements CustomSerializable {
 
     @Override
     public CustomSerializable fromJson(CustomMarshaller m, JsonElement obj, Class<CustomSerializable> clazz) {
-        if (obj instanceof JsonPrimitive string)
-            setRaw(string.asString());
+        if (obj instanceof JsonPrimitive)
+            setRaw(((JsonPrimitive) obj).asString());
         return this;
     }
 }

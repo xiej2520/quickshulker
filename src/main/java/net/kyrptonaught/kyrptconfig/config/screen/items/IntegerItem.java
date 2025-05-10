@@ -11,7 +11,7 @@ public class IntegerItem extends NumberItem<Integer> {
 
     @Override
     public void onTyped(String s) {
-        if (s.isBlank() || s.equals("-")) return;
+        if (s.trim().isEmpty() || s.equals("-")) return;
         String fixed = fixInput(s);
         if (s.equals(fixed))
             value = Integer.parseInt(fixed);

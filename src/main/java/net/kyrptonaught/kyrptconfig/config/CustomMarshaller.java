@@ -7,8 +7,8 @@ import blue.endless.jankson.impl.MarshallerImpl;
 public class CustomMarshaller extends MarshallerImpl {
 
     public JsonElement serialize(Object obj) {
-        if (obj instanceof CustomSerializable customSerializable) {
-            return customSerializable.toJson(this);
+        if (obj instanceof CustomSerializable) {
+            return ((CustomSerializable) obj).toJson(this);
         }
         return super.serialize(obj);
     }

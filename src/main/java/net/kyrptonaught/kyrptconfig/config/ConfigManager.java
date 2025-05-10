@@ -8,6 +8,7 @@ import net.minecraft.util.Identifier;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 
 public class ConfigManager {
@@ -106,7 +107,7 @@ public class ConfigManager {
     public static class MultiConfigManager extends ConfigManager {
         public MultiConfigManager(String mod_id) {
             super(mod_id);
-            dir = Path.of(dir + "/" + MOD_ID);
+            dir = Paths.get(dir + "/" + MOD_ID);
             if (!Files.exists(dir)) {
                 try {
                     Files.createDirectories(dir);

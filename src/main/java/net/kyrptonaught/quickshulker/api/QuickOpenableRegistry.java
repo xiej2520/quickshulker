@@ -7,6 +7,7 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -69,7 +70,7 @@ public class QuickOpenableRegistry {
 
         @SafeVarargs
         public final Builder setItem(Class<? extends ItemConvertible>... quickItems) {
-            this.quickItems.addAll(List.of(quickItems));
+            this.quickItems.addAll(Arrays.asList(quickItems));
             return this;
         }
 

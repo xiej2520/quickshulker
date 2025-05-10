@@ -10,8 +10,9 @@ public class CustomJankson {
     }
 
     public static Boolean shouldSerializeField(Object t, Field field) {
-        if (t instanceof CustomSerializable customSerializable)
-            return customSerializable.shouldSerializeField(field);
+        if (t instanceof CustomSerializable) {
+            return ((CustomSerializable) t).shouldSerializeField(field);
+        }
         return true;
     }
 }

@@ -9,8 +9,10 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Language;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public abstract class ConfigItem<T> {
     private Text fieldTitle;
@@ -59,12 +61,12 @@ public abstract class ConfigItem<T> {
     }
 
     public ConfigItem<?> setToolTip(Text toolTip) {
-        this.toolTipText = List.of(toolTip);
+        this.toolTipText = Arrays.asList(toolTip);
         return this;
     }
 
     public ConfigItem<?> setToolTip(Text... toolTips) {
-        this.toolTipText = List.of(toolTips);
+        this.toolTipText = Arrays.asList(toolTips);
         return this;
     }
 
@@ -199,11 +201,11 @@ public abstract class ConfigItem<T> {
     //}
     public void renderToolTip(int x, int y) {
         if (toolTipText != null && requiresRestart) {
-            List<String> newList = new ArrayList<>(toolTipText.stream().map(Text::asString).toList());
+            List<String> newList = new ArrayList<>(toolTipText.stream().map(Text::asString).collect(Collectors.toList()));
             newList.add(new TranslatableText("key.kyrptconfig.config.restartRequired").asString());
             MinecraftClient.getInstance().currentScreen.renderTooltip(newList, x, y);
         } else if (toolTipText != null)
-            MinecraftClient.getInstance().currentScreen.renderTooltip(toolTipText.stream().map(Text::asString).toList(), x, y);
+            MinecraftClient.getInstance().currentScreen.renderTooltip(toolTipText.stream().map(Text::asString).collect(Collectors.toList()), x, y);
         else if (requiresRestart) {
             MinecraftClient.getInstance().currentScreen.renderTooltip(new TranslatableText("key.kyrptconfig.config.restartRequired").asString(), x, y);
         }
