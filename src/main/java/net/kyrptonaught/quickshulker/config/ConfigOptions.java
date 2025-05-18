@@ -2,13 +2,9 @@ package net.kyrptonaught.quickshulker.config;
 
 import blue.endless.jankson.Comment;
 import net.kyrptonaught.kyrptconfig.config.AbstractConfigFile;
-import net.kyrptonaught.kyrptconfig.keybinding.CustomKeyBinding;
-import net.kyrptonaught.quickshulker.QuickShulkerMod;
 
 public class ConfigOptions implements AbstractConfigFile {
     public static String defaultKeybind = "key.keyboard.k";
-    @Comment("Activation key")
-    public CustomKeyBinding keybinding = CustomKeyBinding.configDefault(QuickShulkerMod.MOD_ID, "key.keyboard.k");
     @Comment("Right Clicking with shulker in hand opens it")
     public boolean rightClickToOpen = true;
     @Comment("Hitting the keybind with shulker in hand opens it")

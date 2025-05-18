@@ -3,7 +3,6 @@ package net.kyrptonaught.quickshulker.mixin;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
-import net.kyrptonaught.quickshulker.api.Util;
 import net.kyrptonaught.quickshulker.client.ClientUtil;
 import net.kyrptonaught.quickshulker.client.QuickShulkerModClient;
 import net.minecraft.client.MinecraftClient;
@@ -39,7 +38,8 @@ public abstract class ScreenMixin {
     // ScreenHandler handler in 1.16+
     protected Container container;
 
-    @Shadow private boolean cancelNextRelease;
+    @Shadow
+    private boolean cancelNextRelease;
 
     @Inject(method = "init", at = @At("TAIL"))
     private void fixMouse(CallbackInfo ci) {
@@ -77,7 +77,6 @@ public abstract class ScreenMixin {
                 if (handleTrigger()) {
                     this.cancelNextRelease = true;
                     cir.setReturnValue(true);
-                    return;
                 }
             }
         }

@@ -8,7 +8,9 @@ import net.kyrptonaught.kyrptconfig.config.screen.ConfigScreen;
 import net.kyrptonaught.kyrptconfig.config.screen.ConfigSection;
 import net.kyrptonaught.kyrptconfig.config.screen.items.BooleanItem;
 import net.kyrptonaught.kyrptconfig.config.screen.items.KeybindItem;
+import net.kyrptonaught.kyrptconfig.keybinding.CustomKeyBinding;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
+import net.kyrptonaught.quickshulker.client.QuickShulkerModClient;
 import net.kyrptonaught.quickshulker.config.ConfigOptions;
 import net.minecraft.text.TranslatableText;
 
@@ -20,13 +22,14 @@ public class ModMenuIntegration implements ModMenuApi {
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
         return (screen) -> {
             ConfigOptions options = QuickShulkerMod.getConfig();
+            CustomKeyBinding keybinding = QuickShulkerModClient.getKeybinding();
 
             ConfigScreen configScreen = new ConfigScreen(screen, new TranslatableText("key.quickshulker.config.category.title"));
             configScreen.setSavingEvent(() -> {
                 QuickShulkerMod.config.save();
             });
             ConfigSection activationSection = new ConfigSection(configScreen, new TranslatableText("key.quickshulker.config.category.activation"));
-            activationSection.addConfigItem(new KeybindItem(new TranslatableText("key.quickshulker.config.keybinding"), options.keybinding.rawKey, ConfigOptions.defaultKeybind).setSaveConsumer(value -> options.keybinding.setRaw(value)));
+            activationSection.addConfigItem(new KeybindItem(new TranslatableText("key.quickshulker.config.keybinding"), keybinding.rawKey, ConfigOptions.defaultKeybind).setSaveConsumer(value -> keybinding.setRaw(value)));
             activationSection.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.keybind"), options.keybind, true).setSaveConsumer(value -> options.keybind = value));
             activationSection.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.rightClick"), options.rightClickToOpen, true).setSaveConsumer(value -> options.rightClickToOpen = value));
             activationSection.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.keybindInInv"), options.keybindInInv, true).setSaveConsumer(value -> options.keybindInInv = value));
