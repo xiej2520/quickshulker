@@ -17,5 +17,5 @@
   "key.quickshulker.config.quickShulkerBox": "셜커 상자 열기 사용",
   "key.quickshulker.config.quickCraftingTable": "작업대 열기 사용",
   "key.quickshulker.config.quickStonecutter": "석재 절단기 열기 사용",
-  "key.quickshulker.config.quickEChest": "엔더 상자 열기 사용"
+  "key.quickshulker.config.quickEnderChest": "엔더 상자 열기 사용"
 }

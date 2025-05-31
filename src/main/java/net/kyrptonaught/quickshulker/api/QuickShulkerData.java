@@ -61,7 +61,7 @@ public class QuickShulkerData {
         }
 
         public Inventory getInventory(PlayerEntity player, ItemStack stack) {
-            if (!QuickShulkerMod.getConfig().quickEChest)
+            if (!QuickShulkerMod.getConfig().quickEnderChest)
                 return null;
             return player.getEnderChestInventory();
         }

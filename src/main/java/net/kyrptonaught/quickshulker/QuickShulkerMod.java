@@ -63,7 +63,7 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
                             new ShulkerBoxContainer(i, player.inventory, new ItemStackInventory(stack, 27)), stack.hasCustomName() ? stack.getName() : new TranslatableText("container.shulkerBox")))))
                     .register();
 
-        if (getConfig().quickEChest)
+        if (getConfig().quickEnderChest)
             new QuickOpenableRegistry.Builder(new QuickShulkerData.QuickEnderData())
                     .setItem(EnderChestBlock.class)
                     .supportsBundleing(true)

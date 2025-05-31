@@ -1,17 +1,24 @@
 package net.kyrptonaught.quickshulker.mixin;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.client.ClientUtil;
 import net.kyrptonaught.quickshulker.client.QuickShulkerModClient;
+import net.kyrptonaught.quickshulker.config.ConfigOptions;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.container.Container;
 import net.minecraft.container.Slot;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 // @Mixin(HandledScreen.class)
 @Mixin(ContainerScreen.class)
 @Environment(EnvType.CLIENT)
-public abstract class ScreenMixin {
+public abstract class ScreenMixin extends Screen {
     @Shadow
     protected Slot focusedSlot;
 
@@ -40,6 +47,10 @@ public abstract class ScreenMixin {
 
     @Shadow
     private boolean cancelNextRelease;
+
+    protected ScreenMixin(Text text) {
+        super(text);
+    }
 
     @Inject(method = "init", at = @At("TAIL"))
     private void fixMouse(CallbackInfo ci) {
@@ -100,4 +111,64 @@ public abstract class ScreenMixin {
             }
         return false;
     }
+
+
+    @Inject(method = "drawSlot",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;II)V"))
+    public void drawSlotBackground(Slot slot, CallbackInfo ci) {
+        // lame bar, I'm too lazy to draw something or render a texture
+        int playerInvUsedSlot = ((ItemInventoryContainer) this.container).getPlayerInvUsedSlot();
+        ConfigOptions opts = QuickShulkerMod.getConfig();
+        if (opts.fillOpenedBackground
+                && playerInvUsedSlot != -1
+                && slot.inventory instanceof PlayerInventory
+                && ((SlotAccessor) slot).getIndex() == playerInvUsedSlot) {
+            int i = slot.xPosition;
+            int j = slot.yPosition;
+
+            RenderSystem.disableDepthTest();
+            RenderSystem.disableTexture();
+            RenderSystem.disableAlphaTest();
+            RenderSystem.disableBlend();
+            Tessellator tessellator = Tessellator.getInstance();
+            BufferBuilder bufferBuilder = tessellator.getBuffer();
+
+            this.itemRenderer.renderGuiQuad(bufferBuilder, i, j, 16, 16,
+                    (opts.colorBackground >> 16) & 0xFF,
+                    (opts.colorBackground >> 8) & 0xFF,
+                    (opts.colorBackground >> 0) & 0xFF,
+                    255
+            );
+            RenderSystem.enableBlend();
+            RenderSystem.enableAlphaTest();
+            RenderSystem.enableTexture();
+            RenderSystem.enableDepthTest();
+
+        }
+    }
+    //@Inject(method = "drawSlot",
+    //        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;II)V",
+    //                shift = At.Shift.AFTER))
+    //public void renderSlot(Slot slot, CallbackInfo ci) {
+    //    // lame bar, I'm too lazy to draw something or render a texture
+    //    int playerInvUsedSlot = ((ItemInventoryContainer) this.container).getPlayerInvUsedSlot();
+    //    if (playerInvUsedSlot != -1 && slot.inventory instanceof PlayerInventory && ((SlotAccessor) slot).getIndex() == playerInvUsedSlot) {
+    //        int i = slot.xPosition;
+    //        int j = slot.yPosition;
+
+    //        RenderSystem.disableDepthTest();
+    //        RenderSystem.disableTexture();
+    //        RenderSystem.disableAlphaTest();
+    //        RenderSystem.disableBlend();
+    //        Tessellator tessellator = Tessellator.getInstance();
+    //        BufferBuilder bufferBuilder = tessellator.getBuffer();
+    //        this.itemRenderer.renderGuiQuad(bufferBuilder, i + 2, j + 13, 13, 2, 90, 40, 240, 255);
+    //        this.itemRenderer.renderGuiQuad(bufferBuilder, i + 2, j + 13, 13, 1, 40,240, 40,255);
+    //        RenderSystem.enableBlend();
+    //        RenderSystem.enableAlphaTest();
+    //        RenderSystem.enableTexture();
+    //        RenderSystem.enableDepthTest();
+
+    //    }
+    //}
 }

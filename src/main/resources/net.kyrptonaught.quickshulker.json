@@ -9,8 +9,8 @@
     "SlotAccessor"
   ],
   "client": [
-    "ScreenMixin",
-    "CreativeSlotMixin"
+    "CreativeSlotMixin",
+    "ScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

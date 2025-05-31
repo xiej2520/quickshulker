@@ -4,3 +4,4 @@ accessible class net/minecraft/client/gui/screen/ingame/CreativeInventoryScreen$
 accessible field net/minecraft/inventory/BasicInventory stackList Lnet/minecraft/util/DefaultedList;
 accessible class net/minecraft/client/gui/screen/ingame/CreativeInventoryScreen$CreativeSlot
 accessible field net/minecraft/container/Slot invSlot I
+accessible method net/minecraft/client/render/item/ItemRenderer renderGuiQuad (Lnet/minecraft/client/render/BufferBuilder;IIIIIIII)V

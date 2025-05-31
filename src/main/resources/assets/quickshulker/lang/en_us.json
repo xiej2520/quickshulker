@@ -18,7 +18,9 @@
   "key.quickshulker.config.quickShulkerBox": "Enable opening Shulker Boxes",
   "key.quickshulker.config.quickCraftingTable": "Enable opening Crafting Tables",
   "key.quickshulker.config.quickStonecutter": "Enable opening Stonecutter",
-  "key.quickshulker.config.quickEChest": "Enable opening EnderChest",
+  "key.quickshulker.config.quickEnderChest": "Enable opening Ender Chest",
+  "key.quickshulker.config.fillOpenedBackground": "Fill the background of an opened item with a color",
+  "key.quickshulker.config.colorBackground": "The color to use for the background (RGB integer)",
 
 
   "key.kyrptconfig.config.restartRequired": "Restart is Required",

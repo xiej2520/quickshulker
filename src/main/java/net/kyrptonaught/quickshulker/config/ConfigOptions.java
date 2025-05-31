@@ -30,6 +30,9 @@ public class ConfigOptions implements AbstractConfigFile {
     @Comment("Enable opening Stonecutter")
     public boolean quickStonecutter = true;
     @Comment("Enable opening EnderChest")
-    public boolean quickEChest = true;
-
+    public boolean quickEnderChest = true;
+    @Comment("Enable filling the background of opened items with a color")
+    public boolean fillOpenedBackground = true;
+    @Comment("The color to use as a background of opened items")
+    public Integer colorBackground = (40 << 16) + (240 << 8) + (40 << 0);
 }

@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import net.kyrptonaught.kyrptconfig.config.screen.ConfigScreen;
 import net.kyrptonaught.kyrptconfig.config.screen.ConfigSection;
 import net.kyrptonaught.kyrptconfig.config.screen.items.BooleanItem;
+import net.kyrptonaught.kyrptconfig.config.screen.items.IntegerItem;
 import net.kyrptonaught.kyrptconfig.config.screen.items.KeybindItem;
 import net.kyrptonaught.kyrptconfig.keybinding.CustomKeyBinding;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
@@ -47,7 +48,9 @@ public class ModMenuIntegration implements ModMenuApi {
             enabledSection.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.quickShulkerBox"), options.quickShulkerBox, true).setSaveConsumer(value -> options.quickShulkerBox = value).setRequiresRestart());
             enabledSection.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.quickCraftingTable"), options.quickCraftingTables, true).setSaveConsumer(value -> options.quickCraftingTables = value).setRequiresRestart());
             enabledSection.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.quickStonecutter"), options.quickStonecutter, true).setSaveConsumer(value -> options.quickStonecutter = value).setRequiresRestart());
-            enabledSection.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.quickEChest"), options.quickEChest, true).setSaveConsumer(value -> options.quickEChest = value).setRequiresRestart());
+            enabledSection.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.quickEnderChest"), options.quickEnderChest, true).setSaveConsumer(value -> options.quickEnderChest = value).setRequiresRestart());
+            enabledSection.addConfigItem(new BooleanItem(new TranslatableText("key.quickshulker.config.fillOpenedBackground"), options.fillOpenedBackground, true).setSaveConsumer(value -> options.fillOpenedBackground = value));
+            enabledSection.addConfigItem(new IntegerItem(new TranslatableText("key.quickshulker.config.colorBackground"), options.colorBackground, (40 << 16) + (240 << 8) + (40 << 0)).setSaveConsumer(value -> options.colorBackground = value));
 
             return configScreen;
         };
