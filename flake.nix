@@ -1,11 +1,18 @@
 {
-  description = "A Nix-flake for a minecraft modding dev environment.";
-  # make sure to git add the flake
+  description = "A Nix flake for a Minecraft modding dev environment.";
 
+  # make sure to git add the flake
+  # $(nix build .#quickshulker.mitmCache.updateScript --no-link --print-out-paths)
+  # nix build
   inputs.nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1.*.tar.gz";
+  inputs.flake-utils.url = "github:numtide/flake-utils";
 
   outputs =
-    { self, nixpkgs }:
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+    }:
     let
       supportedSystems = [
         "x86_64-linux"
@@ -34,13 +41,13 @@
           f {
             pkgs = pkgs;
             deps = deps;
+            system = system;
           }
         );
-
     in
     {
       devShells = forEachSupportedSystem (
-        { pkgs, deps }:
+        { pkgs, deps, ... }:
         {
           default = pkgs.mkShell {
             packages = deps;
@@ -48,7 +55,7 @@
             LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath deps; # Set up the library path for linking
 
             # tell Intellij to use jdk and gradle in ./.share since nixos doesn't like dynamically linked executables
-            # Settings -> Build, Execution, Deployment -> Build Tools -> Gradle
+            # Settings -> Build, Execution; Deployment -> Build Tools -> Gradle
             shellHook = ''
               export BASE_DIR=$(pwd)
               mkdir -p $BASE_DIR/.share
@@ -72,6 +79,56 @@
               export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${pkgs.lib.makeLibraryPath deps};
             '';
           };
+        }
+      );
+
+      packages = forEachSupportedSystem (
+        {
+          pkgs,
+          deps,
+          system,
+        }:
+        let
+          pname = "quickshulker";
+          mcversion = "1.15.2";
+          version = "1.4.0+xiej.1";
+          minecraft-mod = pkgs.stdenv.mkDerivation (finalAttrs: {
+            name = "${pname}-${version}";
+            src = ./.;
+
+            nativeBuildInputs = [ pkgs.gradle ];
+
+            # from nixpkgs manual:
+            # gradle doesn't provide tools for making dependency resolution reproducible,
+            # nixpkgs has mitmCache for intercepting requests and recording them
+
+            # if the package has dependencies, mitmCache must be set
+            mitmCache = pkgs.gradle.fetchDeps {
+              pkg = finalAttrs.finalPackage;
+              data = ./deps.json;
+            };
+
+            __darwinAllowLocalNetworking = true; # required on Darwin
+
+            gradleBuildTask = "build";
+            gradleFlags = [ "-Dfile.encoding=utf-8" ];
+
+            installPhase = ''
+              runHook preInstall
+              mkdir -p $out/share
+              cp build/libs/${pname}-${mcversion}-${version}.jar $out/share/${pname}-${mcversion}-${version}.jar
+              runHook postInstall
+            '';
+
+            meta = {
+              description = "Minecraft mod built using Gradle and Fabric Loom.";
+              platforms = [ system ];
+            };
+          });
+        in
+        {
+          default = minecraft-mod;
+          "${pname}" = minecraft-mod;
         }
       );
     };

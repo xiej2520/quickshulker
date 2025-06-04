@@ -7,7 +7,8 @@ version = project.mod_version
 group = project.maven_group
 
 base {
-	archivesName = project.archives_base_name
+	archivesName = project.mod_file_name + '-' + project.minecraft_version
+	version = project.mod_version
 }
 repositories {
 	maven { url 'https://maven.fabricmc.net' }
@@ -39,10 +40,10 @@ loom {
 }
 
 processResources {
-	inputs.property "version", project.version
+	inputs.property "mod_version", project.mod_version
 
 	filesMatching("fabric.mod.json") {
-		expand "version": inputs.properties.version
+		expand "mod_version": project.mod_version
 	}
 }
 

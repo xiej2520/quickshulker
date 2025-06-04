@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "quickshulker",
-  "version": "1.4.0-1.15",
+  "version": "${mod_version}",
   "name": "Quick Shulker",
   "description": "Quickly open Shulker boxes and more. Backport of newer versions of quickshulker to 1.15 by xiej2520. Using kyrptconfig ~1.2.2 backported to 1.15.",
   "authors": [

@@ -10,6 +10,11 @@ available version is for 1.17.
 
 Very janky downgrade. Copied kryptconfig, brought in minimal files to compile.
 
+```shell
+# generate deps.json by mitm gradle
+$(nix build .#quickshulker.mitmCache.updateScript --no-link --print-out-paths)
+nix build
+```
 ## Testing
 
 Manually test:
