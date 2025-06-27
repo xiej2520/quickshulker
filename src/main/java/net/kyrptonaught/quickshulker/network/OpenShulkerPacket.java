@@ -7,8 +7,8 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.api.Util;
-import net.minecraft.util.PacketByteBuf;
-import net.minecraft.util.Identifier;
+import net.minecraft.resource.Identifier;
+import net.minecraft.network.PacketByteBuf;
 
 public class OpenShulkerPacket {
     private static final Identifier OPEN_SHULKER_PACKET = new Identifier(QuickShulkerMod.MOD_ID, "open_shulker_packet");

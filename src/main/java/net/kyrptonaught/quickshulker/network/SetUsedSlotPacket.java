@@ -6,9 +6,10 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
+import net.minecraft.resource.Identifier;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.PacketByteBuf;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.PacketByteBuf;
+import net.ornithemc.osl.networking.api.PacketByteBufs;
 
 // Server tells client to set used slot after opening container
 public class SetUsedSlotPacket {

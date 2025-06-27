@@ -3,7 +3,7 @@ package net.kyrptonaught.kyrptconfig.config;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import blue.endless.jankson.Jankson;
-import net.minecraft.util.Identifier;
+import net.minecraft.resource.Identifier;
 
 import java.io.IOException;
 import java.nio.file.Files;

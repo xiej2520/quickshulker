@@ -1,7 +1,7 @@
 package net.kyrptonaught.quickshulker.config;
 
-import blue.endless.jankson.Comment;
 import net.kyrptonaught.kyrptconfig.config.AbstractConfigFile;
+import net.kyrptonaught.quickshulker.Comment;
 
 public class ConfigOptions implements AbstractConfigFile {
     public static String defaultKeybind = "key.keyboard.k";

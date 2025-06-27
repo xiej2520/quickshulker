@@ -1,14 +1,12 @@
 package net.kyrptonaught.quickshulker.client;
 
-import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
 import net.kyrptonaught.quickshulker.api.Util;
-import net.kyrptonaught.quickshulker.mixin.CreativeSlotMixin;
 import net.kyrptonaught.quickshulker.mixin.SlotAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.container.Container;
-import net.minecraft.container.Slot;
+import net.minecraft.inventory.slot.InventorySlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -32,7 +30,7 @@ public class ClientUtil {
 
     }
 
-    public static int getSlotId(Container handler, Slot slot) {
+    public static int getSlotId(Container handler, InventorySlot slot) {
         if (handler instanceof CreativeInventoryScreen.CreativeContainer) {
             if (((CreativeInventoryScreen) MinecraftClient.getInstance().currentScreen).getSelectedTab() == ItemGroup.INVENTORY.getIndex() && slot instanceof CreativeInventoryScreen.CreativeSlot) {
                 return ((CreativeSlotMixin) slot).getSlot().id;
@@ -43,14 +41,14 @@ public class ClientUtil {
         return slot.id;
     }
 
-    public static int getPlayerInvSlot(Container handler, Slot slot) {
+    public static int getPlayerInvSlot(Container handler, InventorySlot slot) {
         if (handler instanceof CreativeInventoryScreen.CreativeContainer) {
             if (((CreativeInventoryScreen) MinecraftClient.getInstance().currentScreen).getSelectedTab() == ItemGroup.INVENTORY.getIndex() && slot instanceof CreativeInventoryScreen.CreativeSlot) {
                 // post-1.15: getIndex()
-                return ((SlotAccessor) ((CreativeSlotMixin) slot).getSlot()).getIndex();
+                return ((SlotAccessor) ((CreativeSlotMixin) slot).getSlot()).getInventoryIndex();
             }
         }
         // post-1.15: getIndex()
-        return ((SlotAccessor) slot).getIndex();
+        return ((SlotAccessor) slot).getInventoryIndex();
     }
 }

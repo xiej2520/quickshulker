@@ -1,6 +1,5 @@
 package net.kyrptonaught.quickshulker;
 
-import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyrptonaught.kyrptconfig.config.ConfigManager;
@@ -10,12 +9,13 @@ import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
 import net.minecraft.block.CraftingTableBlock;
 import net.minecraft.block.EnderChestBlock;
 import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.block.StonecutterBlock;
-import net.minecraft.container.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.util.TypedActionResult;
+
+import net.ornithemc.osl.core.api.events.Event;
+import net.ornithemc.osl.entrypoints.api.ModInitializer;
 
 
 public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
@@ -24,7 +24,7 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
     public static double lastMouseX, lastMouseY;
 
     @Override
-    public void onInitialize() {
+    public void init() {
         config.load();
         OpenShulkerPacket.registerReceivePacket();
         //QuickBundlePacket.registerReceivePacket();
@@ -33,7 +33,7 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
             if (!world.isClient) {
                 if (QuickShulkerMod.getConfig().rightClickToOpen) {
                     if (Util.isOpenableItem(stack) && Util.canOpenInHand(stack)) {
-                        if (hand == Hand.MAIN_HAND) {
+                        if (hand == InteractionHand.MAIN_HAND) {
                             Util.openItem(player, 0, player.inventory.selectedSlot);
                         } else {
                             final int PLAYER_INVENTORY_OFF_HAND_SLOT = 40;

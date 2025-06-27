@@ -5,8 +5,6 @@ import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.mixin.SlotAccessor;
 import net.kyrptonaught.quickshulker.network.OpenInventoryPacket;
 import net.kyrptonaught.quickshulker.network.SetUsedSlotPacket;
-import net.minecraft.block.Block;
-import net.minecraft.block.EnderChestBlock;
 import net.minecraft.container.Container;
 import net.minecraft.container.ContainerListener;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,7 +23,7 @@ public class Util {
             System.out.println("[QuickShulker]: unknown slot opened");
             //return; //not preventing the crash might make it easier to debug a fix.
         }
-        openItem(player, invSlot, ((SlotAccessor) player.container.slots.get(invSlot)).getIndex());
+        openItem(player, invSlot, ((SlotAccessor) player.container.slots.get(invSlot)).getInventoryIndex());
     }
 
     public static void openItem(PlayerEntity player, int invSlot, int playerInvIndex) {
