@@ -6,9 +6,11 @@
     "ContainerMixin",
     "CraftingScreenHandlerMixin",
     "ItemMixin",
+    "MinecraftMixin",
     "SlotAccessor"
   ],
   "client": [
+    "ClientPlayerInteractionManagerMixin",
     "CreativeSlotMixin",
     "ScreenMixin"
   ],

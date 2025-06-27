@@ -1,106 +1,75 @@
 package net.kyrptonaught.quickshulker.api;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 public class QuickOpenableRegistry {
-    private static final HashMap<Class<? extends ItemConvertible>, QuickShulkerData> quickies = new HashMap<>();
+    private static final Map<Item, QuickShulkerData> quickies = new HashMap<>();
 
-    public static QuickShulkerData getQuickie(ItemConvertible item) {
-        if (item instanceof BlockItem) {
-            if (quickies.containsKey(((BlockItem) item).getBlock().getClass()))
-                return quickies.get(((BlockItem) item).getBlock().getClass());
-        }
-        return quickies.get(item.getClass());
+    public static QuickShulkerData getQuickie(Item item) {
+        return quickies.get(item);
     }
 
-    public static void register(Class<? extends ItemConvertible> quickItem, QuickShulkerData quickShulkerData) {
+    public static void register(Item quickItem, QuickShulkerData quickShulkerData) {
         quickies.put(quickItem, quickShulkerData);
     }
 
-    @Deprecated
-    public static void register(Class<? extends ItemConvertible> quickItem, Boolean requiresSingularStack, Boolean supportsBundleing, BiConsumer<PlayerEntity, ItemStack> consumer) {
-        register(quickItem, new QuickShulkerData(consumer, supportsBundleing));
-    }
-
-    @Deprecated
-    public static void register(Class<? extends ItemConvertible> quickItem, Boolean supportsBundleing, BiConsumer<PlayerEntity, ItemStack> consumer) {
-        register(quickItem, new QuickShulkerData(consumer, supportsBundleing));
-    }
-
-    @Deprecated
-    public static void register(Class<? extends ItemConvertible> quickItem, BiConsumer<PlayerEntity, ItemStack> consumer) {
-        register(quickItem, new QuickShulkerData(consumer, false));
-    }
-
-    @SafeVarargs
-    @Deprecated
-    public static void register(BiConsumer<PlayerEntity, ItemStack> consumer, Class<? extends ItemConvertible>... quickItems) {
-        for (Class<? extends ItemConvertible> block : quickItems) {
-            register(block, consumer);
-        }
-    }
-
     public static class Builder {
-        private final List<Class<? extends ItemConvertible>> quickItems = new ArrayList<>();
-        private final QuickShulkerData qsdata;
+        private final List<Item> quickItems = new ArrayList<>();
+        private final QuickShulkerData qsData;
 
         public Builder() {
-            qsdata = new QuickShulkerData();
+            qsData = new QuickShulkerData();
         }
 
         public Builder(QuickShulkerData qsdata) {
-            this.qsdata = qsdata;
+            this.qsData = qsdata;
         }
 
         public void register() {
-            for (Class<? extends ItemConvertible> quickItem : quickItems)
-                QuickOpenableRegistry.register(quickItem, qsdata);
+            for (Item quickItem : quickItems) {
+                QuickOpenableRegistry.register(quickItem, qsData);
+            }
         }
 
-        @SafeVarargs
-        public final Builder setItem(Class<? extends ItemConvertible>... quickItems) {
+        public final Builder setItem(Item... quickItems) {
             this.quickItems.addAll(Arrays.asList(quickItems));
             return this;
         }
 
         public Builder setOpenAction(BiConsumer<PlayerEntity, ItemStack> openAction) {
-            qsdata.openConsumer = openAction;
+            qsData.openConsumer = openAction;
             return this;
         }
 
         public Builder supportsBundleing(Boolean supportsBundleing) {
-            qsdata.supportsBundleing = supportsBundleing;
+            qsData.supportsBundleing = supportsBundleing;
             return this;
         }
 
         public Builder getBundleInv(BiFunction<PlayerEntity, ItemStack, Inventory> getBundleInv) {
-            qsdata.bundleInvGetter = getBundleInv;
+            qsData.bundleInvGetter = getBundleInv;
             return this;
         }
 
         public Builder canBundleInsertItem(CanBundleInsertItemFunction canBundleInsertItem) {
-            qsdata.canBundleInsertItem = canBundleInsertItem;
+            qsData.canBundleInsertItem = canBundleInsertItem;
             return this;
         }
 
         public Builder canOpenInHand(boolean canOpenInHand) {
-            qsdata.canOpenInHand = canOpenInHand;
+            qsData.canOpenInHand = canOpenInHand;
             return this;
         }
 
         public Builder ignoreSingleStackCheck(Boolean ignoreSingleStackCheck) {
-            qsdata.ignoreSingleStackCheck = ignoreSingleStackCheck;
+            qsData.ignoreSingleStackCheck = ignoreSingleStackCheck;
             return this;
         }
     }

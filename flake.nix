@@ -28,7 +28,6 @@
           let
             pkgs = import nixpkgs { inherit system; };
             deps = with pkgs; [
-              jdk8 # change java version as necessary
               openjdk
               gradle
               libpulseaudio
@@ -36,6 +35,9 @@
               glfw
               openal
               stdenv.cc.cc.lib
+              # if getting "libXxf86vm.so not found" in intellij gradle, just Invalidate Caches -> Just Restart
+              xorg.libXxf86vm
+              xorg.libXcursor
             ];
           in
           f {

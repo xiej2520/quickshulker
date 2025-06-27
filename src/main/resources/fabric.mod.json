@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "id": "quickshulker",
-  "version": "${mod_version}",
+  "version": "${version}",
   "name": "Quick Shulker",
-  "description": "Quickly open Shulker boxes and more. Backport of newer versions of quickshulker to 1.15 by xiej2520. Using kyrptconfig ~1.2.2 backported to 1.15.",
+  "description": "Quickly open Shulker boxes and more.",
   "authors": [
     "kyrptonaught",
     "xiej2520"
@@ -16,11 +16,10 @@
   "icon": "assets/quickshulker/icon.png",
   "environment": "*",
   "mixins": [
-    "net.kyrptonaught.quickshulker.json",
-    "net.kyrptonaught.shulkerutils.mixins.json"
+    "net.kyrptonaught.quickshulker.json"
   ],
   "entrypoints": {
-    "main": [
+    "init": [
       "net.kyrptonaught.quickshulker.QuickShulkerMod"
     ],
     "quickshulker": [
@@ -34,8 +33,9 @@
     ]
   },
   "depends": {
-    "fabricloader": ">=0.4.0",
-    "fabric": "*"
+    "fabricloader": ">=0.14.0",
+    "minecraft": "1.12.2",
+    "osl-entrypoints": ">=0.4.0"
   },
   "accessWidener": "quickshulker.accesswidener"
 }
