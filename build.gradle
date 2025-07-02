@@ -31,6 +31,10 @@ dependencies {
 	ploceus.dependOsl(project.osl_version)
 }
 
+loom {
+	accessWidenerPath = file("src/main/resources/quickshulker.accesswidener")
+}
+
 processResources {
 	inputs.property 'version', version
 

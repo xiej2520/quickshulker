@@ -3,6 +3,7 @@ package net.kyrptonaught.quickshulker.mixin;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tessellator;
+import com.sun.jna.platform.unix.X11;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
@@ -33,6 +34,8 @@ public abstract class ScreenMixin extends Screen {
     @Shadow
     protected InventorySlot hoveredSlot;
 
+    // this.minecraft.player.inventory <-> protected PlayerInventory playerInventory;
+
     @Shadow
     public InventoryMenu menu;
 
@@ -52,9 +55,8 @@ public abstract class ScreenMixin extends Screen {
     // int keyCode, int scanCode, int modifiers,
     private void QS$keyPressed(char chr, int key, CallbackInfo ci) {
         if (QuickShulkerMod.getConfig().keybindInInv) {
-            if (QuickShulkerModClient.getKeybinding().matches(keyCode, InputUtil.Type.KEYSYM)) {
-                if (handleTrigger())
-                    return;
+            if (QuickShulkerModClient.getKeybinding().isPressed()) {
+                handleTrigger();
             }
         }
     }
@@ -63,19 +65,18 @@ public abstract class ScreenMixin extends Screen {
     private void QS$mousePressed(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
         if (QuickShulkerMod.getConfig().rightClickInv) {
             // cursorStack moved from PlayerInventory to ScreenHandler in 1.16?
-            if (playerInventory.getCursorStack().isEmpty() && button == 1 && this.hoveredSlot != null && this.hoveredSlot.getStack().getSize() == 1) {
+            if (this.minecraft.player.inventory.getCursorStack().isEmpty() && mouseButton == 1 && this.hoveredSlot != null && this.hoveredSlot.getStack().getSize() == 1) {
                 if (handleTrigger()) {
                     this.cancelNextMouseRelease = true;
-                    cir.setReturnValue(true);
-                    return;
+                    ci.cancel();
                 }
             }
         }
         if (QuickShulkerMod.getConfig().keybindInInv) {
-            if (QuickShulkerModClient.getKeybinding().matches(button, InputUtil.Type.MOUSE)) {
+            if (QuickShulkerModClient.getKeybinding().isPressed()) {
                 if (handleTrigger()) {
                     this.cancelNextMouseRelease = true;
-                    cir.setReturnValue(true);
+                    ci.cancel();
                 }
             }
         }

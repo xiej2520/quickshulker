@@ -5,13 +5,12 @@ import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.mixin.SlotAccessor;
 import net.kyrptonaught.quickshulker.network.OpenInventoryPacket;
 import net.kyrptonaught.quickshulker.network.SetUsedSlotPacket;
-import net.minecraft.container.Container;
-import net.minecraft.container.ContainerListener;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.menu.InventoryMenu;
+import net.minecraft.inventory.menu.InventoryMenuListener;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.CloseContainerS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.entity.living.player.ServerPlayerEntity;
 import net.minecraft.util.DefaultedList;
 
 public class Util {
@@ -23,30 +22,30 @@ public class Util {
             System.out.println("[QuickShulker]: unknown slot opened");
             //return; //not preventing the crash might make it easier to debug a fix.
         }
-        openItem(player, invSlot, ((SlotAccessor) player.container.slots.get(invSlot)).getInventoryIndex());
+        openItem(player, invSlot, ((SlotAccessor) player.menu.slots.get(invSlot)).getInventoryIndex());
     }
 
     public static void openItem(PlayerEntity player, int invSlot, int playerInvIndex) {
-        if (QuickShulkerMod.getConfig().rightClickClose && playerInvIndex == ((ItemInventoryContainer) player.container).getPlayerInvUsedSlot()) {
-            ((ServerPlayerEntity) player).closeContainer();
+        if (QuickShulkerMod.getConfig().rightClickClose && playerInvIndex == ((ItemInventoryContainer) player.menu).getPlayerInvUsedSlot()) {
+            ((ServerPlayerEntity) player).closeMenu();
             OpenInventoryPacket.send((ServerPlayerEntity) player);
             return;
         }
-        ItemStack stack = player.inventory.getInvStack(playerInvIndex);
-        stack.removeSubTag(QuickShulkerMod.MOD_ID);
+        ItemStack stack = player.inventory.getStack(playerInvIndex);
+        stack.removeNbt(QuickShulkerMod.MOD_ID);
         QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());
         if (qsData != null) {
             qsData.openConsumer.accept(player, stack);
-            ((ItemInventoryContainer) player.container).setPlayerInvUsedSlot(playerInvIndex);
+            ((ItemInventoryContainer) player.menu).setPlayerInvUsedSlot(playerInvIndex);
             SetUsedSlotPacket.sendUsedSlotPacket((ServerPlayerEntity) player, playerInvIndex);
-            player.container.addListener(forceCloseScreenIfNotPresent(player, playerInvIndex, stack));
+            player.menu.addListener(forceCloseScreenIfNotPresent(player, playerInvIndex, stack));
         }
     }
 
     public static Boolean isOpenableItem(ItemStack stack) {
         QuickShulkerData qsdata = QuickOpenableRegistry.getQuickie(stack.getItem());
         if (qsdata == null) return false;
-        return qsdata.ignoreSingleStackCheck || stack.getCount() <= 1;
+        return qsdata.ignoreSingleStackCheck || stack.getSize() <= 1;
     }
 
     public static Inventory getQuickItemInventory(PlayerEntity player, ItemStack stack) {
@@ -67,29 +66,34 @@ public class Util {
     }
 
     public static boolean areItemsEqual(ItemStack stack1, ItemStack stack2) {
-        return ItemStack.areItemsEqual(stack1, stack2) && ItemStack.areEqualIgnoreDamage(stack1, stack2) && stack1.getCount() == stack2.getCount();
+        return ItemStack.matchesItemIgnoreDamage(stack1, stack2) && ItemStack.matchesItem(stack1, stack2) && stack1.getSize() == stack2.getSize();
     }
 
-    public static ContainerListener forceCloseScreenIfNotPresent(PlayerEntity player, int slotID, ItemStack stack) {
-        return new ContainerListener() {
+    public static InventoryMenuListener forceCloseScreenIfNotPresent(PlayerEntity player, int slotID, ItemStack stack) {
+        return new InventoryMenuListener() {
             @Override
-            public void onContainerRegistered(Container handler, DefaultedList<ItemStack> stacks) {
+            public void updateMenu(InventoryMenu menu, DefaultedList<ItemStack> stacks) {
                 isValid();
             }
 
             @Override
-            public void onContainerSlotUpdate(Container handler, int slotId, ItemStack stack) {
+            public void onSlotChanged(InventoryMenu menu, int slotId, ItemStack stack) {
                 isValid();
             }
 
             @Override
-            public void onContainerPropertyUpdate(Container handler, int property, int value) {
+            public void onDataChanged(InventoryMenu menu, int property, int value) {
                 isValid();
+            }
+
+            @Override
+            public void updateData(InventoryMenu menu, Inventory inventory) {
+                // TODO: should this be empty?
             }
 
             public void isValid() {
-                if (!areItemsEqual(stack, player.inventory.getInvStack(slotID))) {
-                    ((ServerPlayerEntity) player).closeContainer();
+                if (!areItemsEqual(stack, player.inventory.getStack(slotID))) {
+                    ((ServerPlayerEntity) player).closeMenu();
                 }
             }
         };

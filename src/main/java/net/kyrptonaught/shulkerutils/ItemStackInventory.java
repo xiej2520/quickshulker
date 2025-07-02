@@ -10,14 +10,12 @@ import net.minecraft.util.DefaultedList;
 
 public class ItemStackInventory extends SimpleInventory {
     protected final ItemStack itemStack;
-    protected final int SIZE;
+    protected int SIZE;
 
     public ItemStackInventory(ItemStack stack, int SIZE) {
         super("ItemStackInventory", false, SIZE);
 
-        ItemStack[] itemStacks = getStacks(stack, SIZE).toArray(new ItemStack[SIZE]);
-        this.size = SIZE;
-        this.stacks = DefaultedList.of(ItemStack.EMPTY, itemStacks);
+        //ItemStack[] itemStacks = getStacks(stack, SIZE).toArray(new ItemStack[SIZE]);
         itemStack = stack;
         this.SIZE = SIZE;
     }

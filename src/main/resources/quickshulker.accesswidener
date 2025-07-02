@@ -1,11 +1,9 @@
 accessWidener v2 named
 
-accessible class net/minecraft/client/gui/screen/ingame/CreativeInventoryScreen$CreativeSlot
-accessible field net/minecraft/inventory/BasicInventory stackList Lnet/minecraft/util/DefaultedList;
-accessible class net/minecraft/client/gui/screen/ingame/CreativeInventoryScreen$CreativeSlot
-accessible field net/minecraft/container/Slot invSlot I
-accessible method net/minecraft/client/render/item/ItemRenderer renderGuiQuad (Lnet/minecraft/client/render/BufferBuilder;IIIIIIII)V
+accessible field net/minecraft/inventory/slot/InventorySlot slot I
+accessible method net/minecraft/client/render/item/ItemRenderer fill (Lcom/mojang/blaze3d/vertex/BufferBuilder;IIIIIIII)V
 
 accessible field net/minecraft/inventory/SimpleInventory size I
 accessible field net/minecraft/inventory/SimpleInventory stacks Lnet/minecraft/util/DefaultedList;
-accessible method net/minecraft/client/render/item/ItemRenderer fill (Lcom/mojang/blaze3d/vertex/BufferBuilder;IIIIIIII)V
+
+accessible class net/minecraft/client/gui/screen/inventory/menu/CreativeInventoryScreen$CreativeInventorySlot
