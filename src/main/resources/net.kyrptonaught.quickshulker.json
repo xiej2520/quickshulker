@@ -6,11 +6,13 @@
     "ContainerMixin",
     "CraftingScreenHandlerMixin",
     "ItemMixin",
-    "SlotAccessor"
+    "SlotAccessor",
+    "ServerPlayerInteractionManagerMixin"
   ],
   "client": [
     "CreativeSlotMixin",
-    "ScreenMixin"
+    "ScreenMixin",
+    "ClientPlayerInteractionManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

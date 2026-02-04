@@ -188,5 +188,6 @@ Temporary Items
 .apdisk
 # End of https://www.gitignore.io/api/java,gradle,windows,intellij,forgegradle
 
+bin
 .share
 result

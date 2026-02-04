@@ -1,9 +1,10 @@
 package net.kyrptonaught.quickshulker.config;
 
-import net.kyrptonaught.kyrptconfig.config.AbstractConfigFile;
+//import net.kyrptonaught.kyrptconfig.config.AbstractConfigFile;
 import net.kyrptonaught.quickshulker.Comment;
 
-public class ConfigOptions implements AbstractConfigFile {
+//public class ConfigOptions implements AbstractConfigFile {
+public class ConfigOptions {
     public static String defaultKeybind = "key.keyboard.k";
     @Comment("Right Clicking with shulker in hand opens it")
     public boolean rightClickToOpen = true;
