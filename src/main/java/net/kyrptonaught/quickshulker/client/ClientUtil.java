@@ -13,6 +13,7 @@ import net.minecraft.item.CreativeModeTab;
 import net.minecraft.item.ItemStack;
 
 public class ClientUtil {
+    public final static int OFF_HAND_SLOT = 45;
 
     public static boolean CheckAndSend(ItemStack stack, int slot) {
         if (Util.isOpenableItem(stack)) {
@@ -28,7 +29,6 @@ public class ClientUtil {
 
     public static boolean isCreativeScreen(PlayerEntity player) {
         return player.menu instanceof CreativeInventoryScreen.CreativePlayerMenu;
-
     }
 
     public static int getSlotId(InventoryMenu handler, InventorySlot slot) {

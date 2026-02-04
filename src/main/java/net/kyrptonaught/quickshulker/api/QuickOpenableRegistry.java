@@ -3,7 +3,6 @@ package net.kyrptonaught.quickshulker.api;
 import net.minecraft.block.Block;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -15,45 +14,41 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 public class QuickOpenableRegistry {
-    private static final HashMap<Class<? extends Block>, QuickShulkerData> quickies = new HashMap<>();
+    private static final HashMap<Item, QuickShulkerData> quickies = new HashMap<>();
 
     public static QuickShulkerData getQuickie(Item item) {
-        if (item instanceof BlockItem) {
-            if (quickies.containsKey(((BlockItem) item).getClass()))
-                return quickies.get(((BlockItem) item).getClass());
-        }
-        return quickies.get(item.getClass());
+        return quickies.get(item);
     }
 
-    public static void register(Class<? extends Block> quickItem, QuickShulkerData quickShulkerData) {
+    public static void register(Item quickItem, QuickShulkerData quickShulkerData) {
         quickies.put(quickItem, quickShulkerData);
     }
 
     @Deprecated
-    public static void register(Class<? extends Block> quickItem, Boolean requiresSingularStack, Boolean supportsBundleing, BiConsumer<PlayerEntity, ItemStack> consumer) {
+    public static void register(Item quickItem, Boolean requiresSingularStack, Boolean supportsBundleing, BiConsumer<PlayerEntity, ItemStack> consumer) {
         register(quickItem, new QuickShulkerData(consumer, supportsBundleing));
     }
 
     @Deprecated
-    public static void register(Class<? extends Block> quickItem, Boolean supportsBundleing, BiConsumer<PlayerEntity, ItemStack> consumer) {
+    public static void register(Item quickItem, Boolean supportsBundleing, BiConsumer<PlayerEntity, ItemStack> consumer) {
         register(quickItem, new QuickShulkerData(consumer, supportsBundleing));
     }
 
     @Deprecated
-    public static void register(Class<? extends Block> quickItem, BiConsumer<PlayerEntity, ItemStack> consumer) {
+    public static void register(Item quickItem, BiConsumer<PlayerEntity, ItemStack> consumer) {
         register(quickItem, new QuickShulkerData(consumer, false));
     }
 
     @SafeVarargs
     @Deprecated
-    public static void register(BiConsumer<PlayerEntity, ItemStack> consumer, Class<? extends Block>... quickItems) {
-        for (Class<? extends Block> block : quickItems) {
+    public static void register(BiConsumer<PlayerEntity, ItemStack> consumer, Item... quickItems) {
+        for (Item block : quickItems) {
             register(block, consumer);
         }
     }
 
     public static class Builder {
-        private final List<Class<? extends Block>> quickItems = new ArrayList<>();
+        private final List<Item> quickItems = new ArrayList<>();
         private final QuickShulkerData qsdata;
 
         public Builder() {
@@ -65,12 +60,12 @@ public class QuickOpenableRegistry {
         }
 
         public void register() {
-            for (Class<? extends Block> quickItem : quickItems)
+            for (Item quickItem : quickItems)
                 QuickOpenableRegistry.register(quickItem, qsdata);
         }
 
         @SafeVarargs
-        public final Builder setItem(Class<? extends Block>... quickItems) {
+        public final Builder setItem(Item... quickItems) {
             this.quickItems.addAll(Arrays.asList(quickItems));
             return this;
         }
