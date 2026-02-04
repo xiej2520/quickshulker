@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ClientPlayerInteractionManager.class)
-public class ClientPlayerInteractionMangerMixin {
+public class ClientPlayerInteractionManagerMixin {
 
     @Shadow @Final private ClientPlayNetworkHandler networkHandler;
 

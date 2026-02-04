@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Environment(EnvType.CLIENT)
 public abstract class ScreenMixin extends Screen {
     @Shadow
-    protected InventorySlot hoveredSlot;
+    private InventorySlot hoveredSlot;
 
     // this.minecraft.player.inventory <-> protected PlayerInventory playerInventory;
 
@@ -103,7 +103,7 @@ public abstract class ScreenMixin extends Screen {
 
 
     @Inject(method = "drawSlot",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;II)V"))
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItem(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;II)V"))
     public void drawSlotBackground(InventorySlot slot, CallbackInfo ci) {
         // lame bar, I'm too lazy to draw something or render a texture
         int playerInvUsedSlot = ((ItemInventoryContainer) this.menu).getPlayerInvUsedSlot();

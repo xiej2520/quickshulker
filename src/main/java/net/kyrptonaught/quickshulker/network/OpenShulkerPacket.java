@@ -11,8 +11,7 @@ import net.ornithemc.osl.networking.api.client.ClientPlayNetworking;
 import net.ornithemc.osl.networking.api.server.ServerPlayNetworking;
 
 public class OpenShulkerPacket {
-    private static final Identifier OPEN_SHULKER_PACKET = new Identifier(QuickShulkerMod.MOD_ID, "open_shulker_packet");
-
+    private static final Identifier OPEN_SHULKER_PACKET = new Identifier(QuickShulkerMod.PACKET_ID, "open_shulker");
     public static void registerReceivePacket() {
         ServerPlayNetworking.registerListener(String.valueOf(OPEN_SHULKER_PACKET), (server, serverPlayNetworkHandler, player, packetByteBuf) -> {
             int invSlot = packetByteBuf.readInt();

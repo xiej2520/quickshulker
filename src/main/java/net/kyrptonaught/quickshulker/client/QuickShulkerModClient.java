@@ -1,5 +1,6 @@
 package net.kyrptonaught.quickshulker.client;
 
+import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
@@ -13,7 +14,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.menu.SurvivalInventoryScreen;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.entity.living.player.PlayerEntity;
-import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
 import net.ornithemc.osl.keybinds.api.KeyBindingEvents;
 import net.ornithemc.osl.lifecycle.api.client.ClientWorldEvents;
 import net.ornithemc.osl.networking.api.client.ClientPlayNetworking;
@@ -33,7 +33,7 @@ public class QuickShulkerModClient implements ClientModInitializer {
     }
 
     @Override
-    public void initClient() {
+    public void onInitializeClient() {
         //keybind_config.load();
         KeyBindingEvents.REGISTER_KEYBINDS.register(registry -> {
             keybinding = registry.register("Activate", Keyboard.KEY_K, "Quickshulker");

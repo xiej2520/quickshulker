@@ -23,7 +23,6 @@ import java.util.List;
 public abstract class ContainerMixin implements ItemInventoryContainer {
 
     @Shadow
-    @Final
     public List<InventorySlot> slots;
 
     // index of the currently opened QuickShulker item in the player inventory

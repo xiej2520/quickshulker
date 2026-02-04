@@ -10,7 +10,7 @@ import net.minecraft.util.DefaultedList;
 
 public class ItemStackInventory extends SimpleInventory {
     protected final ItemStack itemStack;
-    protected int SIZE;
+    protected final int SIZE;
 
     public ItemStackInventory(ItemStack stack, int SIZE) {
         super("ItemStackInventory", false, SIZE);
