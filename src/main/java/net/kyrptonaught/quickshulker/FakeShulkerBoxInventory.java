@@ -1,22 +1,50 @@
 package net.kyrptonaught.quickshulker;
 
+import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.entity.living.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.inventory.menu.InventoryMenu;
+import net.minecraft.inventory.menu.MenuProvider;
+import net.minecraft.inventory.menu.ShulkerBoxMenu;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ShulkerBoxItem;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.resource.Identifier;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DefaultedList;
 
-/// MenuProvider and Inventory for QuickOpen EnderChest, without being attached to
+/// MenuProvider and Inventory for QuickOpen ShulkerBox, without being attached to
 /// a block entity
 /// does this need to be a menuprovider?
-public class FakeEnderChestInventory implements Inventory {
+public class FakeShulkerBoxInventory implements Inventory, MenuProvider {
     private final DefaultedList<ItemStack> inventory = DefaultedList.of(27, ItemStack.EMPTY);
+    protected String customName;
+
+    public FakeShulkerBoxInventory(ItemStack shulkerBoxItemStack) {
+
+        // ShulkerBoxBlockEntity loadNbt
+        NbtCompound nbt = shulkerBoxItemStack.getNbt();
+        if (nbt == null) {
+            return;
+        }
+
+        if (!this.readLootTable(nbt) && nbt.contains("Items", 9)) {
+            InventoryHelper.fromNbt(nbt, this.inventory);
+        }
+
+        if (nbt.contains("CustomName", 8)) {
+            this.customName = nbt.getString("CustomName");
+        } else {
+            this.customName = shulkerBoxItemStack.getHoverName();
+        }
+    }
 
     @Override
     public String getName() {
-        return new TranslatableText("container.enderchest").getString();
+        return new TranslatableText("container.shulkerBox").getString();
     }
 
     @Override
@@ -26,7 +54,7 @@ public class FakeEnderChestInventory implements Inventory {
 
     @Override
     public Text getDisplayName() {
-        return new TranslatableText("container.enderchest");
+        return new TranslatableText("container.shulkerBox");
     }
 
     @Override
@@ -117,5 +145,28 @@ public class FakeEnderChestInventory implements Inventory {
     @Override
     public void clear() {
         this.inventory.clear();
+    }
+
+
+    protected Identifier lootTableId;
+    protected long lootTableSeed;
+    protected boolean readLootTable(NbtCompound nbt) {
+        if (nbt.contains("LootTable", 8)) {
+            this.lootTableId = new Identifier(nbt.getString("LootTable"));
+            this.lootTableSeed = nbt.getLong("LootTableSeed");
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public InventoryMenu createMenu(PlayerInventory playerInventory, PlayerEntity player) {
+        return new ShulkerBoxMenu(playerInventory, this, player);
+    }
+
+    @Override
+    public String getMenuType() {
+        return "minecraft:shulker_box";
     }
 }
