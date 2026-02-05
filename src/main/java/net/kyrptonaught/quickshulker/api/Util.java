@@ -26,13 +26,14 @@ public class Util {
     }
 
     public static void openItem(PlayerEntity player, int invSlot, int playerInvIndex) {
+        // need to close current menu and save shulker box data before fetching ItemStack
+        // make sure player doesn't reopen shulker boxes and dupe
+        ((ServerPlayerEntity) player).closeMenu();
         if (QuickShulkerMod.getConfig().rightClickClose && playerInvIndex == ((ItemInventoryContainer) player.menu).getPlayerInvUsedSlot()) {
-            ((ServerPlayerEntity) player).closeMenu();
             OpenInventoryPacket.send((ServerPlayerEntity) player);
             return;
         }
         ItemStack stack = player.inventory.getStack(playerInvIndex);
-        stack.removeNbt(QuickShulkerMod.MOD_ID);
         QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());
         if (qsData != null) {
             qsData.openConsumer.accept(player, stack);
