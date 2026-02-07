@@ -1,9 +1,0 @@
-{
-  "required": true,
-  "package": "net.kyrptonaught.kyrptconfig.mixin",
-  "compatibilityLevel": "JAVA_8",
-  "client": [ ],
-  "injectors": {
-    "defaultRequire": 1
-  }
-}

@@ -13,20 +13,23 @@ import net.minecraft.util.DefaultedList;
 
 public class Util {
 
-    //openItem(player, invSlot, ((SlotAccessor) player.menu.slots.get(invSlot)).getInventoryIndex());
     public static void openItem(ServerPlayerEntity player, int playerInvIndex) {
         // need to close current menu and save shulker box data before fetching ItemStack
         // make sure player doesn't reopen shulker boxes and dupe
         player.closeMenu();
+
         if (QuickShulkerMod.getConfig().rightClickClose && playerInvIndex == ((ItemInventoryContainer) player.menu).getPlayerInvUsedSlot()) {
             return;
         }
+
         ItemStack stack = player.inventory.getStack(playerInvIndex);
         QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());
         if (qsData != null) {
             qsData.openConsumer.accept(player, stack);
+
             ((ItemInventoryContainer) player.menu).setPlayerInvUsedSlot(playerInvIndex);
             SetUsedSlotPacket.sendUsedSlotPacket(player, playerInvIndex);
+
             player.menu.addListener(forceCloseScreenIfNotPresent(player, playerInvIndex, stack));
         }
     }
@@ -36,7 +39,7 @@ public class Util {
         if (qsData == null) {
             return false;
         }
-        return qsData.ignoreSingleStackCheck || stack.getSize() <= 1;
+        return qsData.ignoreSingleStackCheck || stack.getSize() == 1;
     }
 
     public static Inventory getQuickItemInventory(PlayerEntity player, ItemStack stack) {

@@ -97,7 +97,7 @@ public abstract class ScreenMixin extends Screen {
             return true;
         }
 
-        if (ClientUtil.CheckAndSend(stack, playerInvIndex)) {
+        if (ClientUtil.tryOpenAndSendPacket(stack, playerInvIndex)) {
             QuickShulkerMod.lastMouseX = Mouse.getX();
             QuickShulkerMod.lastMouseY = Mouse.getY();
             return true;

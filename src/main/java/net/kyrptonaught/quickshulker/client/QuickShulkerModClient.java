@@ -10,7 +10,6 @@ import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.api.RegisterQuickShulkerClient;
 import net.kyrptonaught.quickshulker.network.SetUsedSlotPacket;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.menu.SurvivalInventoryScreen;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.ornithemc.osl.keybinds.api.KeyBindingEvents;
@@ -44,9 +43,9 @@ public class QuickShulkerModClient implements ClientModInitializer {
                 PlayerEntity player = Minecraft.getInstance().player;
                 if (getKeybinding().isPressed() && player != null) {
                     if (player.getMainHandStack().isEmpty() && !player.getOffHandStack().isEmpty()) {
-                        ClientUtil.CheckAndSend(player.getOffHandStack(), PLAYER_INVENTORY_OFF_HAND_SLOT);
+                        ClientUtil.tryOpenAndSendPacket(player.getOffHandStack(), PLAYER_INVENTORY_OFF_HAND_SLOT);
                     } else {
-                        ClientUtil.CheckAndSend(player.getMainHandStack(), player.inventory.selectedSlot);
+                        ClientUtil.tryOpenAndSendPacket(player.getMainHandStack(), player.inventory.selectedSlot);
                     }
                 }
             }

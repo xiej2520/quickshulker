@@ -1,9 +1,11 @@
 package net.kyrptonaught.quickshulker.client;
 
-import net.kyrptonaught.quickshulker.mixin.CreativeSlotMixin;
-import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.kyrptonaught.quickshulker.api.Util;
+import net.kyrptonaught.quickshulker.mixin.CreativeSlotMixin;
 import net.kyrptonaught.quickshulker.mixin.SlotAccessor;
+import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.menu.CreativeInventoryScreen;
 import net.minecraft.entity.living.player.PlayerEntity;
@@ -12,17 +14,14 @@ import net.minecraft.inventory.slot.InventorySlot;
 import net.minecraft.item.CreativeModeTab;
 import net.minecraft.item.ItemStack;
 
+@Environment(EnvType.CLIENT)
 public class ClientUtil {
-    public static boolean CheckAndSend(ItemStack stack, int playerInvIndex) {
+    public static boolean tryOpenAndSendPacket(ItemStack stack, int playerInvIndex) {
         if (Util.isOpenableItem(stack)) {
-            SendOpenPacket(playerInvIndex);
+            OpenShulkerPacket.sendOpenPacket(playerInvIndex);
             return true;
         }
         return false;
-    }
-
-    private static void SendOpenPacket(int playerInvIndex) {
-        OpenShulkerPacket.sendOpenPacket(playerInvIndex);
     }
 
     public static boolean isCreativeScreen(PlayerEntity player) {

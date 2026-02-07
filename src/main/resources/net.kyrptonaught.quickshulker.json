@@ -12,7 +12,7 @@
   ],
   "client": [
     "CreativeSlotMixin",
-    "ScreenMixin",
+    "ScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
