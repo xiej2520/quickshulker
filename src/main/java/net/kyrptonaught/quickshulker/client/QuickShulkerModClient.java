@@ -8,7 +8,6 @@ import net.kyrptonaught.quickshulker.Comment;
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.api.RegisterQuickShulkerClient;
-import net.kyrptonaught.quickshulker.network.OpenInventoryPacket;
 import net.kyrptonaught.quickshulker.network.SetUsedSlotPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.menu.SurvivalInventoryScreen;
@@ -52,12 +51,6 @@ public class QuickShulkerModClient implements ClientModInitializer {
                 }
             }
         });
-        ClientPlayNetworking.registerListener(OpenInventoryPacket.OPEN_INV.toString(), (client, handler, packet) -> {
-            client.submit(() -> {
-                client.openScreen(new SurvivalInventoryScreen(client.player));
-            });
-            return true;
-        });
         ClientPlayNetworking.registerListener(
             SetUsedSlotPacket.SET_USED_SLOT_PACKET.toString(),
             (client, handler, packetByteBuf) -> {
@@ -70,7 +63,7 @@ public class QuickShulkerModClient implements ClientModInitializer {
         );
         FabricLoader.getInstance().getEntrypoints(MOD_ID + "_client", RegisterQuickShulkerClient.class).forEach(RegisterQuickShulkerClient::registerClient);
 
-            //KeyBindingEvents.REGISTER_KEYBINDS.register(registry -> new DisplayOnlyKeyBind(
+        //KeyBindingEvents.REGISTER_KEYBINDS.register(registry -> new DisplayOnlyKeyBind(
         //        "key.quickshulker.config.keybinding",
         //        "key.categories.quickshulker",
         //        getKeybinding(),

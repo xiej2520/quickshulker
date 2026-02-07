@@ -11,6 +11,7 @@ import net.minecraft.block.CraftingTableBlock;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.entity.living.player.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -39,13 +40,13 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
     // move to ServerPlayerInteractionManagerMixin due to lack of OSL event
     public static InteractionResultHolder<ItemStack> interactItem(PlayerEntity player, World world, InteractionHand hand) {
         ItemStack stack = player.getHandStack(hand);
-        if (!world.isClient) {
+        if (!world.isClient && player instanceof ServerPlayerEntity) {
             if (QuickShulkerMod.getConfig().rightClickToOpen) {
                 if (Util.isOpenableItem(stack) && Util.canOpenInHand(stack)) {
                     if (hand == InteractionHand.MAIN_HAND) {
-                        Util.openItem(player, player.inventory.selectedSlot);
+                        Util.openItem((ServerPlayerEntity) player, player.inventory.selectedSlot);
                     } else {
-                        Util.openItem(player, PLAYER_INVENTORY_OFF_HAND_SLOT);
+                        Util.openItem((ServerPlayerEntity) player, PLAYER_INVENTORY_OFF_HAND_SLOT);
                     }
 
                     return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
@@ -84,10 +85,6 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
                             BlockItem.byBlock(Blocks.PINK_SHULKER_BOX)
                     )
                     .supportsBundleing(true)
-                    /*
-                            .setOpenAction(((player, stack) -> player.openMenu(new EmptyMenuProvider((i, playerInventory, playerEntity) ->
-                                    new ShulkerBoxMenu(i, player.inventory, new ItemStackInventory(stack, 27)), stack.hasCustomName() ? stack.getName() : new TranslatableText("container.shulkerBox")))))
-                     */
                     .setOpenAction(((player, stack) -> player.openInventoryMenu(
                             new FakeShulkerBoxInventory(stack)
                     )))

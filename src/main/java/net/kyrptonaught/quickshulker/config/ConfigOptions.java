@@ -16,7 +16,7 @@ public class ConfigOptions {
     public boolean rightClickInv = true;
 
     @Comment("Right Clicking the opened shulker in your inv closes it")
-    public boolean rightClickClose = false;
+    public boolean rightClickClose = true;
     @Comment("Right Clicking a shulker with an item inserts it")
     public boolean supportsBundlingInsert = true;
     @Comment("Right Clicking an item with a shulker inserts it")

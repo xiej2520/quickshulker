@@ -2,8 +2,6 @@ package net.kyrptonaught.quickshulker.api;
 
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
-import net.kyrptonaught.quickshulker.mixin.SlotAccessor;
-import net.kyrptonaught.quickshulker.network.OpenInventoryPacket;
 import net.kyrptonaught.quickshulker.network.SetUsedSlotPacket;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
@@ -16,12 +14,11 @@ import net.minecraft.util.DefaultedList;
 public class Util {
 
     //openItem(player, invSlot, ((SlotAccessor) player.menu.slots.get(invSlot)).getInventoryIndex());
-    public static void openItem(PlayerEntity player, int playerInvIndex) {
+    public static void openItem(ServerPlayerEntity player, int playerInvIndex) {
         // need to close current menu and save shulker box data before fetching ItemStack
         // make sure player doesn't reopen shulker boxes and dupe
-        ((ServerPlayerEntity) player).closeMenu();
+        player.closeMenu();
         if (QuickShulkerMod.getConfig().rightClickClose && playerInvIndex == ((ItemInventoryContainer) player.menu).getPlayerInvUsedSlot()) {
-            OpenInventoryPacket.send((ServerPlayerEntity) player);
             return;
         }
         ItemStack stack = player.inventory.getStack(playerInvIndex);
@@ -29,22 +26,25 @@ public class Util {
         if (qsData != null) {
             qsData.openConsumer.accept(player, stack);
             ((ItemInventoryContainer) player.menu).setPlayerInvUsedSlot(playerInvIndex);
-            SetUsedSlotPacket.sendUsedSlotPacket((ServerPlayerEntity) player, playerInvIndex);
+            SetUsedSlotPacket.sendUsedSlotPacket(player, playerInvIndex);
             player.menu.addListener(forceCloseScreenIfNotPresent(player, playerInvIndex, stack));
         }
     }
 
-    public static Boolean isOpenableItem(ItemStack stack) {
-        QuickShulkerData qsdata = QuickOpenableRegistry.getQuickie(stack.getItem());
-        if (qsdata == null) return false;
-        return qsdata.ignoreSingleStackCheck || stack.getSize() <= 1;
+    public static boolean isOpenableItem(ItemStack stack) {
+        QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());
+        if (qsData == null) {
+            return false;
+        }
+        return qsData.ignoreSingleStackCheck || stack.getSize() <= 1;
     }
 
     public static Inventory getQuickItemInventory(PlayerEntity player, ItemStack stack) {
         QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());
         if (qsData != null) {
-            if (qsData.supportsBundleing)
+            if (qsData.supportsBundleing) {
                 return qsData.getInventory(player, stack);
+            }
         }
         return null;
     }
