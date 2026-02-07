@@ -17,9 +17,9 @@ import net.minecraft.util.DefaultedList;
 
 /// MenuProvider and Inventory for QuickOpen ShulkerBox, without being attached to
 /// a block entity
-/// does this need to be a menuprovider?
 public class FakeShulkerBoxInventory implements Inventory, MenuProvider {
-    private final DefaultedList<ItemStack> inventory = DefaultedList.of(27, ItemStack.EMPTY);
+    public final int SIZE = 27;
+    private final DefaultedList<ItemStack> inventory = DefaultedList.of(SIZE, ItemStack.EMPTY);
     protected String customName;
 
     ItemStack shulkerBoxItemStack;
@@ -27,22 +27,18 @@ public class FakeShulkerBoxInventory implements Inventory, MenuProvider {
     public FakeShulkerBoxInventory(ItemStack shulkerBoxItemStack) {
         this.shulkerBoxItemStack = shulkerBoxItemStack;
 
-        // ShulkerBoxBlockEntity loadNbt
-        NbtCompound nbt = this.shulkerBoxItemStack.getNbt();
-        if (nbt == null || !nbt.contains("BlockEntityTag", 10)) {
+        // ShulkerBoxBlockEntity.loadNbt
+        NbtCompound blockEntityTag = this.shulkerBoxItemStack.getNbt("BlockEntityTag");
+        if (blockEntityTag == null) {
             return;
         }
 
-        NbtCompound blockEntityTag = nbt.getCompound("BlockEntityTag");
-
-        if (!this.readLootTable(nbt) && blockEntityTag.contains("Items", 9)) {
+        if (blockEntityTag.contains("Items", 9)) {
             InventoryHelper.fromNbt(blockEntityTag, this.inventory);
         }
 
         if (blockEntityTag.contains("CustomName", 8)) {
             this.customName = blockEntityTag.getString("CustomName");
-        } else {
-            this.customName = shulkerBoxItemStack.getHoverName();
         }
     }
 
@@ -63,7 +59,7 @@ public class FakeShulkerBoxInventory implements Inventory, MenuProvider {
 
     @Override
     public int getSize() {
-        return 27;
+        return SIZE;
     }
 
     @Override
@@ -108,7 +104,20 @@ public class FakeShulkerBoxInventory implements Inventory, MenuProvider {
 
     @Override
     public void markDirty() {
-        // no-op
+        NbtCompound blockEntityTag = this.shulkerBoxItemStack.getNbt("BlockEntityTag");
+
+        if (this.isEmpty()) {
+            this.shulkerBoxItemStack.removeNbt("BlockEntityTag");
+            return;
+        } else if (blockEntityTag == null) {
+            blockEntityTag = this.shulkerBoxItemStack.getOrCreateNbt("BlockEntityTag");
+        }
+
+        DefaultedList<ItemStack> itemStacks = DefaultedList.of(SIZE, ItemStack.EMPTY);
+        for (int i = 0; i < this.getSize(); i++) {
+            itemStacks.set(i, this.getStack(i));
+        }
+        InventoryHelper.toNbt(blockEntityTag, this.inventory);
     }
 
     @Override
@@ -123,7 +132,7 @@ public class FakeShulkerBoxInventory implements Inventory, MenuProvider {
 
     @Override
     public void onClose(PlayerEntity player) {
-        this.saveNbt();
+        this.markDirty();
     }
 
     @Override
@@ -149,22 +158,6 @@ public class FakeShulkerBoxInventory implements Inventory, MenuProvider {
     @Override
     public void clear() {
         this.inventory.clear();
-    }
-
-    public void saveNbt() {
-        NbtCompound nbt = this.shulkerBoxItemStack.getNbt();
-        if (nbt == null || !nbt.contains("BlockEntityTag", 10)) {
-            return;
-        }
-        NbtCompound blockEntityTag = nbt.getCompound("BlockEntityTag");
-
-        if (!this.writeLootTable(blockEntityTag)) {
-            InventoryHelper.toNbt(blockEntityTag, this.inventory);
-        }
-
-        if (this.hasCustomName()) {
-            blockEntityTag.putString("CustomName", this.customName);
-        }
     }
 
 
