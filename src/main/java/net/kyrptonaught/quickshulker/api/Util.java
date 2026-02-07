@@ -15,8 +15,6 @@ import net.minecraft.util.DefaultedList;
 
 public class Util {
 
-    // 1.16 does a mass reworking of Container to ScreenHandler
-
     public static void openItem(PlayerEntity player, int invSlot) {
         if (invSlot < 0) {
             System.out.println("[QuickShulker]: unknown slot opened");

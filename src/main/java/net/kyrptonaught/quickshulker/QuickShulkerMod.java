@@ -2,6 +2,7 @@ package net.kyrptonaught.quickshulker;
 
 import net.kyrptonaught.quickshulker.api.QuickOpenableRegistry;
 import net.kyrptonaught.quickshulker.api.QuickShulkerData;
+import net.kyrptonaught.quickshulker.api.RegisterQuickShulker;
 import net.kyrptonaught.quickshulker.api.Util;
 import net.kyrptonaught.quickshulker.config.ConfigOptions;
 import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
@@ -20,11 +21,13 @@ import net.minecraft.world.World;
 import net.ornithemc.osl.entrypoints.api.ModInitializer;
 
 
-public class QuickShulkerMod implements ModInitializer {
+public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
     public static final String MOD_ID = "quickshulker";
     public static final String PACKET_ID = "qs";
     //public static ConfigManager.SingleConfigManager config = new ConfigManager.SingleConfigManager(MOD_ID, new ConfigOptions());
-    public static double lastMouseX, lastMouseY;
+
+    // need to persist between screens
+    public static double lastMouseX = -1, lastMouseY = -1;
 
     @Override
     public void init() {
@@ -60,7 +63,7 @@ public class QuickShulkerMod implements ModInitializer {
     }
 
     // register after bootstrap Blocks in Minecraft.init()
-    public static void registerProviders() {
+    public void registerProviders() {
         if (getConfig().quickShulkerBox) {
             new QuickOpenableRegistry.Builder()
                     .setItem(

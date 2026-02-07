@@ -34,13 +34,16 @@ public class QuickShulkerData {
     }
 
     public Inventory getInventory(PlayerEntity player, ItemStack stack) {
-        if (bundleInvGetter != null) return bundleInvGetter.apply(player, stack);
+        if (bundleInvGetter != null) {
+            return bundleInvGetter.apply(player, stack);
+        }
         return ShulkerUtils.getInventoryFromShulker(stack);
     }
 
     public boolean canBundleInsertItem(PlayerEntity player, Inventory inventory, ItemStack hostStack, ItemStack insertStack) {
-        if (canBundleInsertItem != null)
+        if (canBundleInsertItem != null) {
             return canBundleInsertItem.canBundleInsertItem(player, inventory, hostStack, insertStack);
+        }
         return !ShulkerUtils.isShulkerItem(insertStack);
     }
 
@@ -61,8 +64,9 @@ public class QuickShulkerData {
         }
 
         public Inventory getInventory(PlayerEntity player, ItemStack stack) {
-            if (!QuickShulkerMod.getConfig().quickEnderChest)
+            if (!QuickShulkerMod.getConfig().quickEnderChest) {
                 return null;
+            }
             return player.getEnderChestInventory();
         }
     }
