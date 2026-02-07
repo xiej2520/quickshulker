@@ -1,7 +1,6 @@
 package net.kyrptonaught.quickshulker.api;
 
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
-import net.kyrptonaught.shulkerutils.ShulkerUtils;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -31,20 +30,6 @@ public class QuickShulkerData {
         this.openConsumer = openConsumer;
         this.supportsBundleing = supportsBundleing;
         this.ignoreSingleStackCheck = ignoreSingleStackCheck;
-    }
-
-    public Inventory getInventory(PlayerEntity player, ItemStack stack) {
-        if (bundleInvGetter != null) {
-            return bundleInvGetter.apply(player, stack);
-        }
-        return ShulkerUtils.getInventoryFromShulker(stack);
-    }
-
-    public boolean canBundleInsertItem(PlayerEntity player, Inventory inventory, ItemStack hostStack, ItemStack insertStack) {
-        if (canBundleInsertItem != null) {
-            return canBundleInsertItem.canBundleInsertItem(player, inventory, hostStack, insertStack);
-        }
-        return !ShulkerUtils.isShulkerItem(insertStack);
     }
 
     public static class QuickEnderData extends QuickShulkerData {

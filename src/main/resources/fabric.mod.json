@@ -3,7 +3,7 @@
   "id": "quickshulker",
   "version": "${version}",
   "name": "Quick Shulker",
-  "description": "Quickly open Shulker boxes and more. Backport of newer versions of quickshulker to 1.12 by xiej2520.",
+  "description": "Quickly open Shulker boxes and more.",
   "authors": [
     "kyrptonaught",
     "xiej2520"
@@ -16,8 +16,7 @@
   "icon": "assets/quickshulker/icon.png",
   "environment": "*",
   "mixins": [
-    "net.kyrptonaught.quickshulker.json",
-    "net.kyrptonaught.shulkerutils.mixins.json"
+    "net.kyrptonaught.quickshulker.json"
   ],
   "entrypoints": {
     "init": [

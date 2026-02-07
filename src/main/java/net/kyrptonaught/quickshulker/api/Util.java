@@ -42,16 +42,6 @@ public class Util {
         return qsData.ignoreSingleStackCheck || stack.getSize() == 1;
     }
 
-    public static Inventory getQuickItemInventory(PlayerEntity player, ItemStack stack) {
-        QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());
-        if (qsData != null) {
-            if (qsData.supportsBundleing) {
-                return qsData.getInventory(player, stack);
-            }
-        }
-        return null;
-    }
-
     public static boolean canOpenInHand(ItemStack stack) {
         QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());
         if (qsData != null) {
