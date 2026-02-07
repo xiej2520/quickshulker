@@ -7,10 +7,10 @@
     "CraftingScreenHandlerMixin",
     "ItemMixin",
     "MinecraftMixin",
-    "SlotAccessor",
-    "ServerPlayerInteractionManagerMixin"
+    "SlotAccessor"
   ],
   "client": [
+    "ClientPlayerInteractionManagerMixin",
     "CreativeSlotMixin",
     "ScreenMixin"
   ],
