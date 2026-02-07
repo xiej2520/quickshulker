@@ -1,0 +1,35 @@
+quickshulker.config.comment.drawopenedbackgroundcolor=Enable filling the background of opened items with a color
+quickshulker.config.comment.keybindopeninhand=Hitting the keybind with shulker in hand opens it
+quickshulker.config.comment.keybindopenininventory=Hitting the keybind while hovering over shulker in inventory opens it
+quickshulker.config.comment.openedbackgroundcolor=The color to use as a background of opened items
+quickshulker.config.comment.quickshulkerbox=Enable quick opening Shulker Boxes
+quickshulker.config.comment.quickcraftingtable=Enable quick opening Crafting Tables
+quickshulker.config.comment.quickenderchest=Enable quick opening Enderchest
+quickshulker.config.comment.quickstonecutter=§8Enable quick opening Stonecutter (unimplemented)
+quickshulker.config.comment.rightclickopeninhand=Right-Clicking with item in hand opens it
+quickshulker.config.comment.rightclickcloseininventory=Right Clicking the opened item in your inventory closes it
+quickshulker.config.comment.rightclickopenininventory=Right Clicking an item in your inventory opens it
+quickshulker.config.comment.supportbundlinginsert=§8Right Clicking a shulker with an item inserts it (unimplemented)
+quickshulker.config.comment.supportbundlingpickup=§8Right Clicking an item with a shulker inserts it (unimplemented)
+quickshulker.config.comment.supportbundlingextract=§8Right Clicking an empty slot with a shulker extracts an item (unimplemented)
+
+quickshulker.config.name.drawopenedbackgroundcolor=Draw Opened Background Color
+quickshulker.config.name.keybindopeninhand=Keybind to Open in Hand
+quickshulker.config.name.keybindopenininventory=Keybind to Open in Inventory
+quickshulker.config.name.openedbackgroundcolor=Opened Background Color
+quickshulker.config.name.quickshulkerbox=Quick Shulker Boxes
+quickshulker.config.name.quickcraftingtable=Quick Crafting Tables
+quickshulker.config.name.quickenderchest=Quick Ender Chest
+quickshulker.config.name.quickstonecutter=§8Quick Stonecutter
+quickshulker.config.name.rightclickopeninhand=Right Click to Open in Hand
+quickshulker.config.name.rightclickcloseininventory=Right Click to Close in Inventory
+quickshulker.config.name.rightclickopenininventory=Right Click to Open in Inventory
+quickshulker.config.name.supportbundlinginsert=§8Support Bundling Insert
+quickshulker.config.name.supportbundlingpickup=§8Support Bundling Pickup
+quickshulker.config.name.supportbundlingextract=§8Support Bundling Extract
+
+quickshulker.hotkey.name.quickshulkerkeybind=QuickShulker Keybind
+quickshulker.hotkey.comment.quickshulkerkeybind=Keybind for quick opening items
+
+quickshulker.title.screen.configs=QuickShulker Configs
+quickshulker.config.tab.generic=QuickShulker Generic

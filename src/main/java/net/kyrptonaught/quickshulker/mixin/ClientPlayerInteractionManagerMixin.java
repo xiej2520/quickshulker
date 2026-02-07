@@ -1,7 +1,7 @@
 package net.kyrptonaught.quickshulker.mixin;
 
-import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.client.ClientUtil;
+import net.kyrptonaught.quickshulker.config.Configs;
 import net.minecraft.client.ClientPlayerInteractionManager;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.world.InteractionHand;
@@ -19,7 +19,7 @@ public abstract class ClientPlayerInteractionManagerMixin {
 
     @Inject(method = "useItem", at = @At("HEAD"), cancellable = true)
     public void useItem(PlayerEntity player, World world, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
-        if (QuickShulkerMod.getConfig().rightClickToOpen) {
+        if (Configs.Options.RIGHT_CLICK_OPEN_IN_HAND.getValue()) {
             if (player.getMainHandStack().isEmpty() && !player.getOffHandStack().isEmpty()) {
                 if (ClientUtil.tryOpenAndSendPacket(player.getOffHandStack(), PLAYER_INVENTORY_OFF_HAND_SLOT)) {
                     cir.setReturnValue(InteractionResult.SUCCESS);

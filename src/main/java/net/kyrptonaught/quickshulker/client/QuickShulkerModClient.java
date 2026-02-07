@@ -1,20 +1,18 @@
 package net.kyrptonaught.quickshulker.client;
 
+import malilib.registry.Registry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
-import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.api.RegisterQuickShulkerClient;
+import net.kyrptonaught.quickshulker.config.Configs;
 import net.kyrptonaught.quickshulker.network.SetUsedSlotPacket;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.options.KeyBinding;
 import net.minecraft.entity.living.player.PlayerEntity;
-import net.ornithemc.osl.keybinds.api.KeyBindingEvents;
 import net.ornithemc.osl.lifecycle.api.client.ClientWorldEvents;
 import net.ornithemc.osl.networking.api.client.ClientPlayNetworking;
-import org.lwjgl.input.Keyboard;
 
 import static net.kyrptonaught.quickshulker.QuickShulkerMod.MOD_ID;
 import static net.kyrptonaught.quickshulker.QuickShulkerMod.PLAYER_INVENTORY_OFF_HAND_SLOT;
@@ -22,25 +20,13 @@ import static net.kyrptonaught.quickshulker.QuickShulkerMod.PLAYER_INVENTORY_OFF
 @Environment(EnvType.CLIENT)
 public class QuickShulkerModClient implements ClientModInitializer {
 
-    // Activation key
-    public static KeyBinding keybinding;
-    //public static ConfigManager.SingleConfigManager keybind_config = new ConfigManager.SingleConfigManager(MOD_ID + "_keybind", new ConfigOptions());
-
-    public static KeyBinding getKeybinding() {
-        return keybinding;
-    }
-
     @Override
     public void onInitializeClient() {
-        //keybind_config.load();
-        KeyBindingEvents.REGISTER_KEYBINDS.register(registry -> {
-            keybinding = registry.register("Activate", Keyboard.KEY_K, "Quickshulker");
-        });
 
         ClientWorldEvents.TICK_START.register(clientWorld -> {
-            if (Minecraft.getInstance().screen == null && QuickShulkerMod.getConfig().keybind) {
+            if (Minecraft.getInstance().screen == null && Configs.Options.KEYBIND_OPEN_IN_HAND.getValue()) {
                 PlayerEntity player = Minecraft.getInstance().player;
-                if (getKeybinding().isPressed() && player != null) {
+                if (Configs.HotKeys.QUICKSHULKER_KEYBIND.getKeyBind().isKeyBindHeld() && player != null) {
                     if (player.getMainHandStack().isEmpty() && !player.getOffHandStack().isEmpty()) {
                         ClientUtil.tryOpenAndSendPacket(player.getOffHandStack(), PLAYER_INVENTORY_OFF_HAND_SLOT);
                     } else {
@@ -61,11 +47,7 @@ public class QuickShulkerModClient implements ClientModInitializer {
         );
         FabricLoader.getInstance().getEntrypoints(MOD_ID + "_client", RegisterQuickShulkerClient.class).forEach(RegisterQuickShulkerClient::registerClient);
 
-        //KeyBindingEvents.REGISTER_KEYBINDS.register(registry -> new DisplayOnlyKeyBind(
-        //        "key.quickshulker.config.keybinding",
-        //        "key.categories.quickshulker",
-        //        getKeybinding(),
-        //        setKey -> keybind_config.save()
-        //));
+        Registry.INITIALIZATION_DISPATCHER.registerInitializationHandler(new InitHandler());
+
     }
 }

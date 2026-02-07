@@ -7,7 +7,7 @@ plugins {
 base {
 	archivesName = project.archives_base_name
 }
-version = "${project.version}+mc${project.minecraft_version}"
+version = "${project.mod_version}+mc${project.minecraft_version}"
 group = project.maven_group
 
 repositories {
@@ -16,6 +16,9 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+
+	maven { url 'https://masa.dy.fi/maven' }
+	mavenLocal()
 }
 
 dependencies {
@@ -29,6 +32,8 @@ dependencies {
 	modImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
 
 	ploceus.dependOsl(project.osl_version)
+
+	modImplementation "malilib:malilib-ornithe-${project.minecraft_version}:${project.malilib_version}"
 }
 
 loom {

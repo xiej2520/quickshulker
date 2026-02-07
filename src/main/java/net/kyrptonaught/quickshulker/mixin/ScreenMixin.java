@@ -3,13 +3,13 @@ package net.kyrptonaught.quickshulker.mixin;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tessellator;
+import malilib.util.data.Color4f;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.client.ClientUtil;
-import net.kyrptonaught.quickshulker.client.QuickShulkerModClient;
-import net.kyrptonaught.quickshulker.config.ConfigOptions;
+import net.kyrptonaught.quickshulker.config.Configs;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.menu.InventoryMenuScreen;
 import net.minecraft.client.gui.screen.inventory.menu.SurvivalInventoryScreen;
@@ -48,8 +48,8 @@ public abstract class ScreenMixin extends Screen {
 
     @Inject(method = "keyPressed", at = @At("HEAD"))
     private void QS$keyPressed(char chr, int key, CallbackInfo ci) {
-        if (QuickShulkerMod.getConfig().keybindInInv) {
-            if (QuickShulkerModClient.getKeybinding().isPressed()) {
+        if (Configs.Options.KEYBIND_OPEN_IN_HAND.getValue()) {
+            if (Configs.HotKeys.QUICKSHULKER_KEYBIND.getKeyBind().isKeyBindHeld()) {
                 handleTrigger();
             }
         }
@@ -57,7 +57,7 @@ public abstract class ScreenMixin extends Screen {
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void QS$mousePressed(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
-        if (QuickShulkerMod.getConfig().rightClickInv) {
+        if (Configs.Options.RIGHT_CLICK_OPEN_IN_INVENTORY.getValue()) {
             if (this.minecraft.player.inventory.getCursorStack().isEmpty() && mouseButton == 1 && this.hoveredSlot != null && this.hoveredSlot.getStack().getSize() == 1) {
                 if (handleTrigger()) {
                     this.cancelNextMouseRelease = true;
@@ -65,8 +65,8 @@ public abstract class ScreenMixin extends Screen {
                 }
             }
         }
-        if (QuickShulkerMod.getConfig().keybindInInv) {
-            if (QuickShulkerModClient.getKeybinding().isPressed()) {
+        if (Configs.Options.KEYBIND_OPEN_IN_INVENTORY.getValue()) {
+            if (Configs.HotKeys.QUICKSHULKER_KEYBIND.getKeyBind().isKeyBindHeld()) {
                 if (handleTrigger()) {
                     this.cancelNextMouseRelease = true;
                     ci.cancel();
@@ -91,7 +91,7 @@ public abstract class ScreenMixin extends Screen {
 
         int playerInvIndex = ((SlotAccessor) slot).getInventoryIndex();
         int currentInvUsedSlot = ((ItemInventoryContainer) this.menu).getPlayerInvUsedSlot();
-        if (QuickShulkerMod.getConfig().rightClickClose && playerInvIndex == currentInvUsedSlot) {
+        if (Configs.Options.RIGHT_CLICK_CLOSE_IN_INVENTORY.getValue() && playerInvIndex == currentInvUsedSlot) {
             this.minecraft.player.closeMenu();
             this.minecraft.openScreen(new SurvivalInventoryScreen(this.minecraft.player));
             return true;
@@ -108,15 +108,14 @@ public abstract class ScreenMixin extends Screen {
 
 
     @Inject(method = "drawSlot", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItem(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;II)V"))
+        target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItem(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;II)V"))
     public void drawSlotBackground(InventorySlot slot, CallbackInfo ci) {
         // lame bar, I'm too lazy to draw something or render a texture
         int playerInvUsedSlot = ((ItemInventoryContainer) this.menu).getPlayerInvUsedSlot();
-        ConfigOptions opts = QuickShulkerMod.getConfig();
-        if (opts.fillOpenedBackground
-                && playerInvUsedSlot != -1
-                && slot.inventory instanceof PlayerInventory
-                && ((SlotAccessor) slot).getInventoryIndex() == playerInvUsedSlot) {
+        if (Configs.Options.DRAW_OPENED_BACKGROUND_COLOR.getValue()
+            && playerInvUsedSlot != -1
+            && slot.inventory instanceof PlayerInventory
+            && ((SlotAccessor) slot).getInventoryIndex() == playerInvUsedSlot) {
             int i = slot.x;
             int j = slot.y;
 
@@ -127,11 +126,13 @@ public abstract class ScreenMixin extends Screen {
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferBuilder = tessellator.getBuilder();
 
+            Color4f color = Configs.Options.OPENED_BACKGROUND_COLOR.getColor();
+
             this.itemRenderer.fill(bufferBuilder, i, j, 16, 16,
-                    (opts.colorBackground >> 16) & 0xFF,
-                    (opts.colorBackground >> 8) & 0xFF,
-                    (opts.colorBackground >> 0) & 0xFF,
-                    255
+                color.ri,
+                color.gi,
+                color.bi,
+                color.ai
             );
             GlStateManager.enableBlend();
             GlStateManager.enableAlphaTest();
