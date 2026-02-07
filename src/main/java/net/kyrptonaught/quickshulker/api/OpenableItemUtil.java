@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.entity.living.player.ServerPlayerEntity;
 import net.minecraft.util.DefaultedList;
 
-public class Util {
+public class OpenableItemUtil {
 
     public static void openItem(ServerPlayerEntity player, int playerInvIndex) {
         // need to close current menu and save shulker box data before fetching ItemStack

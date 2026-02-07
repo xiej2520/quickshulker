@@ -1,9 +1,7 @@
 package net.kyrptonaught.quickshulker.mixin;
 
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
-import net.kyrptonaught.quickshulker.api.Util;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.CraftingTableBlock;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.inventory.menu.CraftingTableMenu;
 import net.minecraft.inventory.menu.InventoryMenu;

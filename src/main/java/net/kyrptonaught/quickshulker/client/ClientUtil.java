@@ -2,7 +2,7 @@ package net.kyrptonaught.quickshulker.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.kyrptonaught.quickshulker.api.Util;
+import net.kyrptonaught.quickshulker.api.OpenableItemUtil;
 import net.kyrptonaught.quickshulker.mixin.CreativeSlotMixin;
 import net.kyrptonaught.quickshulker.mixin.SlotAccessor;
 import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
@@ -17,7 +17,7 @@ import net.minecraft.item.ItemStack;
 @Environment(EnvType.CLIENT)
 public class ClientUtil {
     public static boolean tryOpenAndSendPacket(ItemStack stack, int playerInvIndex) {
-        if (Util.isOpenableItem(stack)) {
+        if (OpenableItemUtil.isOpenableItem(stack)) {
             OpenShulkerPacket.sendOpenPacket(playerInvIndex);
             return true;
         }

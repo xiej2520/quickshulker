@@ -3,7 +3,7 @@ package net.kyrptonaught.quickshulker;
 import net.kyrptonaught.quickshulker.api.QuickOpenableRegistry;
 import net.kyrptonaught.quickshulker.api.QuickShulkerData;
 import net.kyrptonaught.quickshulker.api.RegisterQuickShulker;
-import net.kyrptonaught.quickshulker.api.Util;
+import net.kyrptonaught.quickshulker.api.OpenableItemUtil;
 import net.kyrptonaught.quickshulker.config.ConfigOptions;
 import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
 import net.minecraft.block.Blocks;
@@ -35,26 +35,6 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
         //config.load();
         OpenShulkerPacket.registerReceivePacket();
         //QuickBundlePacket.registerReceivePacket();
-    }
-
-    // move to ServerPlayerInteractionManagerMixin due to lack of OSL event
-    public static InteractionResultHolder<ItemStack> interactItem(PlayerEntity player, World world, InteractionHand hand) {
-        ItemStack stack = player.getHandStack(hand);
-        if (!world.isClient && player instanceof ServerPlayerEntity) {
-            if (QuickShulkerMod.getConfig().rightClickToOpen) {
-                if (Util.isOpenableItem(stack) && Util.canOpenInHand(stack)) {
-                    if (hand == InteractionHand.MAIN_HAND) {
-                        Util.openItem((ServerPlayerEntity) player, player.inventory.selectedSlot);
-                    } else {
-                        Util.openItem((ServerPlayerEntity) player, PLAYER_INVENTORY_OFF_HAND_SLOT);
-                    }
-
-                    return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
-                }
-            }
-        }
-        return new InteractionResultHolder<>(InteractionResult.PASS, stack);
-
     }
 
     public static ConfigOptions getConfig() {
