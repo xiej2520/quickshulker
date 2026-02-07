@@ -20,6 +20,7 @@ import net.ornithemc.osl.networking.api.client.ClientPlayNetworking;
 import org.lwjgl.input.Keyboard;
 
 import static net.kyrptonaught.quickshulker.QuickShulkerMod.MOD_ID;
+import static net.kyrptonaught.quickshulker.QuickShulkerMod.PLAYER_INVENTORY_OFF_HAND_SLOT;
 
 @Environment(EnvType.CLIENT)
 public class QuickShulkerModClient implements ClientModInitializer {
@@ -44,9 +45,9 @@ public class QuickShulkerModClient implements ClientModInitializer {
                 PlayerEntity player = Minecraft.getInstance().player;
                 if (getKeybinding().isPressed() && player != null) {
                     if (player.getMainHandStack().isEmpty() && !player.getOffHandStack().isEmpty()) {
-                        ClientUtil.CheckAndSend(player.getOffHandStack(), 45);
+                        ClientUtil.CheckAndSend(player.getOffHandStack(), PLAYER_INVENTORY_OFF_HAND_SLOT);
                     } else {
-                        ClientUtil.CheckAndSend(player.getMainHandStack(), 36 + player.inventory.selectedSlot);
+                        ClientUtil.CheckAndSend(player.getMainHandStack(), player.inventory.selectedSlot);
                     }
                 }
             }

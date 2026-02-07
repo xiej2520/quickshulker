@@ -15,15 +15,8 @@ import net.minecraft.util.DefaultedList;
 
 public class Util {
 
-    public static void openItem(PlayerEntity player, int invSlot) {
-        if (invSlot < 0) {
-            System.out.println("[QuickShulker]: unknown slot opened");
-            //return; //not preventing the crash might make it easier to debug a fix.
-        }
-        openItem(player, invSlot, ((SlotAccessor) player.menu.slots.get(invSlot)).getInventoryIndex());
-    }
-
-    public static void openItem(PlayerEntity player, int invSlot, int playerInvIndex) {
+    //openItem(player, invSlot, ((SlotAccessor) player.menu.slots.get(invSlot)).getInventoryIndex());
+    public static void openItem(PlayerEntity player, int playerInvIndex) {
         // need to close current menu and save shulker box data before fetching ItemStack
         // make sure player doesn't reopen shulker boxes and dupe
         ((ServerPlayerEntity) player).closeMenu();

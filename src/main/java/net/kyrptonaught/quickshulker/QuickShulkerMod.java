@@ -29,6 +29,8 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
     // need to persist between screens
     public static double lastMouseX = -1, lastMouseY = -1;
 
+    public static final int PLAYER_INVENTORY_OFF_HAND_SLOT = 40;
+
     @Override
     public void init() {
         //config.load();
@@ -43,10 +45,9 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
             if (QuickShulkerMod.getConfig().rightClickToOpen) {
                 if (Util.isOpenableItem(stack) && Util.canOpenInHand(stack)) {
                     if (hand == InteractionHand.MAIN_HAND) {
-                        Util.openItem(player, 0, player.inventory.selectedSlot);
+                        Util.openItem(player, player.inventory.selectedSlot);
                     } else {
-                        final int PLAYER_INVENTORY_OFF_HAND_SLOT = 40;
-                        Util.openItem(player, 0, PLAYER_INVENTORY_OFF_HAND_SLOT);
+                        Util.openItem(player, PLAYER_INVENTORY_OFF_HAND_SLOT);
                     }
 
                     return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);

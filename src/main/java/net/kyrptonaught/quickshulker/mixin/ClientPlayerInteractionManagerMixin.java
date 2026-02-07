@@ -18,6 +18,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import static net.kyrptonaught.quickshulker.QuickShulkerMod.PLAYER_INVENTORY_OFF_HAND_SLOT;
+
 @Mixin(ClientPlayerInteractionManager.class)
 public class ClientPlayerInteractionManagerMixin {
 
@@ -26,7 +28,7 @@ public class ClientPlayerInteractionManagerMixin {
     @Inject(method = "useItem", at = @At("HEAD"), cancellable = true)
     public void useItem(PlayerEntity player, World world, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         ItemStack stack = player.getHandStack(hand);
-        if (ClientUtil.CheckAndSend(stack, hand == InteractionHand.MAIN_HAND ? 36 + player.inventory.selectedSlot : ClientUtil.OFF_HAND_SLOT)) {
+        if (ClientUtil.CheckAndSend(stack, hand == InteractionHand.MAIN_HAND ? player.inventory.selectedSlot : PLAYER_INVENTORY_OFF_HAND_SLOT)) {
             cir.cancel();
         }
         //InteractionResultHolder<ItemStack> resultHolder = QuickShulkerMod.interactItem(player, world, hand);

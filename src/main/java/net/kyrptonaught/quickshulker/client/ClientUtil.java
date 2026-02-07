@@ -13,18 +13,16 @@ import net.minecraft.item.CreativeModeTab;
 import net.minecraft.item.ItemStack;
 
 public class ClientUtil {
-    public final static int OFF_HAND_SLOT = 45;
-
-    public static boolean CheckAndSend(ItemStack stack, int slot) {
+    public static boolean CheckAndSend(ItemStack stack, int playerInvIndex) {
         if (Util.isOpenableItem(stack)) {
-            SendOpenPacket(slot);
+            SendOpenPacket(playerInvIndex);
             return true;
         }
         return false;
     }
 
-    private static void SendOpenPacket(int slot) {
-        OpenShulkerPacket.sendOpenPacket(slot);
+    private static void SendOpenPacket(int playerInvIndex) {
+        OpenShulkerPacket.sendOpenPacket(playerInvIndex);
     }
 
     public static boolean isCreativeScreen(PlayerEntity player) {

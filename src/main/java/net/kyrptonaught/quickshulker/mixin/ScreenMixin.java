@@ -12,9 +12,10 @@ import net.kyrptonaught.quickshulker.client.QuickShulkerModClient;
 import net.kyrptonaught.quickshulker.config.ConfigOptions;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.menu.InventoryMenuScreen;
+import net.minecraft.client.gui.screen.inventory.menu.SurvivalInventoryScreen;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.menu.InventoryMenu;
 import net.minecraft.inventory.slot.InventorySlot;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
@@ -75,6 +76,7 @@ public abstract class ScreenMixin extends Screen {
     }
 
     @Unique
+    // return whether to cancel further processing due to opening a new screen
     private boolean handleTrigger() {
         InventorySlot slot = this.hoveredSlot;
         // only allow opening player inventory items
@@ -87,8 +89,15 @@ public abstract class ScreenMixin extends Screen {
             return false;
         }
 
-        int id = ClientUtil.getSlotId(this.menu, slot);
-        if (ClientUtil.CheckAndSend(stack, id)) {
+        int playerInvIndex = ((SlotAccessor) slot).getInventoryIndex();
+        int currentInvUsedSlot = ((ItemInventoryContainer) this.menu).getPlayerInvUsedSlot();
+        if (QuickShulkerMod.getConfig().rightClickClose && playerInvIndex == currentInvUsedSlot) {
+            this.minecraft.player.closeMenu();
+            this.minecraft.openScreen(new SurvivalInventoryScreen(this.minecraft.player));
+            return true;
+        }
+
+        if (ClientUtil.CheckAndSend(stack, playerInvIndex)) {
             QuickShulkerMod.lastMouseX = Mouse.getX();
             QuickShulkerMod.lastMouseY = Mouse.getY();
             return true;

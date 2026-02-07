@@ -15,16 +15,16 @@ public class OpenShulkerPacket {
     private static final Identifier OPEN_SHULKER_PACKET = new Identifier(QuickShulkerMod.PACKET_ID, "open_shulker");
     public static void registerReceivePacket() {
         ServerPlayNetworking.registerListener(String.valueOf(OPEN_SHULKER_PACKET), (server, serverPlayNetworkHandler, player, packetByteBuf) -> {
-            int invSlot = packetByteBuf.readInt();
-            server.submit(() -> Util.openItem(player, invSlot));
+            int playerInvIndex = packetByteBuf.readInt();
+            server.submit(() -> Util.openItem(player, playerInvIndex));
             return true;
         });
     }
 
     @Environment(EnvType.CLIENT)
-    public static void sendOpenPacket(int invSlot) {
+    public static void sendOpenPacket(int playerInvIndex) {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-        buf.writeInt(invSlot);
+        buf.writeInt(playerInvIndex);
         ClientPlayNetworking.send(String.valueOf(OPEN_SHULKER_PACKET), new PacketByteBuf(buf));
     }
 }
