@@ -4,7 +4,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
-import net.kyrptonaught.quickshulker.Comment;
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.api.RegisterQuickShulkerClient;
@@ -23,7 +22,7 @@ import static net.kyrptonaught.quickshulker.QuickShulkerMod.PLAYER_INVENTORY_OFF
 @Environment(EnvType.CLIENT)
 public class QuickShulkerModClient implements ClientModInitializer {
 
-    @Comment("Activation key")
+    // Activation key
     public static KeyBinding keybinding;
     //public static ConfigManager.SingleConfigManager keybind_config = new ConfigManager.SingleConfigManager(MOD_ID + "_keybind", new ConfigOptions());
 

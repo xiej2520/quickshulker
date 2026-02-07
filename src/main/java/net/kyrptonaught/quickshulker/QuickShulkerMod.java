@@ -107,7 +107,7 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
                     .ignoreSingleStackCheck(true)
                     // LocalClientPlayerEntity.openMenu
                     .setOpenAction((player, stack) ->
-                            // pos used in isValid() only
+                            // pos used in isValid() only, overridden in CraftingScreenHandlerMixin
                             player.openMenu(new CraftingTableBlock.MenuProvider(player.world, new BlockPos(player.x, player.y, player.z)))
 
                     )
