@@ -21,7 +21,6 @@ public class ServerPlayerInteractionManagerMixin {
         InteractionResultHolder<ItemStack> result = QuickShulkerMod.interactItem(player, world, hand);
         if (result.getResult() != InteractionResult.PASS) {
             cir.setReturnValue(result.getResult());
-            cir.cancel();
         }
     }
 }

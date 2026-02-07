@@ -8,8 +8,6 @@ import net.kyrptonaught.quickshulker.config.ConfigOptions;
 import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CraftingTableBlock;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.menu.CraftingTableScreen;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
@@ -38,7 +36,7 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
         //QuickBundlePacket.registerReceivePacket();
     }
 
-    // move to Server/ClientPlayerInteractionManagerMixin due to lack of OSL event
+    // move to ServerPlayerInteractionManagerMixin due to lack of OSL event
     public static InteractionResultHolder<ItemStack> interactItem(PlayerEntity player, World world, InteractionHand hand) {
         ItemStack stack = player.getHandStack(hand);
         if (!world.isClient) {
