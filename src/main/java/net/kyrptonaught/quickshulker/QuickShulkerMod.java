@@ -22,7 +22,7 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
     public static final ModInfo MOD_INFO = new ModInfo(MOD_ID, MOD_NAME);
 
     public static final String PACKET_ID = "qs";
-    public static final ServerConfig config = new ServerConfig(FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + "_config.json5"));
+    public static final ServerConfig SERVER_CONFIG = new ServerConfig(FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + "_config.json5"));
 
     @Override
     public void init() {

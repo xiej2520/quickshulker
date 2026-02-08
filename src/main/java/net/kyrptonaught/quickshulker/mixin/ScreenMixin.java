@@ -10,11 +10,13 @@ import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.client.ClientUtil;
 import net.kyrptonaught.quickshulker.config.ClientConfigs;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.menu.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.inventory.menu.InventoryMenuScreen;
 import net.minecraft.client.gui.screen.inventory.menu.SurvivalInventoryScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.menu.InventoryMenu;
 import net.minecraft.inventory.slot.InventorySlot;
+import net.minecraft.item.CreativeModeTab;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
@@ -93,6 +95,14 @@ public abstract class ScreenMixin extends Screen {
 
         int playerInvIndex = ((SlotAccessor) slot).getInventoryIndex();
         int currentInvUsedSlot = ((ItemInventoryContainer) this.menu).getPlayerInvUsedSlot();
+
+        if (slot instanceof CreativeInventoryScreen.CreativeInventorySlot && ((Object) this) instanceof CreativeInventoryScreen) {
+            CreativeInventoryScreen screen = (CreativeInventoryScreen) (Object) this;
+            if (screen.getSelectedTab() == CreativeModeTab.INVENTORY.getId()) {
+                playerInvIndex = ((SlotAccessor) ((CreativeSlotMixin) slot).getSlot()).getInventoryIndex();
+            }
+        }
+
         if (ClientConfigs.Options.RIGHT_CLICK_CLOSE_IN_INVENTORY.getValue() && playerInvIndex == currentInvUsedSlot) {
             this.minecraft.player.closeMenu();
             this.minecraft.openScreen(new SurvivalInventoryScreen(this.minecraft.player));

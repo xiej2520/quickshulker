@@ -43,9 +43,7 @@ public class QuickShulkerModClient implements ClientModInitializer {
             SetUsedSlotPacket.SET_USED_SLOT_PACKET.toString(),
             (client, handler, packetByteBuf) -> {
                 int playerInvIndex = packetByteBuf.readInt();
-                client.submit(() -> {
-                    ((ItemInventoryContainer) client.player.menu).setPlayerInvUsedSlot(playerInvIndex);
-                });
+                client.submit(() -> ((ItemInventoryContainer) client.player.menu).setPlayerInvUsedSlot(playerInvIndex));
                 return true;
             }
         );

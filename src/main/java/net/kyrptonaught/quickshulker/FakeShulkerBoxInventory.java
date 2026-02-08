@@ -22,7 +22,7 @@ public class FakeShulkerBoxInventory implements Inventory, MenuProvider {
     private final DefaultedList<ItemStack> inventory = DefaultedList.of(SIZE, ItemStack.EMPTY);
     protected String customName;
 
-    ItemStack shulkerBoxItemStack;
+    private final ItemStack shulkerBoxItemStack;
 
     public FakeShulkerBoxInventory(ItemStack shulkerBoxItemStack) {
         this.shulkerBoxItemStack = shulkerBoxItemStack;
@@ -37,6 +37,7 @@ public class FakeShulkerBoxInventory implements Inventory, MenuProvider {
             InventoryHelper.fromNbt(blockEntityTag, this.inventory);
         }
 
+        // CustomName will only be written to the Shulker Box once it is placed and broken
         if (blockEntityTag.contains("CustomName", 8)) {
             this.customName = blockEntityTag.getString("CustomName");
         }

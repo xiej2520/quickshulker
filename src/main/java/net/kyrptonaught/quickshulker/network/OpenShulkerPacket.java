@@ -10,7 +10,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.ornithemc.osl.networking.api.client.ClientPlayNetworking;
 import net.ornithemc.osl.networking.api.server.ServerPlayNetworking;
 
-// sent by client when they open an quickshulker item
+// sent by client when they open a quickshulker item
 public class OpenShulkerPacket {
     private static final Identifier OPEN_SHULKER_PACKET = new Identifier(QuickShulkerMod.PACKET_ID, "open_shulker");
 
