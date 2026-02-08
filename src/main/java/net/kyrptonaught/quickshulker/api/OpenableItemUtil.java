@@ -1,7 +1,6 @@
 package net.kyrptonaught.quickshulker.api;
 
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
-import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.network.SetUsedSlotPacket;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
@@ -17,10 +16,6 @@ public class OpenableItemUtil {
         // need to close current menu and save shulker box data before fetching ItemStack
         // make sure player doesn't reopen shulker boxes and dupe
         player.closeMenu();
-
-        if (QuickShulkerMod.getConfig().rightClickClose && playerInvIndex == ((ItemInventoryContainer) player.menu).getPlayerInvUsedSlot()) {
-            return;
-        }
 
         ItemStack stack = player.inventory.getStack(playerInvIndex);
         QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());

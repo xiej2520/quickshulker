@@ -3,20 +3,12 @@ package net.kyrptonaught.quickshulker;
 import net.kyrptonaught.quickshulker.api.QuickOpenableRegistry;
 import net.kyrptonaught.quickshulker.api.QuickShulkerData;
 import net.kyrptonaught.quickshulker.api.RegisterQuickShulker;
-import net.kyrptonaught.quickshulker.api.OpenableItemUtil;
 import net.kyrptonaught.quickshulker.config.ConfigOptions;
 import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CraftingTableBlock;
-import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.entity.living.player.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.World;
 import net.ornithemc.osl.entrypoints.api.ModInitializer;
 
 
