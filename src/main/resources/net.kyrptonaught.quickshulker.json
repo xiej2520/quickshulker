@@ -14,6 +14,9 @@
     "CreativeSlotMixin",
     "ScreenMixin"
   ],
+  "server": [
+    "DedicatedServerMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

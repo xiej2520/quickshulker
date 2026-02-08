@@ -1,6 +1,19 @@
 # Quick Shulker
 Quickly open a held shulker box with the press of a key!
 
+## Config
+Server config options stored in `quickshulker_config.json5`.
+- `quickShulkerBox`: Enables quick opening shulker boxes
+- `quickCraftingTable`: Enables quick opening crafting tables
+- `quickEnderChest`: Enables quick opening ender chests
+- `quickStonecutter`: Enables quick opening stonecutters
+- `supportBundlingInsert`: Enable right-clicking a shulker with an item to insert it.
+- `supportBundlingPickup`: Enable right-clicking an item with a shulker to insert it.
+- `supportBundlingExtract`: Enable right-clicking an empty slot with a shulker to extract an item.
+
+These are loaded on server *and client* start. In singleplayer these options are applied.
+Malilib + Modmenu is required for configuring client options.
+
 ## Dev Notes
 
 Forked from the last 1.15 commit in kyyrptonaught/quickshulker. 

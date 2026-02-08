@@ -8,25 +8,22 @@ import net.kyrptonaught.quickshulker.QuickShulkerMod;
 
 import java.util.List;
 
-public class QuickShulkerHotkeyProvider implements HotkeyProvider
-{
+public class QuickShulkerHotkeyProvider implements HotkeyProvider {
     public static final QuickShulkerHotkeyProvider INSTANCE = new QuickShulkerHotkeyProvider();
 
     @Override
-    public List<? extends Hotkey> getAllHotkeys()
-    {
+    public List<? extends Hotkey> getAllHotkeys() {
         ImmutableList.Builder<Hotkey> builder = ImmutableList.builder();
 
-        builder.addAll(Configs.HotKeys.HOTKEY_LIST);
+        builder.addAll(ClientConfigs.HotKeys.HOTKEY_LIST);
 
         return builder.build();
     }
 
     @Override
-    public List<HotkeyCategory> getHotkeysByCategories()
-    {
+    public List<HotkeyCategory> getHotkeysByCategories() {
         return ImmutableList.of(
-            new HotkeyCategory(QuickShulkerMod.MOD_INFO, "quickshulker.hotkeys", Configs.HotKeys.HOTKEY_LIST)
+            new HotkeyCategory(QuickShulkerMod.MOD_INFO, "quickshulker.hotkeys", ClientConfigs.HotKeys.HOTKEY_LIST)
         );
     }
 }

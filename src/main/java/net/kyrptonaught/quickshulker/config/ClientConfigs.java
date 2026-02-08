@@ -12,11 +12,14 @@ import malilib.input.CancelCondition;
 import malilib.input.Context;
 import malilib.input.KeyAction;
 import malilib.input.KeyBindSettings;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 
 import java.util.List;
 
-public class Configs {
+@Environment(EnvType.CLIENT)
+public class ClientConfigs {
     public static final int CURRENT_VERSION = 1;
 
     public static class Options {

@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.api.RegisterQuickShulkerClient;
-import net.kyrptonaught.quickshulker.config.Configs;
+import net.kyrptonaught.quickshulker.config.ClientConfigs;
 import net.kyrptonaught.quickshulker.network.SetUsedSlotPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.living.player.PlayerEntity;
@@ -15,18 +15,22 @@ import net.ornithemc.osl.lifecycle.api.client.ClientWorldEvents;
 import net.ornithemc.osl.networking.api.client.ClientPlayNetworking;
 
 import static net.kyrptonaught.quickshulker.QuickShulkerMod.MOD_ID;
-import static net.kyrptonaught.quickshulker.QuickShulkerMod.PLAYER_INVENTORY_OFF_HAND_SLOT;
 
 @Environment(EnvType.CLIENT)
 public class QuickShulkerModClient implements ClientModInitializer {
+
+    // need to persist between screens
+    public static double LAST_MOUSE_X = -1, LAST_MOUSE_Y = -1;
+
+    public static final int PLAYER_INVENTORY_OFF_HAND_SLOT = 40;
 
     @Override
     public void onInitializeClient() {
 
         ClientWorldEvents.TICK_START.register(clientWorld -> {
-            if (Minecraft.getInstance().screen == null && Configs.Options.KEYBIND_OPEN_IN_HAND.getValue()) {
+            if (Minecraft.getInstance().screen == null && ClientConfigs.Options.KEYBIND_OPEN_IN_HAND.getValue()) {
                 PlayerEntity player = Minecraft.getInstance().player;
-                if (Configs.HotKeys.QUICKSHULKER_KEYBIND.getKeyBind().isKeyBindHeld() && player != null) {
+                if (ClientConfigs.HotKeys.QUICKSHULKER_KEYBIND.getKeyBind().isKeyBindHeld() && player != null) {
                     if (player.getMainHandStack().isEmpty() && !player.getOffHandStack().isEmpty()) {
                         ClientUtil.tryOpenAndSendPacket(player.getOffHandStack(), PLAYER_INVENTORY_OFF_HAND_SLOT);
                     } else {

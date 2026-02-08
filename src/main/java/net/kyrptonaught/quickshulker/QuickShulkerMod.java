@@ -1,16 +1,19 @@
 package net.kyrptonaught.quickshulker;
 
 import malilib.util.data.ModInfo;
+import net.fabricmc.loader.api.FabricLoader;
 import net.kyrptonaught.quickshulker.api.QuickOpenableRegistry;
 import net.kyrptonaught.quickshulker.api.QuickShulkerData;
 import net.kyrptonaught.quickshulker.api.RegisterQuickShulker;
-import net.kyrptonaught.quickshulker.config.Configs;
+import net.kyrptonaught.quickshulker.config.ServerConfig;
 import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CraftingTableBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.math.BlockPos;
 import net.ornithemc.osl.entrypoints.api.ModInitializer;
+
+import static net.kyrptonaught.quickshulker.config.ServerConfig.CONFIG;
 
 
 public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
@@ -19,23 +22,17 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
     public static final ModInfo MOD_INFO = new ModInfo(MOD_ID, MOD_NAME);
 
     public static final String PACKET_ID = "qs";
-    //public static ConfigManager.SingleConfigManager config = new ConfigManager.SingleConfigManager(MOD_ID, new ConfigOptions());
-
-    // need to persist between screens
-    public static double lastMouseX = -1, lastMouseY = -1;
-
-    public static final int PLAYER_INVENTORY_OFF_HAND_SLOT = 40;
+    public static final ServerConfig config = new ServerConfig(FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + "_config.json5"));
 
     @Override
     public void init() {
-        //config.load();
         OpenShulkerPacket.registerReceivePacket();
         //QuickBundlePacket.registerReceivePacket();
     }
 
     // register after bootstrap Blocks in Minecraft.init()
     public void registerProviders() {
-        if (Configs.Options.QUICK_SHULKER_BOX.getValue()) {
+        if (CONFIG.quickShulkerBox) {
             new QuickOpenableRegistry.Builder()
                     .setItem(
                             BlockItem.byBlock(Blocks.WHITE_SHULKER_BOX),
@@ -62,7 +59,7 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
                     .register();
         }
 
-        if (Configs.Options.QUICK_ENDER_CHEST.getValue()) {
+        if (CONFIG.quickEnderChest) {
             new QuickOpenableRegistry.Builder(new QuickShulkerData.QuickEnderData())
                     .setItem(BlockItem.byBlock(Blocks.ENDER_CHEST))
                     .supportsBundleing(true)
@@ -72,7 +69,7 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
                     .register();
         }
 
-        if (Configs.Options.QUICK_CRAFTING_TABLE.getValue()) {
+        if (CONFIG.quickCraftingTable) {
             new QuickOpenableRegistry.Builder()
                     .setItem(BlockItem.byBlock(Blocks.CRAFTING_TABLE))
                     .ignoreSingleStackCheck(true)
