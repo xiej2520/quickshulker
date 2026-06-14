@@ -23,9 +23,9 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
     @Shadow
     public List<InventorySlot> slots;
 
-    // index of the currently opened QuickShulker item in the player inventory
-    // different from index of the item in the ContainerScreen/HandledScreen,
-    // which is the player inventory, may or may not be combined with another screen
+    // Index of the currently opened QuickShulker item in the player inventory.
+    // Different from index of the item (slotId) in the ContainerScreen/HandledScreen,
+    // which is the player inventory possibly combined with another screen.
     @Unique
     int playerInvUsedSlot = -1;
 
@@ -48,16 +48,17 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
 
     @Unique
     public boolean isUsedSlot(int slotId) {
-        return this.slots.get(slotId).inventory instanceof PlayerInventory && ((SlotAccessor) slots.get(slotId)).getInventoryIndex() == playerInvUsedSlot;
+        return this.slots.get(slotId).inventory instanceof PlayerInventory && ((SlotAccessor) this.slots.get(slotId)).getInventoryIndex() == playerInvUsedSlot;
     }
 
+    // slotId in InventoryMenu starts at 0 at top left (possibly in opened container)
     @Inject(method = "onClickSlot", at = @At("HEAD"), cancellable = true)
     public void QS$onClick(int slotId, int button, ActionType slotActionType, PlayerEntity playerEntity, CallbackInfoReturnable<ItemStack> cir) {
         // need to prevent the opened QuickShulker item from being moved in the inventory
         // see issue #28
-        if (slotId > 0 && slotId < slots.size() && hasOpenedItem()) {
+        if (slotId >= 0 && slotId < this.slots.size() && this.hasOpenedItem()) {
             // Intended behavior: inventory actions on opened QuickShulker item doesn't move the item at all
-            if (isUsedSlot(slotId)) {
+            if (this.isUsedSlot(slotId)) {
                 cir.setReturnValue(ItemStack.EMPTY);
             } else if (slotActionType == ActionType.SWAP && button == playerInvUsedSlot) {
                 // QuickShulker item can be moved but slotId doesn't refer to it for SWAP

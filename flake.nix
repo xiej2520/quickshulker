@@ -1,137 +1,68 @@
 {
-  description = "A Nix flake for a Minecraft modding dev environment.";
+  description = "A Nix-flake for a minecraft modding dev environment.";
 
-  # make sure to git add the flake
-  # $(nix build .#quickshulker.mitmCache.updateScript --no-link --print-out-paths)
-  # nix build
-  inputs.nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1.*.tar.gz";
-  inputs.flake-utils.url = "github:numtide/flake-utils";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-  outputs =
-    {
-      self,
-      nixpkgs,
-      flake-utils,
-    }:
+  outputs = { self, nixpkgs }:
     let
-      supportedSystems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
-      ];
+      supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
 
-      forEachSupportedSystem =
-        f:
-        nixpkgs.lib.genAttrs supportedSystems (
-          system:
-          let
-            pkgs = import nixpkgs { inherit system; };
-            deps = with pkgs; [
-              openjdk
-              gradle
-              libpulseaudio
-              libGL
-              glfw
-              openal
-              stdenv.cc.cc.lib
-              # if getting "libXxf86vm.so not found" in intellij gradle, just Invalidate Caches -> Just Restart
-              xorg.libXxf86vm
-              xorg.libXcursor
-            ];
-          in
-          f {
-            pkgs = pkgs;
-            deps = deps;
-            system = system;
-          }
-        );
+      forEachSupportedSystem = f: nixpkgs.lib.genAttrs supportedSystems (system: let
+        pkgs = import nixpkgs { inherit system; };
+        deps = with pkgs; [
+          openjdk
+          zulu8
+          gradle_9
+          libpulseaudio
+          libGL
+          glfw
+          openal
+          stdenv.cc.cc.lib
+          xorg.libXxf86vm
+          xorg.libXcursor
+          libxrandr
+        ];
+      in
+      f {
+        pkgs = pkgs;
+        deps = deps;
+      });
+
     in
     {
-      devShells = forEachSupportedSystem (
-        { pkgs, deps, ... }:
-        {
-          default = pkgs.mkShell {
-            packages = deps;
-            buildInputs = deps;
-            LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath deps; # Set up the library path for linking
+      devShells = forEachSupportedSystem ({ pkgs, deps }: {
+        default = pkgs.mkShell {
+          packages = deps;
+          buildInputs = deps;
+          LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath deps;  # Set up the library path for linking
 
-            # tell Intellij to use jdk and gradle in ./.share since nixos doesn't like dynamically linked executables
-            # Settings -> Build, Execution; Deployment -> Build Tools -> Gradle
-            shellHook = ''
-              export BASE_DIR=$(pwd)
-              mkdir -p $BASE_DIR/.share
+          # tell Intellij to use jdk and gradle in ./.share since nixos doesn't like dynamically linked executables
+          # Settings -> Build, Execution, Deployment -> Build Tools -> Gradle
+          shellHook = ''
+            export BASE_DIR=$(pwd)
+            mkdir -p $BASE_DIR/.share
 
-              if [ -L "$BASE_DIR/.share/java8" ]; then
-                unlink "$BASE_DIR/.share/java8"
-              fi
-              ln -sf ${pkgs.jdk8}/lib/openjdk $BASE_DIR/.share/java8
+            if [ -L "$BASE_DIR/.share/java" ]; then
+              unlink "$BASE_DIR/.share/java"
+            fi
+            ln -sf ${pkgs.openjdk}/lib/openjdk $BASE_DIR/.share/java
 
-              if [ -L "$BASE_DIR/.share/java" ]; then
-                unlink "$BASE_DIR/.share/java"
-              fi
-              ln -sf ${pkgs.openjdk}/lib/openjdk $BASE_DIR/.share/java
+            if [ -L "$BASE_DIR/.share/java8" ]; then
+              unlink "$BASE_DIR/.share/java8"
+            fi
+            ln -sf ${pkgs.zulu8} $BASE_DIR/.share/java8
 
-              if [ -L "$BASE_DIR/.share/gradle" ]; then
-                unlink "$BASE_DIR/.share/gradle"
-              fi
-              ln -sf ${pkgs.gradle}/lib/gradle $BASE_DIR/.share/gradle
-              export GRADLE_HOME="$BASE_DIR/.share/gradle"
+            if [ -L "$BASE_DIR/.share/gradle" ]; then
+              unlink "$BASE_DIR/.share/gradle"
+            fi
+            ln -sf ${pkgs.gradle_9}/libexec/gradle $BASE_DIR/.share/gradle
+            export GRADLE_HOME="$BASE_DIR/.share/gradle"
 
-              export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${pkgs.lib.makeLibraryPath deps};
-            '';
-          };
-        }
-      );
-
-      packages = forEachSupportedSystem (
-        {
-          pkgs,
-          deps,
-          system,
-        }:
-        let
-          pname = "quickshulker";
-          mcversion = "1.15.2";
-          version = "1.4.0+xiej.1";
-          minecraft-mod = pkgs.stdenv.mkDerivation (finalAttrs: {
-            name = "${pname}-${version}";
-            src = ./.;
-
-            nativeBuildInputs = [ pkgs.gradle ];
-
-            # from nixpkgs manual:
-            # gradle doesn't provide tools for making dependency resolution reproducible,
-            # nixpkgs has mitmCache for intercepting requests and recording them
-
-            # if the package has dependencies, mitmCache must be set
-            mitmCache = pkgs.gradle.fetchDeps {
-              pkg = finalAttrs.finalPackage;
-              data = ./deps.json;
+            export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${
+              pkgs.lib.makeLibraryPath deps
             };
-
-            __darwinAllowLocalNetworking = true; # required on Darwin
-
-            gradleBuildTask = "build";
-            gradleFlags = [ "-Dfile.encoding=utf-8" ];
-
-            installPhase = ''
-              runHook preInstall
-              mkdir -p $out/share
-              cp build/libs/${pname}-${mcversion}-${version}.jar $out/share/${pname}-${mcversion}-${version}.jar
-              runHook postInstall
-            '';
-
-            meta = {
-              description = "Minecraft mod built using Gradle and Fabric Loom.";
-              platforms = [ system ];
-            };
-          });
-        in
-        {
-          default = minecraft-mod;
-          "${pname}" = minecraft-mod;
-        }
-      );
+          '';
+        };
+      });
     };
 }
