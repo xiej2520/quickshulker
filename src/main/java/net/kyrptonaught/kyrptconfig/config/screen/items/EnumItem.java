@@ -1,17 +1,17 @@
 package net.kyrptonaught.kyrptconfig.config.screen.items;
 
 import net.kyrptonaught.kyrptconfig.config.screen.NotSuckyButton;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class EnumItem<T extends Enum<?>> extends ConfigItem<T> {
     private final NotSuckyButton displayWidget;
     T[] enumValues;
 
-    public EnumItem(Text name, T[] enums, T value, T defaultValue) {
+    public EnumItem(Component name, T[] enums, T value, T defaultValue) {
         super(name, value, defaultValue);
         this.enumValues = enums;
-        this.displayWidget = new NotSuckyButton(0, 0, 100, 20, new LiteralText("EnumButton"), widget -> {
+        this.displayWidget = new NotSuckyButton(0, 0, 100, 20, new TextComponent("EnumButton"), widget -> {
             cycleSelectedValue();
         });
         setValue(value);

@@ -2,9 +2,8 @@ package net.kyrptonaught.kyrptconfig.config;
 
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.resources.ResourceLocation;
 import blue.endless.jankson.Jankson;
-import net.minecraft.util.Identifier;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,8 +27,8 @@ public class ConfigManager {
         JANKSON = new JanksonJsonLoader();
         Jankson.Builder builder = CustomJankson.customJanksonBuilder();
         setJANKSON(builder
-                .registerSerializer(Identifier.class, (identifier, marshaller) -> marshaller.serialize(identifier.toString()))
-                .registerDeserializer(String.class, Identifier.class, (s, m) -> new Identifier(s))
+                .registerSerializer(ResourceLocation.class, (identifier, marshaller) -> marshaller.serialize(identifier.toString()))
+                .registerDeserializer(String.class, ResourceLocation.class, (s, m) -> new ResourceLocation(s))
                 .build());
     }
 
@@ -38,7 +37,7 @@ public class ConfigManager {
         ((GsonJsonLoader) Gson).provideGson(new GsonBuilder()
                 .setPrettyPrinting()
                 .setLenient()
-                .registerTypeAdapter(Identifier.class, new Identifier.Serializer())
+                .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
                 .create());
     }
 

@@ -1,31 +1,31 @@
 package net.kyrptonaught.shulkerutils;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.BasicInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
 
 public class ShulkerUtils {
     public static boolean isShulkerItem(ItemStack item) {
-        return Block.getBlockFromItem(item.getItem()) instanceof ShulkerBoxBlock;
+        return Block.byItem(item.getItem()) instanceof ShulkerBoxBlock;
     }
 
-    public static boolean shulkerContainsAny(Inventory shulkerInv, ItemStack stack) {
-        for (int i = 0; i < shulkerInv.getInvSize(); i++) {
-            if (shulkerInv.getInvStack(i).getItem().equals(stack.getItem()))
+    public static boolean shulkerContainsAny(Container shulkerInv, ItemStack stack) {
+        for (int i = 0; i < shulkerInv.getContainerSize(); i++) {
+            if (shulkerInv.getItem(i).getItem().equals(stack.getItem()))
                 return true;
         }
         return false;
     }
 
-    public static ItemStack insertIntoShulker(BasicInventory shulkerInv, ItemStack stack, PlayerEntity player) {
+    public static ItemStack insertIntoShulker(SimpleContainer shulkerInv, ItemStack stack, Player player) {
         if (isShulkerItem(stack) || !canInsert(shulkerInv, stack))
             return stack;
-        ItemStack output = shulkerInv.add(stack);
-        shulkerInv.onInvClose(player);
+        ItemStack output = shulkerInv.addItem(stack);
+        shulkerInv.stopOpen(player);
         return output;
     }
 
@@ -37,11 +37,11 @@ public class ShulkerUtils {
         return new ItemStackInventory(stack, 27);
     }
 
-    public static boolean canInsert(BasicInventory shulkerInv, ItemStack stack) {
+    public static boolean canInsert(SimpleContainer shulkerInv, ItemStack stack) {
         boolean bl = false;
 
-        for (ItemStack itemStack : shulkerInv.stackList) {
-            if (itemStack.isEmpty() || canCombine(itemStack, stack) && itemStack.getCount() < itemStack.getMaxCount()) {
+        for (ItemStack itemStack : shulkerInv.items) {
+            if (itemStack.isEmpty() || canCombine(itemStack, stack) && itemStack.getCount() < itemStack.getMaxStackSize()) {
                 bl = true;
                 break;
             }
@@ -51,7 +51,7 @@ public class ShulkerUtils {
     }
 
     public static boolean canCombine(ItemStack one, ItemStack two) {
-        return one.getItem() == two.getItem() && ItemStack.areTagsEqual(one, two);
+        return one.getItem() == two.getItem() && ItemStack.tagMatches(one, two);
     }
 }
 

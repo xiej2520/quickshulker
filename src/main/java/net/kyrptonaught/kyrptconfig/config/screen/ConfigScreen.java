@@ -1,12 +1,13 @@
 package net.kyrptonaught.kyrptconfig.config.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.*;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,20 +18,20 @@ public class ConfigScreen extends Screen {
     private Runnable saveRunnable;
     Screen previousScreen;
 
-    public ConfigScreen(Screen previousScreen, Text title) {
+    public ConfigScreen(Screen previousScreen, Component title) {
         super(title);
         this.previousScreen = previousScreen;
     }
 
     protected void init() {
         int center = this.width / 2;
-        this.addButton(new NotSuckyButton(center - 153, height - 25, 150, 20, new TranslatableText("key.kyrptconfig.config.exit"), widget -> {
-            this.minecraft.openScreen(previousScreen);
+        this.addButton(new NotSuckyButton(center - 153, height - 25, 150, 20, new TranslatableComponent("key.kyrptconfig.config.exit"), widget -> {
+            this.minecraft.setScreen(previousScreen);
         }));
 
-        this.addButton(new NotSuckyButton(center + 3, height - 25, 150, 20, new TranslatableText("key.kyrptconfig.config.saveExit"), widget -> {
+        this.addButton(new NotSuckyButton(center + 3, height - 25, 150, 20, new TranslatableComponent("key.kyrptconfig.config.saveExit"), widget -> {
             save();
-            this.minecraft.openScreen(previousScreen);
+            this.minecraft.setScreen(previousScreen);
         }));
         for (ConfigSection section : sections) {
             section.init(minecraft, width, height - 55 - 30);
@@ -57,7 +58,7 @@ public class ConfigScreen extends Screen {
         } else {
             item.sectionSelectionBTN.x = sections.get(sections.size() - 1).sectionSelectionBTN.x + sections.get(sections.size() - 1).sectionSelectionBTN.getWidth() + 3;
         }
-        item.sectionSelectionBTN.setWidth(MinecraftClient.getInstance().textRenderer.getStringWidth(item.title.asString()) + 10);
+        item.sectionSelectionBTN.setWidth(Minecraft.getInstance().font.width(item.title.getContents()) + 10);
 
         this.sections.add(item);
     }
@@ -133,7 +134,7 @@ public class ConfigScreen extends Screen {
         renderBackgroundTexture(0, 55, 0);
         renderBackgroundTexture(this.height - 30, 30, 0);
 
-        drawCenteredString(this.font, this.title.asString(), this.width / 2, 13, 0xffffff);
+        drawCenteredString(this.font, this.title.getContents(), this.width / 2, 13, 0xffffff);
         for (int i = 0; i < sections.size(); i++) {
             sections.get(i).sectionSelectionBTN.active = i != selectedSection;
             sections.get(i).sectionSelectionBTN.render(mouseX, mouseY, delta);
@@ -161,15 +162,15 @@ public class ConfigScreen extends Screen {
 
     public void renderBackgroundTexture(int startY, int size, int vOffset) {
         // from Screen::renderDirtBackground(int)
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        this.minecraft.getTextureManager().bindTexture(BACKGROUND_LOCATION);
+        Tesselator tessellator = Tesselator.getInstance();
+        BufferBuilder bufferBuilder = tessellator.getBuilder();
+        this.minecraft.getTextureManager().bind(BACKGROUND_LOCATION);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-        bufferBuilder.vertex(0.0, startY + size, 0.0).texture(0.0F, size / 32.0F + vOffset).color(64, 64, 64, 255).next();
-        bufferBuilder.vertex(this.width, startY + size, 0.0).texture(this.width / 32.0F, size / 32.0F + vOffset).color(64, 64, 64, 255).next();
-        bufferBuilder.vertex(this.width, startY, 0.0).texture(this.width / 32.0F, vOffset).color(64, 64, 64, 255).next();
-        bufferBuilder.vertex(0.0, startY, 0.0).texture(0.0F, vOffset).color(64, 64, 64, 255).next();
-        tessellator.draw();
+        bufferBuilder.begin(7, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bufferBuilder.vertex(0.0, startY + size, 0.0).uv(0.0F, size / 32.0F + vOffset).color(64, 64, 64, 255).endVertex();
+        bufferBuilder.vertex(this.width, startY + size, 0.0).uv(this.width / 32.0F, size / 32.0F + vOffset).color(64, 64, 64, 255).endVertex();
+        bufferBuilder.vertex(this.width, startY, 0.0).uv(this.width / 32.0F, vOffset).color(64, 64, 64, 255).endVertex();
+        bufferBuilder.vertex(0.0, startY, 0.0).uv(0.0F, vOffset).color(64, 64, 64, 255).endVertex();
+        tessellator.end();
     }
 }

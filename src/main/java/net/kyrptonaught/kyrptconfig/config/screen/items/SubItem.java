@@ -1,22 +1,21 @@
 package net.kyrptonaught.kyrptconfig.config.screen.items;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
-
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 
 public class SubItem<E> extends ConfigItem<E> {
     protected boolean expanded = false;
     protected int subStart = 0;
     protected List<ConfigItem<?>> configs = new ArrayList<>();
 
-    public SubItem(Text name, boolean isExpanded) {
+    public SubItem(Component name, boolean isExpanded) {
         super(name, null, null);
         this.expanded = isExpanded;
     }
 
-    public SubItem(Text name) {
+    public SubItem(Component name) {
         this(name, false);
     }
 
@@ -124,7 +123,7 @@ public class SubItem<E> extends ConfigItem<E> {
     public void render(int x, int y, int mouseX, int mouseY, float delta) {
         super.render(x, y, mouseX, mouseY, delta);
         if (isHidden()) return;
-        MinecraftClient.getInstance().textRenderer.draw(expanded ? "-" : "+", x - 10, y + 5, 16777215);
+        Minecraft.getInstance().font.draw(expanded ? "-" : "+", x - 10, y + 5, 16777215);
         subStart = y;
         if (expanded) {
             int runningY = subStart + 23;

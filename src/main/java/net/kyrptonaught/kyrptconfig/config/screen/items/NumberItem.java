@@ -1,22 +1,21 @@
 package net.kyrptonaught.kyrptconfig.config.screen.items;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.text.Text;
-
 import java.math.BigDecimal;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
 
 public class NumberItem<T extends Number> extends ConfigItem<T> {
 
     protected T min, max;
-    TextFieldWidget valueEntry;
+    EditBox valueEntry;
 
-    public NumberItem(Text name, T value, T defaultValue) {
+    public NumberItem(Component name, T value, T defaultValue) {
         super(name, value, defaultValue);
         useDefaultResetBTN();
-        valueEntry = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, 0, 0, 96, 17, "Number Entry");
-        valueEntry.setText(value.toString());
-        valueEntry.setChangedListener(this::onTyped);
+        valueEntry = new EditBox(Minecraft.getInstance().font, 0, 0, 96, 17, "Number Entry");
+        valueEntry.setValue(value.toString());
+        valueEntry.setResponder(this::onTyped);
     }
 
     public NumberItem<T> setMinMax(T min, T max) {
@@ -27,7 +26,7 @@ public class NumberItem<T extends Number> extends ConfigItem<T> {
 
     @Override
     public void setValue(T value) {
-        valueEntry.setText(fixInput(value).toString());
+        valueEntry.setValue(fixInput(value).toString());
     }
 
     public T fixInput(T value) {

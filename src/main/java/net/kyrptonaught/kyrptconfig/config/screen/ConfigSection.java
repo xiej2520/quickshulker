@@ -1,22 +1,21 @@
 package net.kyrptonaught.kyrptconfig.config.screen;
 
 import net.kyrptonaught.kyrptconfig.config.screen.items.ConfigItem;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
-
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ConfigSection extends Screen {
 
-    Text title;
+    Component title;
     public List<ConfigItem<?>> configs = new CopyOnWriteArrayList<>();
     public NotSuckyButton sectionSelectionBTN;
     int selectionIndex = 0;
     int scrollOffset = 0;
 
-    public ConfigSection(ConfigScreen configScreen, Text title) {
+    public ConfigSection(ConfigScreen configScreen, Component title) {
         super(title);
         this.title = title;
         this.sectionSelectionBTN = new NotSuckyButton(0, 32, 10, 20, title, widget -> {
@@ -89,7 +88,7 @@ public class ConfigSection extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        scrollOffset = MathHelper.clamp(scrollOffset + (int) (amount * 15), -calculateSectionHeight(), 0);
+        scrollOffset = Mth.clamp(scrollOffset + (int) (amount * 15), -calculateSectionHeight(), 0);
         return true;
     }
 

@@ -2,18 +2,18 @@ package net.kyrptonaught.kyrptconfig.config.screen;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 
-public class NotSuckyButton extends ButtonWidget {
+public class NotSuckyButton extends Button {
     int buttonColor = 16777215;
 
-    public NotSuckyButton(int x, int y, int width, int height, Text message, PressAction onPress) {
+    public NotSuckyButton(int x, int y, int width, int height, Component message, OnPress onPress) {
         //super(x, y, width, height, message, onPress, DEFAULT_NARRATION_SUPPLIER);
-        super(x, y, width, height, message.asString(), onPress);
+        super(x, y, width, height, message.getContents(), onPress);
     }
 
     public void setButtonColor(int color) {
@@ -39,22 +39,22 @@ public class NotSuckyButton extends ButtonWidget {
 
     @Override
     public void renderButton(int mouseX, int mouseY, float delta) {
-        MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        TextRenderer textRenderer = minecraftClient.textRenderer;
+        Minecraft minecraftClient = Minecraft.getInstance();
+        Font textRenderer = minecraftClient.font;
 
         // from AbstractButtonWidget::renderButton
-        minecraftClient.getTextureManager().bindTexture(WIDGETS_LOCATION);
+        minecraftClient.getTextureManager().bind(WIDGETS_LOCATION);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
         int k = this.getYImage(this.isHovered());
         //RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         this.blit(this.x, this.y, 0, 46 + k * 20, this.width / 2, this.height);
         this.blit(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + k * 20, this.width / 2, this.height);
 
         this.renderBg(minecraftClient, mouseX, mouseY);
         int j = this.active ? buttonColor : 10526880;
-        drawCenteredString(textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
+        drawCenteredString(textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
     }
 
     private int getTextureY() {

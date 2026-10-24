@@ -2,16 +2,16 @@ package net.kyrptonaught.quickshulker.client;
 
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.kyrptonaught.quickshulker.api.Util;
 import net.kyrptonaught.quickshulker.mixin.CreativeSlotMixin;
 import net.kyrptonaught.quickshulker.mixin.SlotAccessor;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
-import net.minecraft.container.Container;
-import net.minecraft.container.Slot;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
 
 public class ClientUtil {
 
@@ -27,25 +27,25 @@ public class ClientUtil {
         OpenShulkerPacket.sendOpenPacket(slot);
     }
 
-    public static boolean isCreativeScreen(PlayerEntity player) {
-        return player.container instanceof CreativeInventoryScreen.CreativeContainer;
+    public static boolean isCreativeScreen(Player player) {
+        return player.containerMenu instanceof CreativeModeInventoryScreen.ItemPickerMenu;
 
     }
 
-    public static int getSlotId(Container handler, Slot slot) {
-        if (handler instanceof CreativeInventoryScreen.CreativeContainer) {
-            if (((CreativeInventoryScreen) MinecraftClient.getInstance().currentScreen).getSelectedTab() == ItemGroup.INVENTORY.getIndex() && slot instanceof CreativeInventoryScreen.CreativeSlot) {
-                return ((CreativeSlotMixin) slot).getSlot().id;
+    public static int getSlotId(AbstractContainerMenu handler, Slot slot) {
+        if (handler instanceof CreativeModeInventoryScreen.ItemPickerMenu) {
+            if (((CreativeModeInventoryScreen) Minecraft.getInstance().screen).getSelectedTab() == CreativeModeTab.TAB_INVENTORY.getId() && slot instanceof CreativeModeInventoryScreen.SlotWrapper) {
+                return ((CreativeSlotMixin) slot).getSlot().index;
             } else {
-                return slot.id - 9;
+                return slot.index - 9;
             }
         }
-        return slot.id;
+        return slot.index;
     }
 
-    public static int getPlayerInvSlot(Container handler, Slot slot) {
-        if (handler instanceof CreativeInventoryScreen.CreativeContainer) {
-            if (((CreativeInventoryScreen) MinecraftClient.getInstance().currentScreen).getSelectedTab() == ItemGroup.INVENTORY.getIndex() && slot instanceof CreativeInventoryScreen.CreativeSlot) {
+    public static int getPlayerInvSlot(AbstractContainerMenu handler, Slot slot) {
+        if (handler instanceof CreativeModeInventoryScreen.ItemPickerMenu) {
+            if (((CreativeModeInventoryScreen) Minecraft.getInstance().screen).getSelectedTab() == CreativeModeTab.TAB_INVENTORY.getId() && slot instanceof CreativeModeInventoryScreen.SlotWrapper) {
                 // post-1.15: getIndex()
                 return ((SlotAccessor) ((CreativeSlotMixin) slot).getSlot()).getIndex();
             }

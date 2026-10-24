@@ -1,14 +1,14 @@
 package net.kyrptonaught.shulkerutils;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.BasicInventory;
-import net.minecraft.item.ItemStack;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 
-public class ItemStackInventory extends BasicInventory {
+public class ItemStackInventory extends SimpleContainer {
     protected final ItemStack itemStack;
     protected final int SIZE;
 
@@ -18,47 +18,47 @@ public class ItemStackInventory extends BasicInventory {
         this.SIZE = SIZE;
     }
 
-    public static DefaultedList<ItemStack> getStacks(ItemStack usedStack, int SIZE) {
-        CompoundTag compoundTag = usedStack.getSubTag("BlockEntityTag");
-        DefaultedList<ItemStack> itemStacks = DefaultedList.ofSize(SIZE, ItemStack.EMPTY);
+    public static NonNullList<ItemStack> getStacks(ItemStack usedStack, int SIZE) {
+        CompoundTag compoundTag = usedStack.getTagElement("BlockEntityTag");
+        NonNullList<ItemStack> itemStacks = NonNullList.withSize(SIZE, ItemStack.EMPTY);
         if (compoundTag != null && compoundTag.contains("Items", 9)) {
-            Inventories.fromTag(compoundTag, itemStacks);
+            ContainerHelper.loadAllItems(compoundTag, itemStacks);
         }
         return itemStacks;
     }
 
     @Override
-    public void markDirty() {
-        super.markDirty();
-        CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-        if (isInvEmpty()) {
-            itemStack.removeSubTag("BlockEntityTag");
+    public void setChanged() {
+        super.setChanged();
+        CompoundTag compoundTag = itemStack.getTagElement("BlockEntityTag");
+        if (isEmpty()) {
+            itemStack.removeTagKey("BlockEntityTag");
             return;
         } else if (compoundTag == null) {
-            compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
+            compoundTag = itemStack.getOrCreateTagElement("BlockEntityTag");
         }
 
-        DefaultedList<ItemStack> itemStacks = DefaultedList.ofSize(SIZE, ItemStack.EMPTY);
-        for (int i = 0; i < getInvSize(); i++) {
-            itemStacks.set(i, getInvStack(i));
+        NonNullList<ItemStack> itemStacks = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+        for (int i = 0; i < getContainerSize(); i++) {
+            itemStacks.set(i, getItem(i));
         }
-        Inventories.toTag(compoundTag, itemStacks);
+        ContainerHelper.saveAllItems(compoundTag, itemStacks);
     }
 
     public boolean shouldDeleteNBT(CompoundTag blockEntityTag) {
         if (!blockEntityTag.contains("Items"))
-            return blockEntityTag.getKeys().size() == 0;
-        return isInvEmpty();
+            return blockEntityTag.getAllKeys().size() == 0;
+        return isEmpty();
     }
 
     @Override
-    public void onInvClose(PlayerEntity playerEntity_1) {
+    public void stopOpen(Player playerEntity_1) {
         if (itemStack.getCount() > 1) {
             int count = itemStack.getCount();
             itemStack.setCount(1);
-            playerEntity_1.giveItemStack(new ItemStack(itemStack.getItem(), count - 1));
+            playerEntity_1.addItem(new ItemStack(itemStack.getItem(), count - 1));
         }
-        markDirty();
+        setChanged();
         // itemStack.removeSubTag(QuickShulkerMod.MOD_ID);
     }
 }

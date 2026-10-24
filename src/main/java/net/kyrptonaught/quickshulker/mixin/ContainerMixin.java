@@ -1,12 +1,12 @@
 package net.kyrptonaught.quickshulker.mixin;
 
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
-import net.minecraft.container.Container;
-import net.minecraft.container.Slot;
-import net.minecraft.container.SlotActionType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 
 
-@Mixin(Container.class)
+@Mixin(AbstractContainerMenu.class)
 public abstract class ContainerMixin implements ItemInventoryContainer {
 
     @Shadow
@@ -42,31 +42,31 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
     }
 
     @Unique
-    public ItemStack getPlayerInvUsedStack(PlayerEntity playerEntity) {
-        return playerInvUsedSlot >= 0 ? playerEntity.inventory.getInvStack(playerInvUsedSlot) : ItemStack.EMPTY;
+    public ItemStack getPlayerInvUsedStack(Player playerEntity) {
+        return playerInvUsedSlot >= 0 ? playerEntity.inventory.getItem(playerInvUsedSlot) : ItemStack.EMPTY;
     }
 
     @Unique
     public boolean isUsedSlot(int slotId) {
-        return this.slots.get(slotId).inventory instanceof PlayerInventory && ((SlotAccessor) slots.get(slotId)).getIndex() == playerInvUsedSlot;
+        return this.slots.get(slotId).container instanceof Inventory && ((SlotAccessor) slots.get(slotId)).getIndex() == playerInvUsedSlot;
     }
 
     // slotId counts from 0 at the top left of the menu (possibly in the opened container)
-    @Inject(method = "onSlotClick", at = @At("HEAD"), cancellable = true)
-    public void QS$onClick(int slotId, int button, SlotActionType slotActionType, PlayerEntity playerEntity, CallbackInfoReturnable<ItemStack> cir) {
+    @Inject(method = "clicked", at = @At("HEAD"), cancellable = true)
+    public void QS$onClick(int slotId, int button, ClickType slotActionType, Player playerEntity, CallbackInfoReturnable<ItemStack> cir) {
         // need to prevent the opened QuickShulker item from being moved in the inventory
         // see issue #28
         if (slotId >= 0 && slotId < slots.size() && hasOpenedItem()) {
             // Intended behavior: inventory actions on opened QuickShulker item doesn't move the item at all
             if (isUsedSlot(slotId)) {
                 cir.setReturnValue(ItemStack.EMPTY);
-            } else if (slotActionType == SlotActionType.SWAP && button == playerInvUsedSlot) {
+            } else if (slotActionType == ClickType.SWAP && button == playerInvUsedSlot) {
                 // QuickShulker item can be moved but slotId doesn't refer to it for SWAP
                 cir.setReturnValue(ItemStack.EMPTY);
-            } else if (slotActionType == SlotActionType.PICKUP_ALL) {
+            } else if (slotActionType == ClickType.PICKUP_ALL) {
                 // stop picking up all items equivalent to QuickShulker item
-                ItemStack cursorStack = playerEntity.inventory.getCursorStack();
-                if (ItemStack.areItemsEqualIgnoreDamage(cursorStack, getPlayerInvUsedStack(playerEntity))) {
+                ItemStack cursorStack = playerEntity.inventory.getCarried();
+                if (ItemStack.isSame(cursorStack, getPlayerInvUsedStack(playerEntity))) {
                     cir.setReturnValue(ItemStack.EMPTY);
                 }
             }

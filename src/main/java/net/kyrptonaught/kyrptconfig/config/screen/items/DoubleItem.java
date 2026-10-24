@@ -1,10 +1,10 @@
 package net.kyrptonaught.kyrptconfig.config.screen.items;
 
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 
 public class DoubleItem extends NumberItem<Double> {
-    public DoubleItem(Text name, Double value, Double defaultValue) {
+    public DoubleItem(Component name, Double value, Double defaultValue) {
         super(name, value, defaultValue);
         setMinMax(Double.MIN_VALUE, Double.MAX_VALUE);
     }
@@ -18,7 +18,7 @@ public class DoubleItem extends NumberItem<Double> {
         if (s.equals(fixed))
             value = Double.parseDouble(s);
         else
-            valueEntry.setText(fixed);
+            valueEntry.setValue(fixed);
     }
 
     public String fixInput(String input) {

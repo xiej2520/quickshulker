@@ -1,13 +1,6 @@
 package net.kyrptonaught.quickshulker.mixin;
 
-//import net.kyrptonaught.quickshulker.BundleHelper;
-//import net.kyrptonaught.quickshulker.QuickShulkerMod;
-//import net.kyrptonaught.quickshulker.client.ClientUtil;
-//import net.kyrptonaught.quickshulker.network.QuickBundlePacket;
-//import net.minecraft.entity.player.PlayerEntity;
-//import net.minecraft.entity.player.PlayerInventory;
-//import net.minecraft.inventory.StackReference;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 //import net.minecraft.item.ItemStack;
 //import net.minecraft.screen.slot.Slot;
 //import net.minecraft.util.ClickType;

@@ -1,6 +1,9 @@
 package net.kyrptonaught.quickshulker.mixin;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tesselator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
@@ -8,17 +11,14 @@ import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.client.ClientUtil;
 import net.kyrptonaught.quickshulker.client.QuickShulkerModClient;
 import net.kyrptonaught.quickshulker.config.ConfigOptions;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.container.Container;
-import net.minecraft.container.Slot;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,32 +30,32 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 // @Mixin(HandledScreen.class)
-@Mixin(ContainerScreen.class)
+@Mixin(AbstractContainerScreen.class)
 @Environment(EnvType.CLIENT)
 public abstract class ScreenMixin extends Screen {
     @Shadow
-    protected Slot focusedSlot;
+    protected Slot hoveredSlot;
 
     @Shadow
     @Final
-    protected PlayerInventory playerInventory;
+    protected Inventory inventory;
 
     @Shadow
     @Final
-    // ScreenHandler handler in 1.16+
-    protected Container container;
+    // AbstractContainerMenu menu (ScreenHandler handler in 1.16+ yarn)
+    protected AbstractContainerMenu menu;
 
     @Shadow
-    private boolean cancelNextRelease;
+    private boolean skipNextRelease;
 
-    protected ScreenMixin(Text text) {
+    protected ScreenMixin(Component text) {
         super(text);
     }
 
     @Inject(method = "init", at = @At("TAIL"))
     private void fixMouse(CallbackInfo ci) {
         if (QuickShulkerMod.lastMouseX != 0 && QuickShulkerMod.lastMouseY != 0) {
-            GLFW.glfwSetCursorPos(MinecraftClient.getInstance().getWindow().getHandle(), QuickShulkerMod.lastMouseX, QuickShulkerMod.lastMouseY);
+            GLFW.glfwSetCursorPos(Minecraft.getInstance().getWindow().getWindow(), QuickShulkerMod.lastMouseX, QuickShulkerMod.lastMouseY);
             QuickShulkerMod.lastMouseY = 0;
             QuickShulkerMod.lastMouseX = 0;
         }
@@ -64,7 +64,7 @@ public abstract class ScreenMixin extends Screen {
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void QS$keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
         if (QuickShulkerMod.getConfig().keybindInInv) {
-            if (QuickShulkerModClient.getKeybinding().matches(keyCode, InputUtil.Type.KEYSYM)) {
+            if (QuickShulkerModClient.getKeybinding().matches(keyCode, InputConstants.Type.KEYSYM)) {
                 if (handleTrigger())
                     cir.setReturnValue(true);
             }
@@ -75,18 +75,18 @@ public abstract class ScreenMixin extends Screen {
     private void QS$mousePressed(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         if (QuickShulkerMod.getConfig().rightClickInv) {
             // cursorStack moved from PlayerInventory to ScreenHandler in 1.16?
-            if (playerInventory.getCursorStack().isEmpty() && button == 1 && this.focusedSlot != null && this.focusedSlot.getStack().getCount() == 1) {
+            if (inventory.getCarried().isEmpty() && button == 1 && this.hoveredSlot != null && this.hoveredSlot.getItem().getCount() == 1) {
                 if (handleTrigger()) {
-                    this.cancelNextRelease = true;
+                    this.skipNextRelease = true;
                     cir.setReturnValue(true);
                     return;
                 }
             }
         }
         if (QuickShulkerMod.getConfig().keybindInInv) {
-            if (QuickShulkerModClient.getKeybinding().matches(button, InputUtil.Type.MOUSE)) {
+            if (QuickShulkerModClient.getKeybinding().matches(button, InputConstants.Type.MOUSE)) {
                 if (handleTrigger()) {
-                    this.cancelNextRelease = true;
+                    this.skipNextRelease = true;
                     cir.setReturnValue(true);
                 }
             }
@@ -95,45 +95,45 @@ public abstract class ScreenMixin extends Screen {
 
     @Unique
     private boolean handleTrigger() {
-        if (this.focusedSlot != null) {
-            return isValid(this.focusedSlot.getStack(), ClientUtil.getSlotId(container, this.focusedSlot));
+        if (this.hoveredSlot != null) {
+            return isValid(this.hoveredSlot.getItem(), ClientUtil.getSlotId(menu, this.hoveredSlot));
         }
         return false;
     }
 
     @Unique
     private boolean isValid(ItemStack stack, int id) {
-        if (this.focusedSlot.inventory instanceof PlayerInventory)
+        if (this.hoveredSlot.container instanceof Inventory)
             if (ClientUtil.CheckAndSend(stack, id)) {
-                QuickShulkerMod.lastMouseX = MinecraftClient.getInstance().mouse.getX();
-                QuickShulkerMod.lastMouseY = MinecraftClient.getInstance().mouse.getY();
+                QuickShulkerMod.lastMouseX = Minecraft.getInstance().mouseHandler.xpos();
+                QuickShulkerMod.lastMouseY = Minecraft.getInstance().mouseHandler.ypos();
                 return true;
             }
         return false;
     }
 
 
-    @Inject(method = "drawSlot",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;II)V"))
+    @Inject(method = "renderSlot",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderAndDecorateItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;II)V"))
     public void drawSlotBackground(Slot slot, CallbackInfo ci) {
         // lame bar, I'm too lazy to draw something or render a texture
-        int playerInvUsedSlot = ((ItemInventoryContainer) this.container).getPlayerInvUsedSlot();
+        int playerInvUsedSlot = ((ItemInventoryContainer) this.menu).getPlayerInvUsedSlot();
         ConfigOptions opts = QuickShulkerMod.getConfig();
         if (opts.fillOpenedBackground
                 && playerInvUsedSlot != -1
-                && slot.inventory instanceof PlayerInventory
+                && slot.container instanceof Inventory
                 && ((SlotAccessor) slot).getIndex() == playerInvUsedSlot) {
-            int i = slot.xPosition;
-            int j = slot.yPosition;
+            int i = slot.x;
+            int j = slot.y;
 
             RenderSystem.disableDepthTest();
             RenderSystem.disableTexture();
             RenderSystem.disableAlphaTest();
             RenderSystem.disableBlend();
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBuffer();
+            Tesselator tessellator = Tesselator.getInstance();
+            BufferBuilder bufferBuilder = tessellator.getBuilder();
 
-            this.itemRenderer.renderGuiQuad(bufferBuilder, i, j, 16, 16,
+            this.itemRenderer.fillRect(bufferBuilder, i, j, 16, 16,
                     (opts.colorBackground >> 16) & 0xFF,
                     (opts.colorBackground >> 8) & 0xFF,
                     (opts.colorBackground >> 0) & 0xFF,
@@ -146,12 +146,12 @@ public abstract class ScreenMixin extends Screen {
 
         }
     }
-    //@Inject(method = "drawSlot",
-    //        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;II)V",
+    //@Inject(method = "renderSlot",
+    //        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderAndDecorateItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;II)V",
     //                shift = At.Shift.AFTER))
     //public void renderSlot(Slot slot, CallbackInfo ci) {
     //    // lame bar, I'm too lazy to draw something or render a texture
-    //    int playerInvUsedSlot = ((ItemInventoryContainer) this.container).getPlayerInvUsedSlot();
+    //    int playerInvUsedSlot = ((ItemInventoryContainer) this.menu).getPlayerInvUsedSlot();
     //    if (playerInvUsedSlot != -1 && slot.inventory instanceof PlayerInventory && ((SlotAccessor) slot).getIndex() == playerInvUsedSlot) {
     //        int i = slot.xPosition;
     //        int j = slot.yPosition;
@@ -162,8 +162,8 @@ public abstract class ScreenMixin extends Screen {
     //        RenderSystem.disableBlend();
     //        Tessellator tessellator = Tessellator.getInstance();
     //        BufferBuilder bufferBuilder = tessellator.getBuffer();
-    //        this.itemRenderer.renderGuiQuad(bufferBuilder, i + 2, j + 13, 13, 2, 90, 40, 240, 255);
-    //        this.itemRenderer.renderGuiQuad(bufferBuilder, i + 2, j + 13, 13, 1, 40,240, 40,255);
+    //        this.itemRenderer.fillRect(bufferBuilder, i + 2, j + 13, 13, 2, 90, 40, 240, 255);
+    //        this.itemRenderer.fillRect(bufferBuilder, i + 2, j + 13, 13, 1, 40,240, 40,255);
     //        RenderSystem.enableBlend();
     //        RenderSystem.enableAlphaTest();
     //        RenderSystem.enableTexture();

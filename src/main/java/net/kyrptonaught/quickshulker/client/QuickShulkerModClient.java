@@ -17,9 +17,9 @@ import net.kyrptonaught.quickshulker.api.RegisterQuickShulkerClient;
 import net.kyrptonaught.quickshulker.config.ConfigOptions;
 import net.kyrptonaught.quickshulker.network.OpenInventoryPacket;
 import net.kyrptonaught.quickshulker.network.SetUsedSlotPacket;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.world.entity.player.Player;
 
 import static net.kyrptonaught.quickshulker.QuickShulkerMod.MOD_ID;
 
@@ -39,26 +39,26 @@ public class QuickShulkerModClient implements ClientModInitializer {
         keybind_config.load();
 
         ClientTickEvents.START_WORLD_TICK.register(clientWorld -> {
-            if (MinecraftClient.getInstance().currentScreen == null && QuickShulkerMod.getConfig().keybind) {
-                PlayerEntity player = MinecraftClient.getInstance().player;
+            if (Minecraft.getInstance().screen == null && QuickShulkerMod.getConfig().keybind) {
+                Player player = Minecraft.getInstance().player;
                 if (getKeybinding().isKeybindPressed() && player != null) {
-                    if (player.getMainHandStack().isEmpty() && !player.getOffHandStack().isEmpty()) {
-                        ClientUtil.CheckAndSend(player.getOffHandStack(), 45);
+                    if (player.getMainHandItem().isEmpty() && !player.getOffhandItem().isEmpty()) {
+                        ClientUtil.CheckAndSend(player.getOffhandItem(), 45);
                     } else {
-                        ClientUtil.CheckAndSend(player.getMainHandStack(), 36 + player.inventory.selectedSlot);
+                        ClientUtil.CheckAndSend(player.getMainHandItem(), 36 + player.inventory.selected);
                     }
                 }
             }
         });
         ClientPlayNetworking.registerGlobalReceiver(OpenInventoryPacket.OPEN_INV, (client, handler, packet, sender) -> {
             client.execute(() -> {
-                client.openScreen(new InventoryScreen(client.player));
+                client.setScreen(new InventoryScreen(client.player));
             });
         });
         ClientPlayNetworking.registerGlobalReceiver(SetUsedSlotPacket.SET_USED_SLOT_PACKET, (client, handler, packetByteBuf, sender) -> {
             int playerInvIndex = packetByteBuf.readInt();
             client.execute(() -> {
-                ((ItemInventoryContainer) client.player.container).setPlayerInvUsedSlot(playerInvIndex);
+                ((ItemInventoryContainer) client.player.containerMenu).setPlayerInvUsedSlot(playerInvIndex);
             });
         });
         FabricLoader.getInstance().getEntrypoints(MOD_ID + "_client", RegisterQuickShulkerClient.class).forEach(RegisterQuickShulkerClient::registerClient);

@@ -1,17 +1,17 @@
 package net.kyrptonaught.kyrptconfig.config.screen.items;
 
 import net.kyrptonaught.kyrptconfig.config.screen.NotSuckyButton;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.DyeColor;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.item.DyeColor;
 
 public class BooleanItem extends ConfigItem<Boolean> {
     private final NotSuckyButton boolWidget;
 
-    public BooleanItem(Text name, Boolean value, Boolean defaultValue) {
+    public BooleanItem(Component name, Boolean value, Boolean defaultValue) {
         super(name, value, defaultValue);
-        this.boolWidget = new NotSuckyButton(0, 0, 100, 20, new LiteralText("BoolButton"), widget -> {
+        this.boolWidget = new NotSuckyButton(0, 0, 100, 20, new TextComponent("BoolButton"), widget -> {
             setValue(!this.value);
         });
         setValue(value);
@@ -22,10 +22,10 @@ public class BooleanItem extends ConfigItem<Boolean> {
     public void setValue(Boolean value) {
         super.setValue(value);
         if (value) {
-            boolWidget.setMessage((new TranslatableText("key.kyrptconfig.config.true")).asString());
+            boolWidget.setMessage((new TranslatableComponent("key.kyrptconfig.config.true")).getContents());
             boolWidget.setButtonColor(DyeColor.LIME.getFireworkColor());
         } else {
-            boolWidget.setMessage((new TranslatableText("key.kyrptconfig.config.false")).asString());
+            boolWidget.setMessage((new TranslatableComponent("key.kyrptconfig.config.false")).getContents());
             boolWidget.setButtonColor(DyeColor.RED.getFireworkColor());
         }
     }

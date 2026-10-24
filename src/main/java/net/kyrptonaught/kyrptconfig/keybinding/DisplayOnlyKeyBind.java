@@ -1,23 +1,22 @@
 package net.kyrptonaught.kyrptconfig.keybinding;
 
-import net.minecraft.client.options.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-
+import com.mojang.blaze3d.platform.InputConstants;
 import java.util.function.Consumer;
+import net.minecraft.client.KeyMapping;
 
 // key binding info needed for showing the key binding button
-public class DisplayOnlyKeyBind extends KeyBinding {
+public class DisplayOnlyKeyBind extends KeyMapping {
     private CustomKeyBinding customKeyBinding;
-    private final Consumer<InputUtil.KeyCode> keySet;
+    private final Consumer<InputConstants.Key> keySet;
 
-    public DisplayOnlyKeyBind(String translationKey, InputUtil.Type type, int code, String category) {
+    public DisplayOnlyKeyBind(String translationKey, InputConstants.Type type, int code, String category) {
         super(translationKey, type, code, category);
         keySet = (boundKey) -> {
         };
     }
 
-    public DisplayOnlyKeyBind(String translationKey, String category, CustomKeyBinding customKeyBinding, Consumer<InputUtil.KeyCode> keySet) {
-        super(translationKey, customKeyBinding.getDefaultKey().getCategory(), customKeyBinding.getDefaultKey().getKeyCode(), category);
+    public DisplayOnlyKeyBind(String translationKey, String category, CustomKeyBinding customKeyBinding, Consumer<InputConstants.Key> keySet) {
+        super(translationKey, customKeyBinding.getDefaultKey().getType(), customKeyBinding.getDefaultKey().getValue(), category);
         this.customKeyBinding = customKeyBinding;
         this.keySet = keySet;
         updateSetKey();
@@ -25,17 +24,17 @@ public class DisplayOnlyKeyBind extends KeyBinding {
 
     // setBoundKey in 1.16+
     @Override
-    public void setKeyCode(InputUtil.KeyCode boundKey) {
-        super.setKeyCode(boundKey);
+    public void setKey(InputConstants.Key boundKey) {
+        super.setKey(boundKey);
         if (customKeyBinding != null) {
             // getBoundKeyTranslationKey() in future. lgfw crash with wrong function call??
-            customKeyBinding.setRaw(getName());
+            customKeyBinding.setRaw(saveString());
         }
         keySet.accept(boundKey);
     }
 
     public void updateSetKey() {
-        super.setKeyCode(customKeyBinding.getKeybinding().orElse(InputUtil.UNKNOWN_KEYCODE));
+        super.setKey(customKeyBinding.getKeybinding().orElse(InputConstants.UNKNOWN));
     }
 
     @Override
@@ -45,14 +44,14 @@ public class DisplayOnlyKeyBind extends KeyBinding {
     }
 
     @Override
-    public String getId() {
+    public String getName() {
         updateSetKey();
-        return super.getId();
+        return super.getName();
     }
 
     @Override
-    public InputUtil.KeyCode getDefaultKeyCode() {
+    public InputConstants.Key getDefaultKey() {
         updateSetKey();
-        return super.getDefaultKeyCode();
+        return super.getDefaultKey();
     }
 }

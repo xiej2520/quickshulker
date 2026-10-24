@@ -1,12 +1,12 @@
 package net.kyrptonaught.quickshulker.mixin;
 
-import net.minecraft.container.Slot;
+import net.minecraft.world.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(Slot.class)
 public interface SlotAccessor {
 
-    @Accessor(value = "invSlot")
+    @Accessor(value = "slot")
     int getIndex();
 }

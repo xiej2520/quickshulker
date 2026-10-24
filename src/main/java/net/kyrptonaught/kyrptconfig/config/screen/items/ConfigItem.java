@@ -1,13 +1,12 @@
 package net.kyrptonaught.kyrptconfig.config.screen.items;
 
 import net.kyrptonaught.kyrptconfig.config.screen.NotSuckyButton;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Language;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.locale.Language;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,15 +14,15 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class ConfigItem<T> {
-    private Text fieldTitle;
-    private List<Text> toolTipText;
+    private Component fieldTitle;
+    private List<Component> toolTipText;
     protected Consumer<T> saveConsumer, valueUpdatedEvent;
     protected NotSuckyButton resetButton;
     protected T value, defaultValue;
     private boolean requiresRestart = false;
     private boolean isHidden = false;
 
-    public ConfigItem(Text name, T value, T defaultValue) {
+    public ConfigItem(Component name, T value, T defaultValue) {
         this.fieldTitle = name;
         this.value = value;
         this.defaultValue = defaultValue;
@@ -45,27 +44,27 @@ public abstract class ConfigItem<T> {
         return this;
     }
 
-    public ConfigItem<?> setTitleText(Text title) {
+    public ConfigItem<?> setTitleText(Component title) {
         this.fieldTitle = title;
         return this;
     }
 
     public ConfigItem<?> setToolTipWithNewLine(String translatableKey) {
-        String[] translated = Language.getInstance().translate(translatableKey).split("\n");
+        String[] translated = Language.getInstance().getElement(translatableKey).split("\n");
         this.toolTipText = new ArrayList<>();
         for (String line : translated) {
-            this.toolTipText.add(new LiteralText(line));
+            this.toolTipText.add(new TextComponent(line));
         }
 
         return this;
     }
 
-    public ConfigItem<?> setToolTip(Text toolTip) {
+    public ConfigItem<?> setToolTip(Component toolTip) {
         this.toolTipText = Arrays.asList(toolTip);
         return this;
     }
 
-    public ConfigItem<?> setToolTip(Text... toolTips) {
+    public ConfigItem<?> setToolTip(Component... toolTips) {
         this.toolTipText = Arrays.asList(toolTips);
         return this;
     }
@@ -106,7 +105,7 @@ public abstract class ConfigItem<T> {
     }
 
     public void useDefaultResetBTN() {
-        this.resetButton = new NotSuckyButton(0, 0, 35, 20, new TranslatableText("key.kyrptconfig.config.reset"), widget -> {
+        this.resetButton = new NotSuckyButton(0, 0, 35, 20, new TranslatableComponent("key.kyrptconfig.config.reset"), widget -> {
             resetToDefault();
         });
     }
@@ -161,12 +160,12 @@ public abstract class ConfigItem<T> {
     public void render(int x, int y, int mouseX, int mouseY, float delta) {
         if (isHidden) return;
 
-        int width = MinecraftClient.getInstance().getWindow().getScaledWidth();
+        int width = Minecraft.getInstance().getWindow().getGuiScaledWidth();
         int height = y + getHeaderSize();
         if (mouseY > y && mouseY < height)
-            DrawableHelper.fill(0, y - 1, width, height + 1, 16725815);
+            GuiComponent.fill(0, y - 1, width, height + 1, 16725815);
 
-        MinecraftClient.getInstance().textRenderer.drawWithShadow(this.fieldTitle.asString(), x, y + 6, 16777215);
+        Minecraft.getInstance().font.drawShadow(this.fieldTitle.getContents(), x, y + 6, 16777215);
         if (resetButton != null) {
             this.resetButton.y = y;
             this.resetButton.x = width - resetButton.getWidth() - 20;
@@ -183,7 +182,7 @@ public abstract class ConfigItem<T> {
     //}
     public void render2(int x, int y, int mouseX, int mouseY, float delta) {
         if (isHidden) return;
-        if (mouseX > x && mouseX < x + MinecraftClient.getInstance().textRenderer.getStringWidth(fieldTitle.asString()) &&
+        if (mouseX > x && mouseX < x + Minecraft.getInstance().font.width(fieldTitle.getContents()) &&
                 mouseY > y && mouseY < y + 12)
             renderToolTip(mouseX, mouseY);
     }
@@ -201,13 +200,13 @@ public abstract class ConfigItem<T> {
     //}
     public void renderToolTip(int x, int y) {
         if (toolTipText != null && requiresRestart) {
-            List<String> newList = new ArrayList<>(toolTipText.stream().map(Text::asString).collect(Collectors.toList()));
-            newList.add(new TranslatableText("key.kyrptconfig.config.restartRequired").asString());
-            MinecraftClient.getInstance().currentScreen.renderTooltip(newList, x, y);
+            List<String> newList = new ArrayList<>(toolTipText.stream().map(Component::getContents).collect(Collectors.toList()));
+            newList.add(new TranslatableComponent("key.kyrptconfig.config.restartRequired").getContents());
+            Minecraft.getInstance().screen.renderTooltip(newList, x, y);
         } else if (toolTipText != null)
-            MinecraftClient.getInstance().currentScreen.renderTooltip(toolTipText.stream().map(Text::asString).collect(Collectors.toList()), x, y);
+            Minecraft.getInstance().screen.renderTooltip(toolTipText.stream().map(Component::getContents).collect(Collectors.toList()), x, y);
         else if (requiresRestart) {
-            MinecraftClient.getInstance().currentScreen.renderTooltip(new TranslatableText("key.kyrptconfig.config.restartRequired").asString(), x, y);
+            Minecraft.getInstance().screen.renderTooltip(new TranslatableComponent("key.kyrptconfig.config.restartRequired").getContents(), x, y);
         }
     }
 }

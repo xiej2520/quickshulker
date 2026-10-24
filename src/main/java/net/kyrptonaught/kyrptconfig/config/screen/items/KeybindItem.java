@@ -1,26 +1,26 @@
 package net.kyrptonaught.kyrptconfig.config.screen.items;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.kyrptonaught.kyrptconfig.config.screen.NotSuckyButton;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.lwjgl.glfw.GLFW;
 
 public class KeybindItem extends ConfigItem<String> {
     private final NotSuckyButton keyButton;
     private Boolean isListening = false;
 
-    public KeybindItem(Text name, String key, String defaultKey) {
+    public KeybindItem(Component name, String key, String defaultKey) {
         super(name, key, defaultKey);
         this.keyButton = new NotSuckyButton(0, 0, 100, 20, getCleanName(key), widget -> {
             this.isListening = !this.isListening;
             if (!this.isListening) {
-                widget.setMessage(this.getCleanName(this.value).asString());
+                widget.setMessage(this.getCleanName(this.value).getContents());
                 //widget.setTooltip(Tooltip.of(Text.literal(this.value)));
             } else {
-                widget.setMessage(new LiteralText("> ").append(this.getCleanName(this.value).append(new LiteralText(" <"))).asString());
+                widget.setMessage(new TextComponent("> ").append(this.getCleanName(this.value).append(new TextComponent(" <"))).getContents());
             }
         });
         //keyButton.setTooltip(Tooltip.of(Text.literal(this.value)));
@@ -30,28 +30,28 @@ public class KeybindItem extends ConfigItem<String> {
     public void setValue(String value) {
         super.setValue(value);
         isListening = false;
-        keyButton.setMessage(this.getCleanName(this.value).asString());
+        keyButton.setMessage(this.getCleanName(this.value).getContents());
         //keyButton.setTooltip(Tooltip.of(Text.literal(this.value)));
     }
 
-    public Text getCleanName(String str) {
-        if (I18n.hasTranslation(value))
-            return new TranslatableText(str);
+    public Component getCleanName(String str) {
+        if (I18n.exists(value))
+            return new TranslatableComponent(str);
         if (str == null || str.trim().isEmpty())
-            return new TranslatableText("key.keyboard.unknown");
-        return new LiteralText(str.substring(str.length() - 1).toUpperCase());
+            return new TranslatableComponent("key.keyboard.unknown");
+        return new TextComponent(str.substring(str.length() - 1).toUpperCase());
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (isListening) {
             // post 1.15: fromKeyCode, getTranslationKey()
-            setValue(InputUtil.getKeyCode(keyCode, scanCode).getName());
+            setValue(InputConstants.getKey(keyCode, scanCode).getName());
             if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
                 setValue(value);
                 return true;
             }
-            setValue(InputUtil.getKeyCode(keyCode, scanCode).getName());
+            setValue(InputConstants.getKey(keyCode, scanCode).getName());
             return true;
         }
         return false;
@@ -63,7 +63,7 @@ public class KeybindItem extends ConfigItem<String> {
         boolean handled;
         handled = (keyButton.mouseClicked(mouseX, mouseY, button) || resetButton.mouseClicked(mouseX, mouseY, button));
         if (isListening && !handled) {
-            setValue(InputUtil.Type.MOUSE.createFromCode(button).getName());
+            setValue(InputConstants.Type.MOUSE.getOrCreate(button).getName());
         }
     }
 

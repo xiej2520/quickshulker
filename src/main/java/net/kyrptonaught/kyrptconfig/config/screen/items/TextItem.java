@@ -1,20 +1,20 @@
 package net.kyrptonaught.kyrptconfig.config.screen.items;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
 
 public class TextItem extends ConfigItem<String> {
 
-    TextFieldWidget valueEntry;
+    EditBox valueEntry;
 
-    public TextItem(Text name, String value, String defaultValue) {
+    public TextItem(Component name, String value, String defaultValue) {
         super(name, value, defaultValue);
         useDefaultResetBTN();
-        valueEntry = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, 0, 0, 96, 17, "Text Entry");
+        valueEntry = new EditBox(Minecraft.getInstance().font, 0, 0, 96, 17, "Text Entry");
         setMaxLength(256);
-        valueEntry.setText(value);
-        valueEntry.setChangedListener(this::setValue);
+        valueEntry.setValue(value);
+        valueEntry.setResponder(this::setValue);
     }
 
     public TextItem setMaxLength(int length) {
@@ -30,7 +30,7 @@ public class TextItem extends ConfigItem<String> {
     @Override
     public void resetToDefault() {
         setValue(defaultValue);
-        valueEntry.setText(value);
+        valueEntry.setValue(value);
     }
 
     @Override
