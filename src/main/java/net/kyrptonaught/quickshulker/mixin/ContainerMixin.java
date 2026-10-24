@@ -51,11 +51,12 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
         return this.slots.get(slotId).inventory instanceof PlayerInventory && ((SlotAccessor) slots.get(slotId)).getIndex() == playerInvUsedSlot;
     }
 
+    // slotId counts from 0 at the top left of the menu (possibly in the opened container)
     @Inject(method = "onSlotClick", at = @At("HEAD"), cancellable = true)
     public void QS$onClick(int slotId, int button, SlotActionType slotActionType, PlayerEntity playerEntity, CallbackInfoReturnable<ItemStack> cir) {
         // need to prevent the opened QuickShulker item from being moved in the inventory
         // see issue #28
-        if (slotId > 0 && slotId < slots.size() && hasOpenedItem()) {
+        if (slotId >= 0 && slotId < slots.size() && hasOpenedItem()) {
             // Intended behavior: inventory actions on opened QuickShulker item doesn't move the item at all
             if (isUsedSlot(slotId)) {
                 cir.setReturnValue(ItemStack.EMPTY);
