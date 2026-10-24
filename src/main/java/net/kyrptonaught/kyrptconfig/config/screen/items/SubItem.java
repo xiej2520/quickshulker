@@ -1,5 +1,6 @@
 package net.kyrptonaught.kyrptconfig.config.screen.items;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
@@ -120,16 +121,16 @@ public class SubItem<E> extends ConfigItem<E> {
     //    }
     //}
     @Override
-    public void render(int x, int y, int mouseX, int mouseY, float delta) {
-        super.render(x, y, mouseX, mouseY, delta);
+    public void render(PoseStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
+        super.render(matrices, x, y, mouseX, mouseY, delta);
         if (isHidden()) return;
-        Minecraft.getInstance().font.draw(expanded ? "-" : "+", x - 10, y + 5, 16777215);
+        Minecraft.getInstance().font.draw(matrices, expanded ? "-" : "+", x - 10, y + 5, 16777215);
         subStart = y;
         if (expanded) {
             int runningY = subStart + 23;
             for (ConfigItem<?> item : configs) {
                 if (item.isHidden()) continue;
-                item.render(30, runningY, mouseX, mouseY, delta);
+                item.render(matrices, 30, runningY, mouseX, mouseY, delta);
                 runningY += item.getSize() + 3;
             }
         }
@@ -149,15 +150,15 @@ public class SubItem<E> extends ConfigItem<E> {
     //    }
     //}
     @Override
-    public void render2(int x, int y, int mouseX, int mouseY, float delta) {
-        super.render2(x, y, mouseX, mouseY, delta);
+    public void render2(PoseStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
+        super.render2(matrices, x, y, mouseX, mouseY, delta);
         if (isHidden()) return;
 
         if (expanded) {
             int runningY = y + 23;
             for (ConfigItem<?> item : configs) {
                 if (item.isHidden()) continue;
-                item.render2(30, runningY, mouseX, mouseY, delta);
+                item.render2(matrices, 30, runningY, mouseX, mouseY, delta);
                 runningY += item.getSize() + 3;
             }
         }

@@ -1,10 +1,12 @@
 package net.kyrptonaught.kyrptconfig.config.screen.items;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.kyrptonaught.kyrptconfig.config.screen.NotSuckyButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import java.util.ArrayList;
@@ -40,7 +42,7 @@ public abstract class ConfigItem<T> {
 
     public ConfigItem<?> setRequiresRestart() {
         requiresRestart = true;
-        fieldTitle.append(" *");
+        ((MutableComponent) fieldTitle).append(" *");
         return this;
     }
 
@@ -50,7 +52,7 @@ public abstract class ConfigItem<T> {
     }
 
     public ConfigItem<?> setToolTipWithNewLine(String translatableKey) {
-        String[] translated = Language.getInstance().getElement(translatableKey).split("\n");
+        String[] translated = Language.getInstance().getOrDefault(translatableKey).split("\n");
         this.toolTipText = new ArrayList<>();
         for (String line : translated) {
             this.toolTipText.add(new TextComponent(line));
@@ -157,20 +159,20 @@ public abstract class ConfigItem<T> {
     //        resetButton.render(matrices, mouseX, mouseY, delta);
     //    }
     //}
-    public void render(int x, int y, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
         if (isHidden) return;
 
         int width = Minecraft.getInstance().getWindow().getGuiScaledWidth();
         int height = y + getHeaderSize();
         if (mouseY > y && mouseY < height)
-            GuiComponent.fill(0, y - 1, width, height + 1, 16725815);
+            GuiComponent.fill(matrices, 0, y - 1, width, height + 1, 16725815);
 
-        Minecraft.getInstance().font.drawShadow(this.fieldTitle.getContents(), x, y + 6, 16777215);
+        Minecraft.getInstance().font.drawShadow(matrices, this.fieldTitle, x, y + 6, 16777215);
         if (resetButton != null) {
             this.resetButton.y = y;
             this.resetButton.x = width - resetButton.getWidth() - 20;
             resetButton.active = !isValueDefault();
-            resetButton.render(mouseX, mouseY, delta);
+            resetButton.render(matrices, mouseX, mouseY, delta);
         }
     }
 
@@ -180,11 +182,11 @@ public abstract class ConfigItem<T> {
     //            mouseY > y && mouseY < y + 12)
     //        renderToolTip(matrices, mouseX, mouseY);
     //}
-    public void render2(int x, int y, int mouseX, int mouseY, float delta) {
+    public void render2(PoseStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
         if (isHidden) return;
-        if (mouseX > x && mouseX < x + Minecraft.getInstance().font.width(fieldTitle.getContents()) &&
+        if (mouseX > x && mouseX < x + Minecraft.getInstance().font.width(fieldTitle) &&
                 mouseY > y && mouseY < y + 12)
-            renderToolTip(mouseX, mouseY);
+            renderToolTip(matrices, mouseX, mouseY);
     }
 
     //public void renderToolTip(MatrixStack matrices, int x, int y) {
@@ -198,15 +200,15 @@ public abstract class ConfigItem<T> {
     //        MinecraftClient.getInstance().currentScreen.renderTooltip(matrices, Text.translatable("key.kyrptconfig.config.restartRequired"), x, y);
     //    }
     //}
-    public void renderToolTip(int x, int y) {
+    public void renderToolTip(PoseStack matrices, int x, int y) {
         if (toolTipText != null && requiresRestart) {
-            List<String> newList = new ArrayList<>(toolTipText.stream().map(Component::getContents).collect(Collectors.toList()));
-            newList.add(new TranslatableComponent("key.kyrptconfig.config.restartRequired").getContents());
-            Minecraft.getInstance().screen.renderTooltip(newList, x, y);
+            List<Component> newList = new ArrayList<>(toolTipText);
+            newList.add(new TranslatableComponent("key.kyrptconfig.config.restartRequired"));
+            Minecraft.getInstance().screen.renderComponentTooltip(matrices, newList, x, y);
         } else if (toolTipText != null)
-            Minecraft.getInstance().screen.renderTooltip(toolTipText.stream().map(Component::getContents).collect(Collectors.toList()), x, y);
+            Minecraft.getInstance().screen.renderComponentTooltip(matrices, toolTipText, x, y);
         else if (requiresRestart) {
-            Minecraft.getInstance().screen.renderTooltip(new TranslatableComponent("key.kyrptconfig.config.restartRequired").getContents(), x, y);
+            Minecraft.getInstance().screen.renderTooltip(matrices, new TranslatableComponent("key.kyrptconfig.config.restartRequired"), x, y);
         }
     }
 }

@@ -44,7 +44,7 @@ public class QuickShulkerModClient implements ClientModInitializer {
                     if (player.getMainHandItem().isEmpty() && !player.getOffhandItem().isEmpty()) {
                         ClientUtil.CheckAndSend(player.getOffhandItem(), 45);
                     } else {
-                        ClientUtil.CheckAndSend(player.getMainHandItem(), 36 + player.inventory.selected);
+                        ClientUtil.CheckAndSend(player.getMainHandItem(), 36 + player.getInventory().selected);
                     }
                 }
             }
@@ -52,7 +52,7 @@ public class QuickShulkerModClient implements ClientModInitializer {
         UseItemCallback.EVENT.register((player, world, hand) -> {
             ItemStack stack = player.getItemInHand(hand);
             if (world.isClientSide && QuickShulkerMod.getConfig().rightClickToOpen && Util.canOpenInHand(stack)) {
-                int slot = hand == InteractionHand.MAIN_HAND ? 36 + player.inventory.selected : 45;
+                int slot = hand == InteractionHand.MAIN_HAND ? 36 + player.getInventory().selected : 45;
                 if (ClientUtil.CheckAndSend(stack, slot)) {
                     return InteractionResultHolder.success(stack);
                 }

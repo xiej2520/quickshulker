@@ -43,7 +43,7 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
                     .setItem(ShulkerBoxBlock.class)
                     .supportsBundleing(true)
                     .setOpenAction(((player, stack) -> player.openMenu(new SimpleMenuProvider((i, playerInventory, playerEntity) ->
-                            new ShulkerBoxMenu(i, player.inventory, new ItemStackInventory(stack, 27)), stack.hasCustomHoverName() ? stack.getHoverName() : new TranslatableComponent("container.shulkerBox")))))
+                            new ShulkerBoxMenu(i, player.getInventory(), new ItemStackInventory(stack, 27)), stack.hasCustomHoverName() ? stack.getHoverName() : new TranslatableComponent("container.shulkerBox")))))
                     .register();
 
         if (getConfig().quickEnderChest)
@@ -60,7 +60,7 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
                     .setItem(CraftingTableBlock.class)
                     .ignoreSingleStackCheck(true)
                     .setOpenAction(((player, stack) -> player.openMenu(new SimpleMenuProvider((i, playerInventory, playerEntity) ->
-                            new CraftingMenu(i, playerInventory, ContainerLevelAccess.create(player.getCommandSenderWorld(), player.getCommandSenderBlockPosition())), new TranslatableComponent("container.crafting")))))
+                            new CraftingMenu(i, playerInventory, ContainerLevelAccess.create(player.getCommandSenderWorld(), player.blockPosition())), new TranslatableComponent("container.crafting")))))
                     .register();
 
         if (getConfig().quickStonecutter)
@@ -68,7 +68,7 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
                     .setItem(StonecutterBlock.class)
                     .ignoreSingleStackCheck(true)
                     .setOpenAction(((player, stack) -> player.openMenu(new SimpleMenuProvider((i, playerInventory, playerEntity) ->
-                            new StonecutterMenu(i, playerInventory, ContainerLevelAccess.create(player.getCommandSenderWorld(), player.getCommandSenderBlockPosition())), new TranslatableComponent("container.stonecutter")))))
+                            new StonecutterMenu(i, playerInventory, ContainerLevelAccess.create(player.getCommandSenderWorld(), player.blockPosition())), new TranslatableComponent("container.stonecutter")))))
                     .register();
     }
 }

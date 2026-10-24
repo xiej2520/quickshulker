@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -37,13 +38,13 @@ public abstract class ServerGamePacketListenerMixin {
 
     @Unique
     private int handSlot(InteractionHand hand) {
-        return hand == InteractionHand.MAIN_HAND ? this.player.inventory.selected : 40;
+        return hand == InteractionHand.MAIN_HAND ? this.player.getInventory().selected : 40;
     }
 
     @Unique
     private void cancelAndResync(CallbackInfo ci) {
         ci.cancel();
-        this.player.refreshContainer(this.player.containerMenu);
+        this.player.containerMenu.sendAllDataToRemote();
     }
 
     @Inject(method = "handlePlayerAction", at = @At(value = "INVOKE", target = ON_SERVER_THREAD, shift = At.Shift.AFTER), cancellable = true)
@@ -51,10 +52,10 @@ public abstract class ServerGamePacketListenerMixin {
         switch (packet.getAction()) {
             case DROP_ITEM:
             case DROP_ALL_ITEMS:
-                if (isOpenedSlot(this.player.inventory.selected)) cancelAndResync(ci);
+                if (isOpenedSlot(this.player.getInventory().selected)) cancelAndResync(ci);
                 break;
-            case SWAP_HELD_ITEMS:
-                if (isOpenedSlot(this.player.inventory.selected) || isOpenedSlot(40)) cancelAndResync(ci);
+            case SWAP_ITEM_WITH_OFFHAND:
+                if (isOpenedSlot(this.player.getInventory().selected) || isOpenedSlot(40)) cancelAndResync(ci);
                 break;
             default:
                 break;
@@ -79,12 +80,27 @@ public abstract class ServerGamePacketListenerMixin {
 
     @Inject(method = "handleInteract", at = @At(value = "INVOKE", target = ON_SERVER_THREAD, shift = At.Shift.AFTER), cancellable = true)
     private void QS$handleInteract(ServerboundInteractPacket packet, CallbackInfo ci) {
-        InteractionHand hand = packet.getHand();
-        if (hand != null && isOpenedSlot(handSlot(hand))) cancelAndResync(ci);
+        InteractionHand[] hand = new InteractionHand[1];
+        packet.dispatch(new ServerboundInteractPacket.Handler() {
+            @Override
+            public void onInteraction(InteractionHand interactionHand) {
+                hand[0] = interactionHand;
+            }
+
+            @Override
+            public void onInteraction(InteractionHand interactionHand, Vec3 location) {
+                hand[0] = interactionHand;
+            }
+
+            @Override
+            public void onAttack() {
+            }
+        });
+        if (hand[0] != null && isOpenedSlot(handSlot(hand[0]))) cancelAndResync(ci);
     }
 
     @Inject(method = "handlePickItem", at = @At(value = "INVOKE", target = ON_SERVER_THREAD, shift = At.Shift.AFTER), cancellable = true)
     private void QS$handlePickItem(ServerboundPickItemPacket packet, CallbackInfo ci) {
-        if (isOpenedSlot(this.player.inventory.selected) || isOpenedSlot(packet.getSlot())) cancelAndResync(ci);
+        if (isOpenedSlot(this.player.getInventory().selected) || isOpenedSlot(packet.getSlot())) cancelAndResync(ci);
     }
 }

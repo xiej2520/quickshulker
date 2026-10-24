@@ -3,4 +3,3 @@ accessWidener v2 named
 accessible class net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen$SlotWrapper
 accessible field net/minecraft/world/SimpleContainer items Lnet/minecraft/core/NonNullList;
 accessible field net/minecraft/world/inventory/Slot slot I
-accessible method net/minecraft/client/renderer/entity/ItemRenderer fillRect (Lcom/mojang/blaze3d/vertex/BufferBuilder;IIIIIIII)V

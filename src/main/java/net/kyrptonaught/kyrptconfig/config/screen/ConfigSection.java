@@ -1,5 +1,6 @@
 package net.kyrptonaught.kyrptconfig.config.screen;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.kyrptonaught.kyrptconfig.config.screen.items.ConfigItem;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -108,12 +109,12 @@ public class ConfigSection extends Screen {
     //        runningY += configItem.getSize() + 3;
     //    }
     //}
-    public void render(int startY, int mouseX, int mouseY, float delta) {
-        super.render(mouseX, mouseY, delta);
+    public void render(PoseStack matrices, int startY, int mouseX, int mouseY, float delta) {
+        super.render(matrices, mouseX, mouseY, delta);
         int runningY = scrollOffset + startY + 5;
         for (ConfigItem<?> configItem : configs) {
             // if (runningY + configItem.getSize() > 55 && runningY < 55 + height)
-            configItem.render(20, runningY, mouseX, mouseY, delta);
+            configItem.render(matrices, 20, runningY, mouseX, mouseY, delta);
             runningY += configItem.getSize() + 3;
         }
     }
@@ -125,10 +126,10 @@ public class ConfigSection extends Screen {
     //        runningY += configItem.getSize() + 3;
     //    }
     //}
-    public void render2(int startY, int mouseX, int mouseY, float delta) {
+    public void render2(PoseStack matrices, int startY, int mouseX, int mouseY, float delta) {
         int runningY = scrollOffset + startY + 5;
         for (ConfigItem<?> configItem : configs) {
-            configItem.render2(20, runningY, mouseX, mouseY, delta);
+            configItem.render2(matrices, 20, runningY, mouseX, mouseY, delta);
             runningY += configItem.getSize() + 3;
         }
     }

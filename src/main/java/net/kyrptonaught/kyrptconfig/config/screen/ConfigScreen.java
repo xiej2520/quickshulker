@@ -1,9 +1,12 @@
 package net.kyrptonaught.kyrptconfig.config.screen;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -25,11 +28,11 @@ public class ConfigScreen extends Screen {
 
     protected void init() {
         int center = this.width / 2;
-        this.addButton(new NotSuckyButton(center - 153, height - 25, 150, 20, new TranslatableComponent("key.kyrptconfig.config.exit"), widget -> {
+        this.addRenderableWidget(new NotSuckyButton(center - 153, height - 25, 150, 20, new TranslatableComponent("key.kyrptconfig.config.exit"), widget -> {
             this.minecraft.setScreen(previousScreen);
         }));
 
-        this.addButton(new NotSuckyButton(center + 3, height - 25, 150, 20, new TranslatableComponent("key.kyrptconfig.config.saveExit"), widget -> {
+        this.addRenderableWidget(new NotSuckyButton(center + 3, height - 25, 150, 20, new TranslatableComponent("key.kyrptconfig.config.saveExit"), widget -> {
             save();
             this.minecraft.setScreen(previousScreen);
         }));
@@ -125,24 +128,24 @@ public class ConfigScreen extends Screen {
     //}
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
+    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
         renderBackgroundTexture(0, this.height, 0);
-        fillGradient(0, 0, this.width, this.height, -1072689136, -804253680);
+        fillGradient(matrices, 0, 0, this.width, this.height, -1072689136, -804253680);
 
-        sections.get(selectedSection).render(55, mouseX, mouseY, delta);
+        sections.get(selectedSection).render(matrices, 55, mouseX, mouseY, delta);
 
         renderBackgroundTexture(0, 55, 0);
         renderBackgroundTexture(this.height - 30, 30, 0);
 
-        drawCenteredString(this.font, this.title.getContents(), this.width / 2, 13, 0xffffff);
+        drawCenteredString(matrices, this.font, this.title, this.width / 2, 13, 0xffffff);
         for (int i = 0; i < sections.size(); i++) {
             sections.get(i).sectionSelectionBTN.active = i != selectedSection;
-            sections.get(i).sectionSelectionBTN.render(mouseX, mouseY, delta);
+            sections.get(i).sectionSelectionBTN.render(matrices, mouseX, mouseY, delta);
         }
         // render tooltip if applicable
-        sections.get(selectedSection).render2(55, mouseX, mouseY, delta);
+        sections.get(selectedSection).render2(matrices, 55, mouseX, mouseY, delta);
 
-        super.render(mouseX, mouseY, delta);
+        super.render(matrices, mouseX, mouseY, delta);
     }
 
     //public void renderBackgroundTexture(int startY, int size, int vOffset) {
@@ -164,9 +167,10 @@ public class ConfigScreen extends Screen {
         // from Screen::renderDirtBackground(int)
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuilder();
-        this.minecraft.getTextureManager().bind(BACKGROUND_LOCATION);
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        bufferBuilder.begin(7, DefaultVertexFormat.POSITION_TEX_COLOR);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        RenderSystem.setShaderTexture(0, BACKGROUND_LOCATION);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         bufferBuilder.vertex(0.0, startY + size, 0.0).uv(0.0F, size / 32.0F + vOffset).color(64, 64, 64, 255).endVertex();
         bufferBuilder.vertex(this.width, startY + size, 0.0).uv(this.width / 32.0F, size / 32.0F + vOffset).color(64, 64, 64, 255).endVertex();
         bufferBuilder.vertex(this.width, startY, 0.0).uv(this.width / 32.0F, vOffset).color(64, 64, 64, 255).endVertex();

@@ -25,7 +25,7 @@ public abstract class CraftingScreenHandlerMixin extends AbstractContainerMenu {
     @Inject(method = "stillValid", at = @At("HEAD"), cancellable = true)
     public void overrideCanUse(Player player, CallbackInfoReturnable<Boolean> cir) {
         if (((ItemInventoryContainer) this).hasOpenedItem()) {
-            ItemStack stack = player.inventory.getItem(((ItemInventoryContainer) this).getPlayerInvUsedSlot());
+            ItemStack stack = player.getInventory().getItem(((ItemInventoryContainer) this).getPlayerInvUsedSlot());
             if (Util.isOpenableItem(stack))
                 cir.setReturnValue(true);
         }

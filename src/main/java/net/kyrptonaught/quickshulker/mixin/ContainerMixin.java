@@ -4,6 +4,7 @@ import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
@@ -14,9 +15,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
 
 
 @Mixin(AbstractContainerMenu.class)
@@ -24,7 +24,7 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
 
     @Shadow
     @Final
-    public List<Slot> slots;
+    public NonNullList<Slot> slots;
 
     // index of the currently opened QuickShulker item in the player inventory
     // different from index of the item in the ContainerScreen/HandledScreen,
@@ -57,7 +57,7 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
 
     @Unique
     public ItemStack getPlayerInvUsedStack(Player playerEntity) {
-        return playerInvUsedSlot >= 0 ? playerEntity.inventory.getItem(playerInvUsedSlot) : ItemStack.EMPTY;
+        return playerInvUsedSlot >= 0 ? playerEntity.getInventory().getItem(playerInvUsedSlot) : ItemStack.EMPTY;
     }
 
     @Unique
@@ -67,12 +67,12 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
 
     // slotId counts from 0 at the top left of the menu (possibly in the opened container)
     @Inject(method = "clicked", at = @At("HEAD"), cancellable = true)
-    public void QS$onClick(int slotId, int button, ClickType slotActionType, Player playerEntity, CallbackInfoReturnable<ItemStack> cir) {
+    public void QS$onClick(int slotId, int button, ClickType slotActionType, Player playerEntity, CallbackInfo ci) {
         // prevent items from being taken out of the menu (dupe) if anything moved or used up the opened stack.
         if (hasOpenedItem() && playerEntity instanceof ServerPlayer) {
-            ItemStack current = playerEntity.inventory.getItem(playerInvUsedSlot);
+            ItemStack current = playerEntity.getInventory().getItem(playerInvUsedSlot);
             if (current != openedStack || current.isEmpty()) {
-                cir.setReturnValue(ItemStack.EMPTY);
+                ci.cancel();
                 return;
             }
         }
@@ -81,15 +81,15 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
         if (slotId >= 0 && slotId < slots.size() && hasOpenedItem()) {
             // Intended behavior: inventory actions on opened QuickShulker item doesn't move the item at all
             if (isUsedSlot(slotId)) {
-                cir.setReturnValue(ItemStack.EMPTY);
+                ci.cancel();
             } else if (slotActionType == ClickType.SWAP && button == playerInvUsedSlot) {
                 // QuickShulker item can be moved but slotId doesn't refer to it for SWAP
-                cir.setReturnValue(ItemStack.EMPTY);
+                ci.cancel();
             } else if (slotActionType == ClickType.PICKUP_ALL) {
                 // stop picking up all items equivalent to QuickShulker item
-                ItemStack cursorStack = playerEntity.inventory.getCarried();
+                ItemStack cursorStack = ((AbstractContainerMenu) (Object) this).getCarried();
                 if (ItemStack.isSame(cursorStack, getPlayerInvUsedStack(playerEntity))) {
-                    cir.setReturnValue(ItemStack.EMPTY);
+                    ci.cancel();
                 }
             }
         }

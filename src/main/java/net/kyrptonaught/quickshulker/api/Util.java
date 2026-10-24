@@ -4,7 +4,6 @@ import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.mixin.SlotAccessor;
 import net.kyrptonaught.quickshulker.network.SetUsedSlotPacket;
-import net.minecraft.core.NonNullList;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -30,7 +29,7 @@ public class Util {
     }
 
     public static void openItem(Player player, int invSlot, int playerInvIndex) {
-        ItemStack stack = player.inventory.getItem(playerInvIndex);
+        ItemStack stack = player.getInventory().getItem(playerInvIndex);
         stack.removeTagKey(QuickShulkerMod.MOD_ID);
         QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());
         if (qsData != null && isOpenableItem(stack)) {
@@ -72,22 +71,17 @@ public class Util {
     public static ContainerListener forceCloseScreenIfNotPresent(Player player, int slotID, ItemStack stack) {
         return new ContainerListener() {
             @Override
-            public void refreshContainer(AbstractContainerMenu handler, NonNullList<ItemStack> stacks) {
-                isValid();
-            }
-
-            @Override
             public void slotChanged(AbstractContainerMenu handler, int slotId, ItemStack stack) {
                 isValid();
             }
 
             @Override
-            public void setContainerData(AbstractContainerMenu handler, int property, int value) {
+            public void dataChanged(AbstractContainerMenu handler, int property, int value) {
                 isValid();
             }
 
             public void isValid() {
-                ItemStack current = player.inventory.getItem(slotID);
+                ItemStack current = player.getInventory().getItem(slotID);
                 if (current != stack || stack.isEmpty()) {
                     ((ServerPlayer) player).closeContainer();
                 }

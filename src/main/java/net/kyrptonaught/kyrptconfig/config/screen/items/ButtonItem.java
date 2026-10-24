@@ -1,5 +1,6 @@
 package net.kyrptonaught.kyrptconfig.config.screen.items;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.kyrptonaught.kyrptconfig.config.screen.NotSuckyButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -32,11 +33,11 @@ public class ButtonItem extends ConfigItem<Void> {
     //    button.render(matrices, mouseX, mouseY, delta);
     //}
     @Override
-    public void render(int x, int y, int mouseX, int mouseY, float delta) {
-        super.render(x, y, mouseX, mouseY, delta);
+    public void render(PoseStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
+        super.render(matrices, x, y, mouseX, mouseY, delta);
         this.button.y = y;
         this.button.x = Minecraft.getInstance().getWindow().getGuiScaledWidth() - button.getWidth() - 40;
 
-        button.render(mouseX, mouseY, delta);
+        button.render(matrices, mouseX, mouseY, delta);
     }
 }

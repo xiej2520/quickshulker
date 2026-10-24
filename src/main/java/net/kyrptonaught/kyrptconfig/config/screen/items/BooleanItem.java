@@ -1,5 +1,6 @@
 package net.kyrptonaught.kyrptconfig.config.screen.items;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.kyrptonaught.kyrptconfig.config.screen.NotSuckyButton;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -22,10 +23,10 @@ public class BooleanItem extends ConfigItem<Boolean> {
     public void setValue(Boolean value) {
         super.setValue(value);
         if (value) {
-            boolWidget.setMessage((new TranslatableComponent("key.kyrptconfig.config.true")).getContents());
+            boolWidget.setMessage(new TranslatableComponent("key.kyrptconfig.config.true"));
             boolWidget.setButtonColor(DyeColor.LIME.getFireworkColor());
         } else {
-            boolWidget.setMessage((new TranslatableComponent("key.kyrptconfig.config.false")).getContents());
+            boolWidget.setMessage(new TranslatableComponent("key.kyrptconfig.config.false"));
             boolWidget.setButtonColor(DyeColor.RED.getFireworkColor());
         }
     }
@@ -45,11 +46,11 @@ public class BooleanItem extends ConfigItem<Boolean> {
     //}
 
     @Override
-    public void render(int x, int y, int mouseX, int mouseY, float delta) {
-        super.render(x, y, mouseX, mouseY, delta);
+    public void render(PoseStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
+        super.render(matrices, x, y, mouseX, mouseY, delta);
         this.boolWidget.y = y;
         this.boolWidget.x = resetButton.x - resetButton.getWidth() - (boolWidget.getWidth() / 2) - 20;
 
-        boolWidget.render(mouseX, mouseY, delta);
+        boolWidget.render(matrices, mouseX, mouseY, delta);
     }
 }

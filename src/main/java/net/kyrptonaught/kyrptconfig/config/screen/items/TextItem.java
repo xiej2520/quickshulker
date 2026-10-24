@@ -1,5 +1,7 @@
 package net.kyrptonaught.kyrptconfig.config.screen.items;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
@@ -11,7 +13,7 @@ public class TextItem extends ConfigItem<String> {
     public TextItem(Component name, String value, String defaultValue) {
         super(name, value, defaultValue);
         useDefaultResetBTN();
-        valueEntry = new EditBox(Minecraft.getInstance().font, 0, 0, 96, 17, "Text Entry");
+        valueEntry = new EditBox(Minecraft.getInstance().font, 0, 0, 96, 17, new TextComponent("Text Entry"));
         setMaxLength(256);
         valueEntry.setValue(value);
         valueEntry.setResponder(this::setValue);
@@ -70,8 +72,8 @@ public class TextItem extends ConfigItem<String> {
     //    valueEntry.render(matrices, mouseX, mouseY, delta);
     //}
     @Override
-    public void render(int x, int y, int mouseX, int mouseY, float delta) {
-        super.render(x, y, mouseX, mouseY, delta);
+    public void render(PoseStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
+        super.render(matrices, x, y, mouseX, mouseY, delta);
 
         if (valueEntry.isFocused()) {
             this.valueEntry.setWidth(150);
@@ -82,6 +84,6 @@ public class TextItem extends ConfigItem<String> {
         this.valueEntry.y = y + 1;
         this.valueEntry.setX(resetButton.x - (valueEntry.getWidth()) - 7);
 
-        valueEntry.render(mouseX, mouseY, delta);
+        valueEntry.render(matrices, mouseX, mouseY, delta);
     }
 }

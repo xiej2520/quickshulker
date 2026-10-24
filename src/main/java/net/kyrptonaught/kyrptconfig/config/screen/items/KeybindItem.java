@@ -1,9 +1,11 @@
 package net.kyrptonaught.kyrptconfig.config.screen.items;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.kyrptonaught.kyrptconfig.config.screen.NotSuckyButton;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import org.lwjgl.glfw.GLFW;
@@ -17,10 +19,10 @@ public class KeybindItem extends ConfigItem<String> {
         this.keyButton = new NotSuckyButton(0, 0, 100, 20, getCleanName(key), widget -> {
             this.isListening = !this.isListening;
             if (!this.isListening) {
-                widget.setMessage(this.getCleanName(this.value).getContents());
+                widget.setMessage(this.getCleanName(this.value));
                 //widget.setTooltip(Tooltip.of(Text.literal(this.value)));
             } else {
-                widget.setMessage(new TextComponent("> ").append(this.getCleanName(this.value).append(new TextComponent(" <"))).getContents());
+                widget.setMessage(new TextComponent("> ").append(this.getCleanName(this.value).append(new TextComponent(" <"))));
             }
         });
         //keyButton.setTooltip(Tooltip.of(Text.literal(this.value)));
@@ -30,11 +32,11 @@ public class KeybindItem extends ConfigItem<String> {
     public void setValue(String value) {
         super.setValue(value);
         isListening = false;
-        keyButton.setMessage(this.getCleanName(this.value).getContents());
+        keyButton.setMessage(this.getCleanName(this.value));
         //keyButton.setTooltip(Tooltip.of(Text.literal(this.value)));
     }
 
-    public Component getCleanName(String str) {
+    public MutableComponent getCleanName(String str) {
         if (I18n.exists(value))
             return new TranslatableComponent(str);
         if (str == null || str.trim().isEmpty())
@@ -77,12 +79,12 @@ public class KeybindItem extends ConfigItem<String> {
     //    keyButton.render(matrices, mouseX, mouseY, delta);
     //}
     @Override
-    public void render(int x, int y, int mouseX, int mouseY, float delta) {
-        super.render(x, y, mouseX, mouseY, delta);
+    public void render(PoseStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
+        super.render(matrices, x, y, mouseX, mouseY, delta);
         this.keyButton.y = y;
 
         this.keyButton.x = resetButton.x - resetButton.getWidth() - (keyButton.getWidth() / 2) - 20;
 
-        keyButton.render(mouseX, mouseY, delta);
+        keyButton.render(matrices, mouseX, mouseY, delta);
     }
 }

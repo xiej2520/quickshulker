@@ -1,9 +1,7 @@
 package net.kyrptonaught.quickshulker.mixin;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
@@ -12,6 +10,7 @@ import net.kyrptonaught.quickshulker.client.ClientUtil;
 import net.kyrptonaught.quickshulker.client.QuickShulkerModClient;
 import net.kyrptonaught.quickshulker.config.ConfigOptions;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -36,10 +35,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ScreenMixin extends Screen {
     @Shadow
     protected Slot hoveredSlot;
-
-    @Shadow
-    @Final
-    protected Inventory inventory;
 
     @Shadow
     @Final
@@ -76,7 +71,7 @@ public abstract class ScreenMixin extends Screen {
     private void QS$mousePressed(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         if (QuickShulkerMod.getConfig().rightClickInv) {
             // cursorStack moved from PlayerInventory to ScreenHandler in 1.16?
-            if (inventory.getCarried().isEmpty() && button == 1 && this.hoveredSlot != null && this.hoveredSlot.getItem().getCount() == 1) {
+            if (this.menu.getCarried().isEmpty() && button == 1 && this.hoveredSlot != null && this.hoveredSlot.getItem().getCount() == 1) {
                 if (handleTrigger()) {
                     this.skipNextRelease = true;
                     cir.setReturnValue(true);
@@ -122,37 +117,16 @@ public abstract class ScreenMixin extends Screen {
     }
 
 
-    @Inject(method = "renderSlot",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderAndDecorateItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;II)V"))
-    public void drawSlotBackground(Slot slot, CallbackInfo ci) {
-        // lame bar, I'm too lazy to draw something or render a texture
+    @Inject(method = "renderSlot", at = @At("HEAD"))
+    public void drawSlotBackground(PoseStack poseStack, Slot slot, CallbackInfo ci) {
+        // Mark the slot holding the opened item, behind the item itself.
         int playerInvUsedSlot = ((ItemInventoryContainer) this.menu).getPlayerInvUsedSlot();
         ConfigOptions opts = QuickShulkerMod.getConfig();
         if (opts.fillOpenedBackground
                 && playerInvUsedSlot != -1
                 && slot.container instanceof Inventory
                 && ((SlotAccessor) slot).getIndex() == playerInvUsedSlot) {
-            int i = slot.x;
-            int j = slot.y;
-
-            RenderSystem.disableDepthTest();
-            RenderSystem.disableTexture();
-            RenderSystem.disableAlphaTest();
-            RenderSystem.disableBlend();
-            Tesselator tessellator = Tesselator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBuilder();
-
-            this.itemRenderer.fillRect(bufferBuilder, i, j, 16, 16,
-                    (opts.colorBackground >> 16) & 0xFF,
-                    (opts.colorBackground >> 8) & 0xFF,
-                    (opts.colorBackground >> 0) & 0xFF,
-                    255
-            );
-            RenderSystem.enableBlend();
-            RenderSystem.enableAlphaTest();
-            RenderSystem.enableTexture();
-            RenderSystem.enableDepthTest();
-
+            GuiComponent.fill(poseStack, slot.x, slot.y, slot.x + 16, slot.y + 16, 0xFF000000 | opts.colorBackground);
         }
     }
     //@Inject(method = "renderSlot",

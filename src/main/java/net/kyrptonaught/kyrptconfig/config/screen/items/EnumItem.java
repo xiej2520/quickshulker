@@ -1,5 +1,6 @@
 package net.kyrptonaught.kyrptconfig.config.screen.items;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.kyrptonaught.kyrptconfig.config.screen.NotSuckyButton;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -22,7 +23,7 @@ public class EnumItem<T extends Enum<?>> extends ConfigItem<T> {
     @Override
     public void setValue(T value) {
         super.setValue(value);
-        displayWidget.setMessage(value.toString());
+        displayWidget.setMessage(new TextComponent(value.toString()));
     }
 
     public void cycleSelectedValue() {
@@ -53,11 +54,11 @@ public class EnumItem<T extends Enum<?>> extends ConfigItem<T> {
     //    displayWidget.render(matrices, mouseX, mouseY, delta);
     //}
     @Override
-    public void render(int x, int y, int mouseX, int mouseY, float delta) {
-        super.render(x, y, mouseX, mouseY, delta);
+    public void render(PoseStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
+        super.render(matrices, x, y, mouseX, mouseY, delta);
         this.displayWidget.y = y;
         this.displayWidget.x = resetButton.x - resetButton.getWidth() - (displayWidget.getWidth() / 2) - 20;
 
-        displayWidget.render(mouseX, mouseY, delta);
+        displayWidget.render(matrices, mouseX, mouseY, delta);
     }
 }

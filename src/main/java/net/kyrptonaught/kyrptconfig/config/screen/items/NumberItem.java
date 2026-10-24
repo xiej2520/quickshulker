@@ -1,6 +1,8 @@
 package net.kyrptonaught.kyrptconfig.config.screen.items;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.math.BigDecimal;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
@@ -13,7 +15,7 @@ public class NumberItem<T extends Number> extends ConfigItem<T> {
     public NumberItem(Component name, T value, T defaultValue) {
         super(name, value, defaultValue);
         useDefaultResetBTN();
-        valueEntry = new EditBox(Minecraft.getInstance().font, 0, 0, 96, 17, "Number Entry");
+        valueEntry = new EditBox(Minecraft.getInstance().font, 0, 0, 96, 17, new TextComponent("Number Entry"));
         valueEntry.setValue(value.toString());
         valueEntry.setResponder(this::onTyped);
     }
@@ -73,11 +75,11 @@ public class NumberItem<T extends Number> extends ConfigItem<T> {
     //    valueEntry.render(matrices, mouseX, mouseY, delta);
     //}
     @Override
-    public void render(int x, int y, int mouseX, int mouseY, float delta) {
-        super.render(x, y, mouseX, mouseY, delta);
+    public void render(PoseStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
+        super.render(matrices, x, y, mouseX, mouseY, delta);
         this.valueEntry.y = y + 2;
         this.valueEntry.x = resetButton.x - resetButton.getWidth() - (valueEntry.getWidth() / 2) - 20;
 
-        valueEntry.render(mouseX, mouseY, delta);
+        valueEntry.render(matrices, mouseX, mouseY, delta);
     }
 }
