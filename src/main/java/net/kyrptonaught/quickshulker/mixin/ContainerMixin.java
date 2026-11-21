@@ -2,10 +2,10 @@ package net.kyrptonaught.quickshulker.mixin;
 
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.minecraft.entity.living.player.PlayerEntity;
+import net.minecraft.entity.living.player.PlayerInventory;
 import net.minecraft.inventory.menu.ActionType;
 import net.minecraft.inventory.menu.InventoryMenu;
 import net.minecraft.inventory.slot.InventorySlot;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -43,7 +43,7 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
 
     @Unique
     public ItemStack getPlayerInvUsedStack(PlayerEntity playerEntity) {
-        return playerInvUsedSlot >= 0 ? playerEntity.inventory.getStack(playerInvUsedSlot) : ItemStack.EMPTY;
+        return playerInvUsedSlot >= 0 ? playerEntity.inventory.getItem(playerInvUsedSlot) : ItemStack.EMPTY;
     }
 
     @Unique
@@ -65,7 +65,7 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
                 cir.setReturnValue(ItemStack.EMPTY);
             } else if (slotActionType == ActionType.PICKUP_ALL) {
                 // stop picking up all items equivalent to QuickShulker item
-                ItemStack cursorStack = playerEntity.inventory.getCursorStack();
+                ItemStack cursorStack = playerEntity.inventory.getCursorItem();
                 if (ItemStack.matchesItemIgnoreDamage(cursorStack, getPlayerInvUsedStack(playerEntity))) {
                     cir.setReturnValue(ItemStack.EMPTY);
                 }

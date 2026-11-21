@@ -17,7 +17,7 @@ public class OpenableItemUtil {
         // make sure player doesn't reopen shulker boxes and dupe
         player.closeMenu();
 
-        ItemStack stack = player.inventory.getStack(playerInvIndex);
+        ItemStack stack = player.inventory.getItem(playerInvIndex);
         QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());
         if (qsData != null) {
             qsData.openConsumer.accept(player, stack);
@@ -52,7 +52,7 @@ public class OpenableItemUtil {
     public static InventoryMenuListener forceCloseScreenIfNotPresent(PlayerEntity player, int slotID, ItemStack stack) {
         return new InventoryMenuListener() {
             @Override
-            public void updateMenu(InventoryMenu menu, DefaultedList<ItemStack> stacks) {
+            public void onMenuChanged(InventoryMenu menu, DefaultedList<ItemStack> stacks) {
                 isValid();
             }
 
@@ -72,7 +72,7 @@ public class OpenableItemUtil {
             }
 
             public void isValid() {
-                if (!areItemsEqual(stack, player.inventory.getStack(slotID))) {
+                if (!areItemsEqual(stack, player.inventory.getItem(slotID))) {
                     ((ServerPlayerEntity) player).closeMenu();
                 }
             }

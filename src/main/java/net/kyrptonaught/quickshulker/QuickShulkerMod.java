@@ -53,7 +53,7 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
                             BlockItem.byBlock(Blocks.PINK_SHULKER_BOX)
                     )
                     .supportsBundleing(true)
-                    .setOpenAction(((player, stack) -> player.openInventoryMenu(
+                    .setOpenAction(((player, stack) -> player.openChestMenu(
                             new FakeShulkerBoxInventory(stack)
                     )))
                     .register();
@@ -65,7 +65,7 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
                     .supportsBundleing(true)
                     .ignoreSingleStackCheck(true)
                     .setOpenAction((player, stack) ->
-                            player.openInventoryMenu(player.getEnderChestInventory()))
+                            player.openChestMenu(player.getEnderChestInventory()))
                     .register();
         }
 

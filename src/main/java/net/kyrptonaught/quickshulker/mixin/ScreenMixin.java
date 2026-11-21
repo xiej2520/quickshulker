@@ -1,8 +1,5 @@
 package net.kyrptonaught.quickshulker.mixin;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tessellator;
 import malilib.util.data.Color4f;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -10,10 +7,13 @@ import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.client.ClientUtil;
 import net.kyrptonaught.quickshulker.config.ClientConfigs;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.menu.CreativeInventoryScreen;
-import net.minecraft.client.gui.screen.inventory.menu.InventoryMenuScreen;
-import net.minecraft.client.gui.screen.inventory.menu.SurvivalInventoryScreen;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.client.gui.screen.game.inventory.CreativeInventoryScreen;
+import net.minecraft.client.gui.screen.game.inventory.InventoryMenuScreen;
+import net.minecraft.client.gui.screen.game.inventory.SurvivalInventoryScreen;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.vertex.BufferBuilder;
+import net.minecraft.client.render.vertex.Tesselator;
+import net.minecraft.entity.living.player.PlayerInventory;
 import net.minecraft.inventory.menu.InventoryMenu;
 import net.minecraft.inventory.slot.InventorySlot;
 import net.minecraft.item.CreativeModeTab;
@@ -62,7 +62,7 @@ public abstract class ScreenMixin extends Screen {
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void QS$mousePressed(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
         if (ClientConfigs.Options.RIGHT_CLICK_OPEN_IN_INVENTORY.getValue()) {
-            if (this.minecraft.player.inventory.getCursorStack().isEmpty() && mouseButton == 1 && this.hoveredSlot != null && this.hoveredSlot.getStack().getSize() == 1) {
+            if (this.minecraft.player.inventory.getCursorItem().isEmpty() && mouseButton == 1 && this.hoveredSlot != null && this.hoveredSlot.getItem().getSize() == 1) {
                 if (handleTrigger()) {
                     this.cancelNextMouseRelease = true;
                     ci.cancel();
@@ -88,7 +88,7 @@ public abstract class ScreenMixin extends Screen {
             return false;
         }
 
-        ItemStack stack = slot.getStack();
+        ItemStack stack = slot.getItem();
         if (stack.getSize() != 1) {
             return false;
         }
@@ -119,8 +119,8 @@ public abstract class ScreenMixin extends Screen {
     }
 
 
-    @Inject(method = "drawSlot", at = @At(value = "INVOKE",
-        target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItem(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;II)V"))
+    @Inject(method = "renderSlot", at = @At(value = "INVOKE",
+        target = "Lnet/minecraft/client/render/entity/ItemRenderer;renderGuiItem(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;II)V"))
     public void drawSlotBackground(InventorySlot slot, CallbackInfo ci) {
         // lame bar, I'm too lazy to draw something or render a texture
         int playerInvUsedSlot = ((ItemInventoryContainer) this.menu).getPlayerInvUsedSlot();
@@ -135,8 +135,8 @@ public abstract class ScreenMixin extends Screen {
             GlStateManager.disableTexture();
             GlStateManager.disableAlphaTest();
             GlStateManager.disableBlend();
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBuilder();
+            Tesselator tessellator = Tesselator.getInstance();
+            BufferBuilder bufferBuilder = tessellator.getBuffer();
 
             Color4f color = ClientConfigs.Options.OPENED_BACKGROUND_COLOR.getColor();
 

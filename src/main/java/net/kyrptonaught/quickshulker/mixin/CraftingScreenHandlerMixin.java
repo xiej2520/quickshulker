@@ -18,7 +18,7 @@ public abstract class CraftingScreenHandlerMixin extends InventoryMenu {
     @Inject(method = "isValid", at = @At("HEAD"), cancellable = true)
     public void overrideCanUse(PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
         if (((ItemInventoryContainer) this).hasOpenedItem()) {
-            ItemStack stack = player.inventory.getStack(((ItemInventoryContainer) this).getPlayerInvUsedSlot());
+            ItemStack stack = player.inventory.getItem(((ItemInventoryContainer) this).getPlayerInvUsedSlot());
             if (stack.getItem() == BlockItem.byBlock(Blocks.CRAFTING_TABLE)) {
                 cir.setReturnValue(true);
             }

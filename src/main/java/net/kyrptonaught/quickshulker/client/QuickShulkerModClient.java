@@ -31,22 +31,19 @@ public class QuickShulkerModClient implements ClientModInitializer {
             if (Minecraft.getInstance().screen == null && ClientConfigs.Options.KEYBIND_OPEN_IN_HAND.getValue()) {
                 PlayerEntity player = Minecraft.getInstance().player;
                 if (ClientConfigs.HotKeys.QUICKSHULKER_KEYBIND.getKeyBind().isKeyBindHeld() && player != null) {
-                    if (player.getMainHandStack().isEmpty() && !player.getOffHandStack().isEmpty()) {
-                        ClientUtil.tryOpenAndSendPacket(player.getOffHandStack(), PLAYER_INVENTORY_OFF_HAND_SLOT);
+                    if (player.getItemInMainHand().isEmpty() && !player.getItemInOffHand().isEmpty()) {
+                        ClientUtil.tryOpenAndSendPacket(player.getItemInOffHand(), PLAYER_INVENTORY_OFF_HAND_SLOT);
                     } else {
-                        ClientUtil.tryOpenAndSendPacket(player.getMainHandStack(), player.inventory.selectedSlot);
+                        ClientUtil.tryOpenAndSendPacket(player.getItemInMainHand(), player.inventory.selectedSlot);
                     }
                 }
             }
         });
-        ClientPlayNetworking.registerListener(
-            SetUsedSlotPacket.SET_USED_SLOT_PACKET.toString(),
-            (client, handler, packetByteBuf) -> {
-                int playerInvIndex = packetByteBuf.readInt();
-                client.submit(() -> ((ItemInventoryContainer) client.player.menu).setPlayerInvUsedSlot(playerInvIndex));
-                return true;
-            }
-        );
+        ClientPlayNetworking.registerListener(SetUsedSlotPacket.SET_USED_SLOT_PACKET, (ctx, buffer) -> {
+            ctx.ensureOnMainThread();
+            int playerInvIndex = buffer.readInt();
+            ((ItemInventoryContainer) Minecraft.getInstance().player.menu).setPlayerInvUsedSlot(playerInvIndex);
+        });
         FabricLoader.getInstance().getEntrypoints(MOD_ID + "_client", RegisterQuickShulkerClient.class).forEach(RegisterQuickShulkerClient::registerClient);
 
         Registry.INITIALIZATION_DISPATCHER.registerInitializationHandler(new InitHandler());

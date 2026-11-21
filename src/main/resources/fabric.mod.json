@@ -36,7 +36,8 @@
     "fabricloader": ">=0.14.0",
     "malilib": ">=0.60.0",
     "minecraft": "1.12.2",
-    "osl-entrypoints": ">=0.4.0"
+    "osl-entrypoints": ">=0.4.0",
+    "osl-networking": ">=0.10.0"
   },
   "accessWidener": "quickshulker.accesswidener"
 }

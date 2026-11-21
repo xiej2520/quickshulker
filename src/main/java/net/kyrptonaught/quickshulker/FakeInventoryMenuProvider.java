@@ -1,7 +1,7 @@
 package net.kyrptonaught.quickshulker;
 
 import net.minecraft.entity.living.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.living.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.menu.ChestMenu;
@@ -52,12 +52,12 @@ public class FakeInventoryMenuProvider implements MenuProvider, Inventory {
     }
 
     @Override
-    public ItemStack getStack(int slot) {
+    public ItemStack getItem(int slot) {
         return this.inventory.get(slot);
     }
 
     @Override
-    public ItemStack removeStack(int slot, int amount) {
+    public ItemStack removeItem(int slot, int amount) {
         ItemStack itemStack = InventoryHelper.split(this.inventory, slot, amount);
         if (!itemStack.isEmpty()) {
             this.markDirty();
@@ -67,12 +67,12 @@ public class FakeInventoryMenuProvider implements MenuProvider, Inventory {
     }
 
     @Override
-    public ItemStack removeStackQuietly(int slot) {
+    public ItemStack removeItemQuietly(int slot) {
         return InventoryHelper.remove(this.inventory, slot);
     }
 
     @Override
-    public void setStack(int slot, ItemStack stack) {
+    public void setItem(int slot, ItemStack stack) {
         this.inventory.set(slot, stack);
         if (stack.getSize() > this.getMaxStackSize()) {
             stack.setSize(this.getMaxStackSize());
@@ -107,7 +107,7 @@ public class FakeInventoryMenuProvider implements MenuProvider, Inventory {
     }
 
     @Override
-    public boolean canSetStack(int slot, ItemStack stack) {
+    public boolean isItemAllowed(int slot, ItemStack stack) {
         return true;
     }
 

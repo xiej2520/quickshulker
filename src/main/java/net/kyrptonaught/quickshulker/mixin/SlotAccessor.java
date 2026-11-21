@@ -8,6 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface SlotAccessor {
 
     // slot.slot is the index of the slot in the inventory it's in
-    @Accessor(value = "slot")
+    @Accessor(value = "id")
     int getInventoryIndex();
 }
