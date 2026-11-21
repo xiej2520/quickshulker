@@ -1,7 +1,6 @@
 package net.kyrptonaught.quickshulker;
 
 import malilib.util.data.ModInfo;
-import net.fabricmc.loader.api.FabricLoader;
 import net.kyrptonaught.quickshulker.api.QuickOpenableRegistry;
 import net.kyrptonaught.quickshulker.api.QuickShulkerData;
 import net.kyrptonaught.quickshulker.api.RegisterQuickShulker;
@@ -11,9 +10,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CraftingTableBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.math.BlockPos;
+import net.ornithemc.osl.config.api.ConfigManager;
 import net.ornithemc.osl.entrypoints.api.ModInitializer;
-
-import static net.kyrptonaught.quickshulker.config.ServerConfig.CONFIG;
 
 
 public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
@@ -22,17 +20,17 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
     public static final ModInfo MOD_INFO = new ModInfo(MOD_ID, MOD_NAME);
 
     public static final String PACKET_ID = "qs";
-    public static final ServerConfig SERVER_CONFIG = new ServerConfig(FabricLoader.getInstance().getConfigDir().resolve(MOD_ID + "_config.json5"));
 
     @Override
     public void init() {
+        ConfigManager.register(ServerConfig.INSTANCE);
         OpenShulkerPacket.registerReceivePacket();
         //QuickBundlePacket.registerReceivePacket();
     }
 
     // register after bootstrap Blocks in Minecraft.init()
     public void registerProviders() {
-        if (CONFIG.quickShulkerBox) {
+        if (ServerConfig.QUICK_SHULKER_BOX.get()) {
             new QuickOpenableRegistry.Builder()
                     .setItem(
                             BlockItem.byBlock(Blocks.WHITE_SHULKER_BOX),
@@ -59,7 +57,7 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
                     .register();
         }
 
-        if (CONFIG.quickEnderChest) {
+        if (ServerConfig.QUICK_ENDER_CHEST.get()) {
             new QuickOpenableRegistry.Builder(new QuickShulkerData.QuickEnderData())
                     .setItem(BlockItem.byBlock(Blocks.ENDER_CHEST))
                     .supportsBundleing(true)
@@ -69,7 +67,7 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
                     .register();
         }
 
-        if (CONFIG.quickCraftingTable) {
+        if (ServerConfig.QUICK_CRAFTING_TABLE.get()) {
             new QuickOpenableRegistry.Builder()
                     .setItem(BlockItem.byBlock(Blocks.CRAFTING_TABLE))
                     .ignoreSingleStackCheck(true)

@@ -1,6 +1,6 @@
 package net.kyrptonaught.quickshulker.api;
 
-import net.kyrptonaught.quickshulker.config.ClientConfigs;
+import net.kyrptonaught.quickshulker.config.ServerConfig;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -49,7 +49,7 @@ public class QuickShulkerData {
         }
 
         public Inventory getInventory(PlayerEntity player, ItemStack stack) {
-            if (!ClientConfigs.Options.QUICK_ENDER_CHEST.getValue()) {
+            if (!ServerConfig.QUICK_ENDER_CHEST.get()) {
                 return null;
             }
             return player.getEnderChestInventory();

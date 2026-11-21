@@ -1,56 +1,66 @@
 package net.kyrptonaught.quickshulker.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import net.kyrptonaught.quickshulker.QuickShulkerMod;
+import net.ornithemc.osl.config.api.ConfigScope;
+import net.ornithemc.osl.config.api.LoadingPhase;
+import net.ornithemc.osl.config.api.config.BaseConfig;
+import net.ornithemc.osl.config.api.config.option.BooleanOption;
+import net.ornithemc.osl.config.api.serdes.FileSerializerType;
+import net.ornithemc.osl.config.api.serdes.SerializerTypes;
 
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+// <ai>Server side settings: which items can be quick opened. Saved to config/quickshulker/server.json,
+// loaded on game or dedicated server start (before the providers are registered).</ai>
+public class ServerConfig extends BaseConfig {
+    public static final ServerConfig INSTANCE = new ServerConfig();
 
-import static net.kyrptonaught.quickshulker.QuickShulkerMod.MOD_ID;
+    public static final BooleanOption QUICK_SHULKER_BOX        = new BooleanOption("quickShulkerBox", "Allow quick opening Shulker Boxes", true);
+    public static final BooleanOption QUICK_CRAFTING_TABLE     = new BooleanOption("quickCraftingTable", "Allow quick opening Crafting Tables", true);
+    public static final BooleanOption QUICK_ENDER_CHEST        = new BooleanOption("quickEnderChest", "Allow quick opening Ender Chests", true);
+    public static final BooleanOption QUICK_STONECUTTER        = new BooleanOption("quickStonecutter", "Allow quick opening Stonecutters (unimplemented)", true);
 
-public class ServerConfig {
-    private final Path saveFile;
+    public static final BooleanOption SUPPORT_BUNDLING_INSERT  = new BooleanOption("supportBundlingInsert", "Allow inserting items into shulkers (unimplemented)", true);
+    public static final BooleanOption SUPPORT_BUNDLING_PICKUP  = new BooleanOption("supportBundlingPickup", "Allow picking up items with shulkers (unimplemented)", true);
+    public static final BooleanOption SUPPORT_BUNDLING_EXTRACT = new BooleanOption("supportBundlingExtract", "Allow extracting items from shulkers (unimplemented)", true);
 
-    public static ServerConfigOptions CONFIG = new ServerConfigOptions();
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
-
-    public ServerConfig(Path saveFile) {
-        this.saveFile = saveFile;
-
-        if (!Files.exists(this.saveFile) || !Files.isReadable(this.saveFile)) {
-            System.out.printf("%s: Unable to find config file: %s. Saving default config.\n", MOD_ID, this.saveFile);
-            this.save();
-            return;
-        }
-
-        try (Reader reader = Files.newBufferedReader(this.saveFile)) {
-            ServerConfigOptions readConfig = gson.fromJson(reader, ServerConfigOptions.class);
-            if (readConfig == null) {
-                System.out.printf("%s: Failed to load config file: %s! Saving default config\n", MOD_ID, this.saveFile);
-                this.save();
-            } else {
-                CONFIG = readConfig;
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            System.out.printf("%s: Failed to load config file: %s! Saving default config\n", MOD_ID, this.saveFile);
-            this.save();
-        }
+    @Override
+    public String getNamespace() {
+        return QuickShulkerMod.MOD_ID;
     }
 
-    public void save() {
-        try (OutputStream os = Files.newOutputStream(this.saveFile); OutputStreamWriter out = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {
-            String json = gson.toJson(CONFIG);
-            out.write(json);
-        } catch (Exception e) {
-            System.out.printf("%s: Failed to save config file: %s!\n", MOD_ID, this.saveFile);
-            e.printStackTrace();
-        }
+    @Override
+    public String getName() {
+        return "server";
+    }
+
+    @Override
+    public String getSaveName() {
+        return "server.json";
+    }
+
+    @Override
+    public ConfigScope getScope() {
+        return ConfigScope.GLOBAL;
+    }
+
+    @Override
+    public LoadingPhase getLoadingPhase() {
+        return LoadingPhase.START;
+    }
+
+    @Override
+    public FileSerializerType<?> getType() {
+        return SerializerTypes.JSON;
+    }
+
+    @Override
+    public int getVersion() {
+        return 1;
+    }
+
+    @Override
+    public void init() {
+        registerOptions("generic",
+            QUICK_SHULKER_BOX, QUICK_CRAFTING_TABLE, QUICK_ENDER_CHEST, QUICK_STONECUTTER,
+            SUPPORT_BUNDLING_INSERT, SUPPORT_BUNDLING_PICKUP, SUPPORT_BUNDLING_EXTRACT);
     }
 }
