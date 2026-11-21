@@ -13,13 +13,17 @@ import net.minecraft.util.DefaultedList;
 public class OpenableItemUtil {
 
     public static void openItem(ServerPlayerEntity player, int playerInvIndex) {
+        if (playerInvIndex < 0 || playerInvIndex >= player.inventory.getSize()) {
+            return;
+        }
+
         // need to close current menu and save shulker box data before fetching ItemStack
         // make sure player doesn't reopen shulker boxes and dupe
         player.closeMenu();
 
         ItemStack stack = player.inventory.getItem(playerInvIndex);
         QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());
-        if (qsData != null) {
+        if (qsData != null && isOpenableItem(stack)) {
             qsData.openConsumer.accept(player, stack);
 
             ((ItemInventoryContainer) player.menu).setPlayerInvUsedSlot(playerInvIndex);

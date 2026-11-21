@@ -24,13 +24,18 @@ public class QuickShulkerModClient implements ClientModInitializer {
 
     public static final int PLAYER_INVENTORY_OFF_HAND_SLOT = 40;
 
+    private static boolean wasKeyHeld;
+
     @Override
     public void onInitializeClient() {
 
         ClientWorldEvents.TICK_START.register(clientWorld -> {
-            if (Minecraft.getInstance().screen == null && ClientConfigs.Options.KEYBIND_OPEN_IN_HAND.getValue()) {
+            boolean keyHeld = ClientConfigs.HotKeys.QUICKSHULKER_KEYBIND.getKeyBind().isKeyBindHeld();
+            boolean keyPressed = keyHeld && !wasKeyHeld;
+            wasKeyHeld = keyHeld;
+            if (keyPressed && Minecraft.getInstance().screen == null && ClientConfigs.Options.KEYBIND_OPEN_IN_HAND.getValue()) {
                 PlayerEntity player = Minecraft.getInstance().player;
-                if (ClientConfigs.HotKeys.QUICKSHULKER_KEYBIND.getKeyBind().isKeyBindHeld() && player != null) {
+                if (player != null) {
                     if (player.getItemInMainHand().isEmpty() && !player.getItemInOffHand().isEmpty()) {
                         ClientUtil.tryOpenAndSendPacket(player.getItemInOffHand(), PLAYER_INVENTORY_OFF_HAND_SLOT);
                     } else {

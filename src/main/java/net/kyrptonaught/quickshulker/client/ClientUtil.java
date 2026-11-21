@@ -2,6 +2,7 @@ package net.kyrptonaught.quickshulker.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.kyrptonaught.quickshulker.api.OpenableItemUtil;
 import net.kyrptonaught.quickshulker.config.ClientConfigs;
 import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
 import net.minecraft.block.Blocks;
@@ -20,6 +21,11 @@ public class ClientUtil {
     }
 
     public static boolean isOpenableItem(ItemStack stack) {
+        // registered items (vanilla ones and any added through the api entrypoint)
+        if (!OpenableItemUtil.isOpenableItem(stack)) {
+          return false;
+        }
+        // check client toggles
         if (stack.getItem() instanceof ShulkerBoxItem) {
             return ClientConfigs.Options.QUICK_SHULKER_BOX.getValue();
         }
@@ -29,7 +35,7 @@ public class ClientUtil {
         if (stack.getItem().equals(BlockItem.byBlock(Blocks.CRAFTING_TABLE))) {
             return ClientConfigs.Options.QUICK_CRAFTING_TABLE.getValue();
         }
-        return false;
+        return true;
     }
 
 }
