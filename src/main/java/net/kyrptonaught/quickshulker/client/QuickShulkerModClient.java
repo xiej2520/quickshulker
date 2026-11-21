@@ -1,7 +1,5 @@
 package net.kyrptonaught.quickshulker.client;
 
-import malilib.registry.Registry;
-import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
@@ -11,6 +9,9 @@ import net.kyrptonaught.quickshulker.config.ClientConfigs;
 import net.kyrptonaught.quickshulker.network.SetUsedSlotPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.living.player.PlayerEntity;
+import net.ornithemc.osl.config.api.ConfigManager;
+import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
+import net.ornithemc.osl.keybinds.api.KeybindEvents;
 import net.ornithemc.osl.lifecycle.api.client.ClientWorldEvents;
 import net.ornithemc.osl.networking.api.client.ClientPlayNetworking;
 
@@ -27,13 +28,15 @@ public class QuickShulkerModClient implements ClientModInitializer {
     private static boolean wasKeyHeld;
 
     @Override
-    public void onInitializeClient() {
+    public void initClient() {
+        ConfigManager.register(ClientConfigs.INSTANCE);
+        KeybindEvents.REGISTER_KEYBINDS.register(ClientConfigs.HotKeys::register);
 
         ClientWorldEvents.TICK_START.register(clientWorld -> {
-            boolean keyHeld = ClientConfigs.HotKeys.QUICKSHULKER_KEYBIND.getKeyBind().isKeyBindHeld();
+            boolean keyHeld = ClientConfigs.HotKeys.isQuickShulkerKeyHeld();
             boolean keyPressed = keyHeld && !wasKeyHeld;
             wasKeyHeld = keyHeld;
-            if (keyPressed && Minecraft.getInstance().screen == null && ClientConfigs.Options.KEYBIND_OPEN_IN_HAND.getValue()) {
+            if (keyPressed && Minecraft.getInstance().screen == null && ClientConfigs.Options.KEYBIND_OPEN_IN_HAND.get()) {
                 PlayerEntity player = Minecraft.getInstance().player;
                 if (player != null) {
                     if (player.getItemInMainHand().isEmpty() && !player.getItemInOffHand().isEmpty()) {
@@ -50,8 +53,6 @@ public class QuickShulkerModClient implements ClientModInitializer {
             ((ItemInventoryContainer) Minecraft.getInstance().player.menu).setPlayerInvUsedSlot(playerInvIndex);
         });
         FabricLoader.getInstance().getEntrypoints(MOD_ID + "_client", RegisterQuickShulkerClient.class).forEach(RegisterQuickShulkerClient::registerClient);
-
-        Registry.INITIALIZATION_DISPATCHER.registerInitializationHandler(new InitHandler());
 
     }
 }

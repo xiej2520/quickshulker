@@ -19,7 +19,7 @@ public abstract class ClientPlayerInteractionManagerMixin {
 
     @Inject(method = "useItem", at = @At("HEAD"), cancellable = true)
     public void useItem(PlayerEntity player, World world, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
-        if (ClientConfigs.Options.RIGHT_CLICK_OPEN_IN_HAND.getValue()) {
+        if (ClientConfigs.Options.RIGHT_CLICK_OPEN_IN_HAND.get()) {
             if (player.getItemInMainHand().isEmpty() && !player.getItemInOffHand().isEmpty()) {
                 if (ClientUtil.tryOpenAndSendPacket(player.getItemInOffHand(), PLAYER_INVENTORY_OFF_HAND_SLOT)) {
                     cir.setReturnValue(InteractionResult.SUCCESS);

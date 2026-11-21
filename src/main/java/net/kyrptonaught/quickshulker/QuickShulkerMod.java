@@ -1,6 +1,5 @@
 package net.kyrptonaught.quickshulker;
 
-import malilib.util.data.ModInfo;
 import net.kyrptonaught.quickshulker.api.QuickOpenableRegistry;
 import net.kyrptonaught.quickshulker.api.QuickShulkerData;
 import net.kyrptonaught.quickshulker.api.RegisterQuickShulker;
@@ -16,8 +15,6 @@ import net.ornithemc.osl.entrypoints.api.ModInitializer;
 
 public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
     public static final String MOD_ID = "quickshulker";
-    public static final String MOD_NAME = "QuickShulker";
-    public static final ModInfo MOD_INFO = new ModInfo(MOD_ID, MOD_NAME);
 
     public static final String PACKET_ID = "qs";
 

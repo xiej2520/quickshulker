@@ -27,13 +27,13 @@ public class ClientUtil {
         }
         // check client toggles
         if (stack.getItem() instanceof ShulkerBoxItem) {
-            return ClientConfigs.Options.QUICK_SHULKER_BOX.getValue();
+            return ClientConfigs.Options.QUICK_SHULKER_BOX.get();
         }
         if (stack.getItem().equals(BlockItem.byBlock(Blocks.ENDER_CHEST))) {
-            return ClientConfigs.Options.QUICK_ENDER_CHEST.getValue();
+            return ClientConfigs.Options.QUICK_ENDER_CHEST.get();
         }
         if (stack.getItem().equals(BlockItem.byBlock(Blocks.CRAFTING_TABLE))) {
-            return ClientConfigs.Options.QUICK_CRAFTING_TABLE.getValue();
+            return ClientConfigs.Options.QUICK_CRAFTING_TABLE.get();
         }
         return true;
     }

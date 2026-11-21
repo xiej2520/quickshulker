@@ -28,8 +28,10 @@ quickshulker.config.name.supportbundlinginsert=§8Support Bundling Insert
 quickshulker.config.name.supportbundlingpickup=§8Support Bundling Pickup
 quickshulker.config.name.supportbundlingextract=§8Support Bundling Extract
 
+quickshulker.keybind.category=Quick Shulker
 quickshulker.hotkey.name.quickshulkerkeybind=QuickShulker Keybind
 quickshulker.hotkey.comment.quickshulkerkeybind=Keybind for quick opening items
 
 quickshulker.title.screen.configs=QuickShulker Configs
+quickshulker.config.keybindhint=Keybind: %s (change it in Controls)
 quickshulker.config.tab.generic=QuickShulker Generic

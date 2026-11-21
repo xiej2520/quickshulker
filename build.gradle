@@ -21,7 +21,6 @@ repositories {
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
 
-	maven { url 'https://masa.dy.fi/maven' }
 	mavenLocal()
 }
 
@@ -33,8 +32,6 @@ dependencies {
 	modImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
 
 	ploceus.dependOsl(project.osl_version)
-
-	modImplementation "malilib:malilib-ornithe-${project.minecraft_version}:${project.malilib_version}"
 }
 
 loom {
