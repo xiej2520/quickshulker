@@ -13,6 +13,7 @@ import net.kyrptonaught.kyrptconfig.keybinding.CustomKeyBinding;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.client.QuickShulkerModClient;
 import net.kyrptonaught.quickshulker.config.ConfigOptions;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.TranslatableComponent;
 
 @Environment(EnvType.CLIENT)
@@ -28,6 +29,7 @@ public class ModMenuIntegration implements ModMenuApi {
             ConfigScreen configScreen = new ConfigScreen(screen, new TranslatableComponent("key.quickshulker.config.category.title"));
             configScreen.setSavingEvent(() -> {
                 QuickShulkerMod.config.save();
+                Minecraft.getInstance().options.save();
             });
             ConfigSection activationSection = new ConfigSection(configScreen, new TranslatableComponent("key.quickshulker.config.category.activation"));
             activationSection.addConfigItem(new KeybindItem(new TranslatableComponent("key.quickshulker.config.keybinding"), keybinding.rawKey, ConfigOptions.defaultKeybind).setSaveConsumer(value -> keybinding.setRaw(value)));

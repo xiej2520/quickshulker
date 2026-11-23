@@ -8,13 +8,11 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
-import net.kyrptonaught.kyrptconfig.config.ConfigManager;
 import net.kyrptonaught.kyrptconfig.keybinding.CustomKeyBinding;
 import net.kyrptonaught.kyrptconfig.keybinding.DisplayOnlyKeyBind;
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.api.RegisterQuickShulkerClient;
-import net.kyrptonaught.quickshulker.config.ConfigOptions;
 import net.kyrptonaught.quickshulker.network.OpenInventoryPacket;
 import net.kyrptonaught.quickshulker.network.SetUsedSlotPacket;
 import net.minecraft.client.Minecraft;
@@ -28,7 +26,6 @@ public class QuickShulkerModClient implements ClientModInitializer {
 
     @Comment("Activation key")
     public static CustomKeyBinding keybinding = CustomKeyBinding.configDefault(MOD_ID, "key.keyboard.k");
-    public static ConfigManager.SingleConfigManager keybind_config = new ConfigManager.SingleConfigManager(MOD_ID + "_keybind", new ConfigOptions());
 
     public static CustomKeyBinding getKeybinding() {
         return keybinding;
@@ -36,8 +33,6 @@ public class QuickShulkerModClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        keybind_config.load();
-
         ClientTickEvents.START_WORLD_TICK.register(clientWorld -> {
             boolean pressed = getKeybinding().wasPressed();
             if (pressed && Minecraft.getInstance().screen == null && QuickShulkerMod.getConfig().keybind) {
@@ -68,7 +63,8 @@ public class QuickShulkerModClient implements ClientModInitializer {
                 "key.quickshulker.config.keybinding",
                 "key.categories.quickshulker",
                 getKeybinding(),
-                setKey -> keybind_config.save()
+                setKey -> {
+                }
         ));
     }
 }
