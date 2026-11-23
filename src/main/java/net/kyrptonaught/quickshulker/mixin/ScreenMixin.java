@@ -14,6 +14,7 @@ import net.kyrptonaught.quickshulker.config.ConfigOptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -96,6 +97,14 @@ public abstract class ScreenMixin extends Screen {
     @Unique
     private boolean handleTrigger() {
         if (this.hoveredSlot != null) {
+            if (QuickShulkerMod.getConfig().rightClickClose && this.hoveredSlot.container instanceof Inventory
+                    && ClientUtil.getPlayerInvSlot(menu, this.hoveredSlot) == ((ItemInventoryContainer) menu).getPlayerInvUsedSlot()) {
+                QuickShulkerMod.lastMouseX = this.minecraft.mouseHandler.xpos();
+                QuickShulkerMod.lastMouseY = this.minecraft.mouseHandler.ypos();
+                this.minecraft.player.closeContainer();
+                this.minecraft.setScreen(new InventoryScreen(this.minecraft.player));
+                return true;
+            }
             return isValid(this.hoveredSlot.getItem(), ClientUtil.getSlotId(menu, this.hoveredSlot));
         }
         return false;

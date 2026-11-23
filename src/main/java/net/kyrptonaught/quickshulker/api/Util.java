@@ -3,7 +3,6 @@ package net.kyrptonaught.quickshulker.api;
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.mixin.SlotAccessor;
-import net.kyrptonaught.quickshulker.network.OpenInventoryPacket;
 import net.kyrptonaught.quickshulker.network.SetUsedSlotPacket;
 import net.minecraft.core.NonNullList;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,11 +30,6 @@ public class Util {
     }
 
     public static void openItem(Player player, int invSlot, int playerInvIndex) {
-        if (QuickShulkerMod.getConfig().rightClickClose && playerInvIndex == ((ItemInventoryContainer) player.containerMenu).getPlayerInvUsedSlot()) {
-            ((ServerPlayer) player).closeContainer();
-            OpenInventoryPacket.send((ServerPlayer) player);
-            return;
-        }
         ItemStack stack = player.inventory.getItem(playerInvIndex);
         stack.removeTagKey(QuickShulkerMod.MOD_ID);
         QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());

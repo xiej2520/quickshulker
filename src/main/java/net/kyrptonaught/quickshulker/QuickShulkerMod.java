@@ -1,22 +1,18 @@
 package net.kyrptonaught.quickshulker;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyrptonaught.kyrptconfig.config.ConfigManager;
 import net.kyrptonaught.quickshulker.api.*;
 import net.kyrptonaught.quickshulker.config.ConfigOptions;
 import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.ShulkerBoxMenu;
 import net.minecraft.world.inventory.StonecutterMenu;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.CraftingTableBlock;
 import net.minecraft.world.level.block.EnderChestBlock;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
@@ -33,24 +29,6 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
         config.load();
         OpenShulkerPacket.registerReceivePacket();
         //QuickBundlePacket.registerReceivePacket();
-        UseItemCallback.EVENT.register((player, world, hand) -> {
-            ItemStack stack = player.getItemInHand(hand);
-            if (!world.isClientSide) {
-                if (QuickShulkerMod.getConfig().rightClickToOpen) {
-                    if (Util.isOpenableItem(stack) && Util.canOpenInHand(stack)) {
-                        if (hand == InteractionHand.MAIN_HAND) {
-                            Util.openItem(player, 0, player.inventory.selected);
-                        } else {
-                            final int PLAYER_INVENTORY_OFF_HAND_SLOT = 40;
-                            Util.openItem(player, 0, PLAYER_INVENTORY_OFF_HAND_SLOT);
-                        }
-
-                        return InteractionResultHolder.success(stack);
-                    }
-                }
-            }
-            return InteractionResultHolder.pass(stack);
-        });
         FabricLoader.getInstance().getEntrypoints(MOD_ID, RegisterQuickShulker.class).forEach(RegisterQuickShulker::registerProviders);
     }
 
