@@ -8,9 +8,11 @@ import net.kyrptonaught.quickshulker.network.SetUsedSlotPacket;
 import net.minecraft.core.NonNullList;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerListener;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public class Util {
@@ -18,11 +20,14 @@ public class Util {
     // 1.16 does a mass reworking of Container to ScreenHandler
 
     public static void openItem(Player player, int invSlot) {
-        if (invSlot < 0) {
-            System.out.println("[QuickShulker]: unknown slot opened");
-            //return; //not preventing the crash might make it easier to debug a fix.
+        if (invSlot < 0 || invSlot >= player.containerMenu.slots.size()) {
+            return;
         }
-        openItem(player, invSlot, ((SlotAccessor) player.containerMenu.slots.get(invSlot)).getIndex());
+        Slot slot = player.containerMenu.slots.get(invSlot);
+        if (!(slot.container instanceof Inventory)) {
+            return;
+        }
+        openItem(player, invSlot, ((SlotAccessor) slot).getIndex());
     }
 
     public static void openItem(Player player, int invSlot, int playerInvIndex) {
@@ -34,7 +39,7 @@ public class Util {
         ItemStack stack = player.inventory.getItem(playerInvIndex);
         stack.removeTagKey(QuickShulkerMod.MOD_ID);
         QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());
-        if (qsData != null) {
+        if (qsData != null && isOpenableItem(stack)) {
             qsData.openConsumer.accept(player, stack);
             ((ItemInventoryContainer) player.containerMenu).setPlayerInvUsedSlot(playerInvIndex);
             SetUsedSlotPacket.sendUsedSlotPacket((ServerPlayer) player, playerInvIndex);

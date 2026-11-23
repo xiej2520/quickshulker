@@ -39,9 +39,10 @@ public class QuickShulkerModClient implements ClientModInitializer {
         keybind_config.load();
 
         ClientTickEvents.START_WORLD_TICK.register(clientWorld -> {
-            if (Minecraft.getInstance().screen == null && QuickShulkerMod.getConfig().keybind) {
+            boolean pressed = getKeybinding().wasPressed();
+            if (pressed && Minecraft.getInstance().screen == null && QuickShulkerMod.getConfig().keybind) {
                 Player player = Minecraft.getInstance().player;
-                if (getKeybinding().isKeybindPressed() && player != null) {
+                if (player != null) {
                     if (player.getMainHandItem().isEmpty() && !player.getOffhandItem().isEmpty()) {
                         ClientUtil.CheckAndSend(player.getOffhandItem(), 45);
                     } else {
