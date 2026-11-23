@@ -30,13 +30,9 @@ public class ItemStackInventory extends SimpleContainer {
     @Override
     public void setChanged() {
         super.setChanged();
-        CompoundTag compoundTag = itemStack.getTagElement("BlockEntityTag");
-        if (isEmpty()) {
-            itemStack.removeTagKey("BlockEntityTag");
-            return;
-        } else if (compoundTag == null) {
-            compoundTag = itemStack.getOrCreateTagElement("BlockEntityTag");
-        }
+        // Keep BlockEntityTag and Items always, writes empty list when empty, like Vanilla breaking
+        // empty box (see shulker_box loot table `set_contents`).
+        CompoundTag compoundTag = itemStack.getOrCreateTagElement("BlockEntityTag");
 
         NonNullList<ItemStack> itemStacks = NonNullList.withSize(SIZE, ItemStack.EMPTY);
         for (int i = 0; i < getContainerSize(); i++) {
