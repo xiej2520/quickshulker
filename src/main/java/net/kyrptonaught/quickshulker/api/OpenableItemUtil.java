@@ -27,6 +27,7 @@ public class OpenableItemUtil {
             qsData.openConsumer.accept(player, stack);
 
             ((ItemInventoryContainer) player.menu).setPlayerInvUsedSlot(playerInvIndex);
+            ((ItemInventoryContainer) player.menu).setOpenedStack(stack);
             SetUsedSlotPacket.sendUsedSlotPacket(player, playerInvIndex);
 
             player.menu.addListener(forceCloseScreenIfNotPresent(player, playerInvIndex, stack));
@@ -76,7 +77,8 @@ public class OpenableItemUtil {
             }
 
             public void isValid() {
-                if (!areItemsEqual(stack, player.inventory.getItem(slotID))) {
+                ItemStack current = player.inventory.getItem(slotID);
+                if (current != stack || stack.isEmpty()) {
                     ((ServerPlayerEntity) player).closeMenu();
                 }
             }

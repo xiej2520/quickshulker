@@ -3,6 +3,7 @@ package net.kyrptonaught.quickshulker.mixin;
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.entity.living.player.PlayerInventory;
+import net.minecraft.server.entity.living.player.ServerPlayerEntity;
 import net.minecraft.inventory.menu.ActionType;
 import net.minecraft.inventory.menu.InventoryMenu;
 import net.minecraft.inventory.slot.InventorySlot;
@@ -42,6 +43,21 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
     }
 
     @Unique
+    ItemStack openedStack = ItemStack.EMPTY;
+
+    @Unique
+    @Override
+    public ItemStack getOpenedStack() {
+        return openedStack;
+    }
+
+    @Unique
+    @Override
+    public void setOpenedStack(ItemStack openedStack) {
+        this.openedStack = openedStack;
+    }
+
+    @Unique
     public ItemStack getPlayerInvUsedStack(PlayerEntity playerEntity) {
         return playerInvUsedSlot >= 0 ? playerEntity.inventory.getItem(playerInvUsedSlot) : ItemStack.EMPTY;
     }
@@ -54,6 +70,14 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
     // slotId in InventoryMenu starts at 0 at top left (possibly in opened container)
     @Inject(method = "onClickSlot", at = @At("HEAD"), cancellable = true)
     public void QS$onClick(int slotId, int button, ActionType slotActionType, PlayerEntity playerEntity, CallbackInfoReturnable<ItemStack> cir) {
+        // prevent items from being taken out of the menu (dupe) if anything moved or used up the opened stack.
+        if (this.hasOpenedItem() && playerEntity instanceof ServerPlayerEntity) {
+            ItemStack current = playerEntity.inventory.getItem(this.playerInvUsedSlot);
+            if (current != this.openedStack || current.isEmpty()) {
+                cir.setReturnValue(ItemStack.EMPTY);
+                return;
+            }
+        }
         // need to prevent the opened QuickShulker item from being moved in the inventory
         // see issue #28
         if (slotId >= 0 && slotId < this.slots.size() && this.hasOpenedItem()) {

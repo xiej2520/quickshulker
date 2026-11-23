@@ -13,7 +13,7 @@ import net.minecraft.item.ShulkerBoxItem;
 @Environment(EnvType.CLIENT)
 public class ClientUtil {
     public static boolean tryOpenAndSendPacket(ItemStack stack, int playerInvIndex) {
-        if (isOpenableItem(stack)) {
+        if (isOpenableItem(stack) && OpenShulkerPacket.canSend()) {
             OpenShulkerPacket.sendOpenPacket(playerInvIndex);
             return true;
         }

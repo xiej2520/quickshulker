@@ -23,6 +23,11 @@ public class OpenShulkerPacket {
     }
 
     @Environment(EnvType.CLIENT)
+    public static boolean canSend() {
+        return ClientPlayNetworking.isPlayReady(OPEN_SHULKER_PACKET);
+    }
+
+    @Environment(EnvType.CLIENT)
     public static void sendOpenPacket(int playerInvIndex) {
         ClientPlayNetworking.send(OPEN_SHULKER_PACKET, buffer -> buffer.writeInt(playerInvIndex));
     }
