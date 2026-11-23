@@ -105,20 +105,16 @@ public class FakeShulkerBoxInventory implements Inventory, MenuProvider {
 
     @Override
     public void markDirty() {
-        NbtCompound blockEntityTag = this.shulkerBoxItemStack.getNbt("BlockEntityTag");
-
-        if (this.isEmpty()) {
-            this.shulkerBoxItemStack.removeNbt("BlockEntityTag");
-            return;
-        } else if (blockEntityTag == null) {
-            blockEntityTag = this.shulkerBoxItemStack.getOrCreateNbt("BlockEntityTag");
-        }
+        // Keep BlockEntityTag, write Items only when box isn't empty.
+        // See ShulkerBoxBlock.onRemoved + ShulkerBoxBlockEntity.saveNbt
+        NbtCompound blockEntityTag = this.shulkerBoxItemStack.getOrCreateNbt("BlockEntityTag");
 
         DefaultedList<ItemStack> itemStacks = DefaultedList.of(SIZE, ItemStack.EMPTY);
         for (int i = 0; i < this.getSize(); i++) {
             itemStacks.set(i, this.getItem(i));
         }
-        InventoryHelper.toNbt(blockEntityTag, this.inventory);
+        blockEntityTag.remove("Items");
+        InventoryHelper.toNbt(blockEntityTag, this.inventory, false);
     }
 
     @Override
