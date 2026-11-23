@@ -28,6 +28,7 @@
 package net.kyrptonaught.quickshulker.mixin.minecraft;
 
 import net.kyrptonaught.quickshulker.api.ItemInventoryContainer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -66,6 +67,17 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
         this.playerInvSlot = playerInvSlotID;
     }
 
+    @Unique
+    ItemStack openedStack = ItemStack.EMPTY;
+
+    public ItemStack QS$getOpenedStack() {
+        return openedStack;
+    }
+
+    public void QS$setOpenedStack(ItemStack stack) {
+        this.openedStack = stack;
+    }
+
     @Shadow
     public abstract ItemStack getCarried();
 
@@ -77,6 +89,14 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
     public void QS$onClick(int slotId, int button, ClickType actionType, Player player, CallbackInfo ci) {
     //#endif
         if (!hasItem()) return;
+        // prevent items from being taken out of the menu (dupe) if anything moved or used up the opened stack.
+        if (player instanceof ServerPlayer) {
+            ItemStack current = player.getInventory().getItem(playerInvSlot);
+            if (current != openedStack || current.isEmpty()) {
+                ci.cancel();
+                return;
+            }
+        }
         // The opened item must not move while its menu is open.
         if (slotId >= 0 && slotId < slots.size()
                 && slots.get(slotId).container instanceof Inventory && slots.get(slotId).getContainerSlot() == playerInvSlot) {

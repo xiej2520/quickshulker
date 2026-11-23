@@ -27,6 +27,8 @@
 
 package net.kyrptonaught.quickshulker.api;
 
+import net.minecraft.world.item.ItemStack;
+
 public interface ItemInventoryContainer {
 
     int QS$getUsedSlotInPlayerInv();
@@ -36,5 +38,9 @@ public interface ItemInventoryContainer {
     }
 
     void QS$setUsedSlot(int playerInvSlotID);
+
+    ItemStack QS$getOpenedStack();
+
+    void QS$setOpenedStack(ItemStack stack);
 
 }

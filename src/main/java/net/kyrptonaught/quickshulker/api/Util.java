@@ -62,6 +62,7 @@ public class Util {
         if (qsData != null) {
             qsData.openConsumer.accept(player, stack);
             ((ItemInventoryContainer) player.containerMenu).QS$setUsedSlot(playerInvIndex);
+            ((ItemInventoryContainer) player.containerMenu).QS$setOpenedStack(stack);
             SetUsedSlotPacket.send((ServerPlayer) player, playerInvIndex);
             player.containerMenu.addSlotListener(forceCloseScreenIfNotPresent(player, playerInvIndex, stack));
         }
