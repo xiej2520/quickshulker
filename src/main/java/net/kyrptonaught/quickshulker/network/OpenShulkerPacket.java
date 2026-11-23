@@ -21,6 +21,11 @@ public class OpenShulkerPacket {
     }
 
     @Environment(EnvType.CLIENT)
+    public static boolean canSend() {
+        return ClientPlayNetworking.canSend(OPEN_SHULKER_PACKET);
+    }
+
+    @Environment(EnvType.CLIENT)
     public static void sendOpenPacket(int invSlot) {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         buf.writeInt(invSlot);

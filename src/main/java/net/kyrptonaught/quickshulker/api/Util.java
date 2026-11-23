@@ -36,6 +36,7 @@ public class Util {
         if (qsData != null && isOpenableItem(stack)) {
             qsData.openConsumer.accept(player, stack);
             ((ItemInventoryContainer) player.containerMenu).setPlayerInvUsedSlot(playerInvIndex);
+            ((ItemInventoryContainer) player.containerMenu).setOpenedStack(stack);
             SetUsedSlotPacket.sendUsedSlotPacket((ServerPlayer) player, playerInvIndex);
             player.containerMenu.addSlotListener(forceCloseScreenIfNotPresent(player, playerInvIndex, stack));
         }
@@ -86,7 +87,8 @@ public class Util {
             }
 
             public void isValid() {
-                if (!areItemsEqual(stack, player.inventory.getItem(slotID))) {
+                ItemStack current = player.inventory.getItem(slotID);
+                if (current != stack || stack.isEmpty()) {
                     ((ServerPlayer) player).closeContainer();
                 }
             }

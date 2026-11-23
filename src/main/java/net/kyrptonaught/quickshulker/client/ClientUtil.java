@@ -16,7 +16,7 @@ import net.kyrptonaught.quickshulker.mixin.SlotAccessor;
 public class ClientUtil {
 
     public static boolean CheckAndSend(ItemStack stack, int slot) {
-        if (Util.isOpenableItem(stack)) {
+        if (Util.isOpenableItem(stack) && OpenShulkerPacket.canSend()) {
             SendOpenPacket(slot);
             return true;
         }

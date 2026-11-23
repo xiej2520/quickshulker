@@ -6,6 +6,7 @@
     "ContainerMixin",
     "CraftingScreenHandlerMixin",
     "ItemMixin",
+    "ServerGamePacketListenerMixin",
     "SlotAccessor"
   ],
   "client": [

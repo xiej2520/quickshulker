@@ -1,6 +1,7 @@
 package net.kyrptonaught.quickshulker.mixin;
 
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -42,6 +43,19 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
     }
 
     @Unique
+    ItemStack openedStack = ItemStack.EMPTY;
+
+    @Unique
+    public ItemStack getOpenedStack() {
+        return openedStack;
+    }
+
+    @Unique
+    public void setOpenedStack(ItemStack openedStack) {
+        this.openedStack = openedStack;
+    }
+
+    @Unique
     public ItemStack getPlayerInvUsedStack(Player playerEntity) {
         return playerInvUsedSlot >= 0 ? playerEntity.inventory.getItem(playerInvUsedSlot) : ItemStack.EMPTY;
     }
@@ -54,6 +68,14 @@ public abstract class ContainerMixin implements ItemInventoryContainer {
     // slotId counts from 0 at the top left of the menu (possibly in the opened container)
     @Inject(method = "clicked", at = @At("HEAD"), cancellable = true)
     public void QS$onClick(int slotId, int button, ClickType slotActionType, Player playerEntity, CallbackInfoReturnable<ItemStack> cir) {
+        // prevent items from being taken out of the menu (dupe) if anything moved or used up the opened stack.
+        if (hasOpenedItem() && playerEntity instanceof ServerPlayer) {
+            ItemStack current = playerEntity.inventory.getItem(playerInvUsedSlot);
+            if (current != openedStack || current.isEmpty()) {
+                cir.setReturnValue(ItemStack.EMPTY);
+                return;
+            }
+        }
         // need to prevent the opened QuickShulker item from being moved in the inventory
         // see issue #28
         if (slotId >= 0 && slotId < slots.size() && hasOpenedItem()) {
