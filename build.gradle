@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.10-SNAPSHOT'
+	id 'fabric-loom' version '1.19-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -68,22 +68,10 @@ jar {
 
 // configure the maven publication
 publishing {
-	//publications {
-	//	QuickshulkerPublication(MavenPublication) {
-	//		groupId 'net.kyrptonaught'
-	//		artifactId 'quickshulker'
-	//		version project.version
-
-	//		artifact(remapJar) {
-	//			builtBy remapJar
-	//		}
-	//		artifact(sourcesJar) {
-	//			builtBy remapSourcesJar
-	//		}
-	//	}
-	//}
-
-	//repositories {
-	//	 mavenLocal()
-	//}
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'quickshulker'
+            from components.java
+        }
+    }
 }
